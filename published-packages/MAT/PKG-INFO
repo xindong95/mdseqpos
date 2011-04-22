@@ -1,0 +1,12 @@
+Metadata-Version: 1.0
+Name: MAT
+Version: 2.11272006
+Summary: A model-based algorithm to reliably detect regions enriched by transcription factor Chromatin ImmunoPrecipitation on Affymetrix tiling arrays.
+Home-page: http://chip.dfci.harvard.edu/~wli/MAT
+Author: Liu Lab
+Author-email: weili@jimmy.harvard.edu
+License: the Artistic License
+Description: 
+        We propose a novel analysis algorithm MAT to reliably detect regions enriched by transcription factor Chromatin ImmunoPrecipitation (ChIP) on Affymetrix tiling arrays (chip). MAT models the baseline probe behavior by considering probe sequence and copy number on each array. The correlation between the baseline probe model estimates and the observed measurements can be as high as 0.72. MAT standardizes the probe value via the probe model, eliminating the need for sample normalization. A novel scoring function is applied to the standardized data to identify the ChIP-enriched regions, which allows robust p-value and false discovery rate calculations. MAT can detect ChIP-regions from a single ChIP sample, multiple ChIP samples, or multiple ChIP samples with controls with increasing accuracy. Based on the mock ChIP samples provided by the ENCODE consortium, MAT achieved 100% accuracy (0 false positive and 0 false negative) for the target detection of those spike-in plasmids, which are 2,4,8,-256 fold enriched compared with the genomic background. Quantitatively, MAT yielded a 0.95 correlation coefficient between the spike-in DNA concentration and the predicted score. Upon further analysis, MAT identified more than 70% of the true targets at 5% FDR cutoff from a single ChIP sample. This is a valuable feature for quickly testing the protocols and antibodies for ChIP-chip, and easily identifying ChIP-chip samples with questionable quality.
+        
+Platform: Linux/Unix/Cygwin

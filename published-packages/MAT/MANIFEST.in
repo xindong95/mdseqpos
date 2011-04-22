@@ -1,0 +1,5 @@
+recursive-include   src *
+include MANIFEST.in
+include ER.tag
+include Artistic_License.pdf
+#recursive-include SampleData *

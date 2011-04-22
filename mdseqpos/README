@@ -1,0 +1,16 @@
+mdseqpos python package
+
+Authors: Len Taing, Ying Lei, Cliff Meyers, et al
+Contact: lentaing@jimmy.harvard.edu
+URL:'http://cistrome.dfci.harvard.edu/ap' to test the tool
+
+To download the tool package:
+URL: 'http://liulab.dfci.harvard.edu/mdseqpos'
+
+INSTALLATION INSTRUCTIONS:
+1. install package dependencies:
+   a. django v. 1.1.1 or greater
+   b. numpy v. 1.3.0 or greater
+2. in lib> cp settings.py.example settings.py
+3. in lib/settings.py specify where your UCSC assemblies are
+4. as sudo, type: python setup.py install

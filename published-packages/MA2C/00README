@@ -1,0 +1,44 @@
+README for MA2C
+Time-stamp: <2008-06-02 14:06:26 Tao Liu>
+
+* Install
+
+Please check the file 'INSTALL' in the distribution.
+
+* Usage
+
+Usage: ma2c <tag file>
+
+A sample tag file is included in the distribution, please check the
+instruction there. To write a tag file, you should collect information
+from the samplekey file from NimbleGen, and organize your design files
+and data files.
+
+* Output files
+
+All the output files will be saved in a subdirectory named
+'MA2C_Output/'.
+
+1. For the given DESIGN_ID, MA2C will generate a tpmap file named
+'MA2C_'+DESIGN_ID+'.tpmap'. Keeping this file in place will save time
+while you run MA2C next time for the same DESIGN_ID.
+
+2. For every CHIP_ID, MA2C generates a raw data , a normalized data
+file and a R script file. The raw data file
+('MA2C_'+CHIP_ID+'_raw.txt') can be reused if you keep it in
+'MA2C_Output/'. But normalized data file --
+'MA2C_'+CHIP_ID+'_normalized.txt'-- will never be reused. The R script
+can be processed by R program to generate a pdf file visualizing the
+normalized signal distribution for each CHIP_ID. A good ChIP
+experiment must have a biased long right tail.
+
+3. The peak regions output files include a bed file, a xls file, a
+gzipped wig file and a FDR table together with its R script. These
+file names are consistent with the file name for the tag file. BED
+file can be loaded by UCSC genome browser or IGB which contains the
+detected peak regions. XLS file provides more detailed information for
+the regions. And the gzipped wig file represents the MA2Cscore values
+along the chromosomes, which can be loaded by UCSC genome browser or
+IGB from Affymetrix. To process the R script with FDR table in R will
+generate a pdf figure. If the figure is like a log curve, the result
+may be reliable.

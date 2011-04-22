@@ -1,2 +1,9 @@
+syntax: regexp
+
+\.svn$
+
 syntax: glob
+.hg*
 .DS_Store
+build/
+*.pyc

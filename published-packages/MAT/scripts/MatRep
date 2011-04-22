@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+from optparse import OptionParser
+from MAT.Rep import *
+import sys
+
+parser = OptionParser(usage = "%prog [options] RepeatMsk simpleRepeat SegmentalDups", version = "%prog 02172008", description= "Make a RepLib for MAT, example: %prog -m RepeatMsk simpleRepeat SegmentalDups\n Three repeat information must be downloaded from UCSC downlod page.")
+
+parser.add_option("-m",  action = "store_true", dest="make", default=False,
+                  help="make repeat lib")
+parser.add_option("-b",  dest="bed",action = "store_true", default=False,
+                      help="mask bed files")
+
+(options, args) = parser.parse_args()
+
+if len(sys.argv) <2:
+    parser.print_help()
+    sys.exit()
+
+if options.make:
+    rep = Rep()
+    rep.Make(args[0], args[1], args[2])
+    pickle.dump(rep.__dict__, open('RepeatLib','wb'), -1)
+
+if options.bed:
+    rep = Rep('RepeatLib')
+    for file in args:
+        sys.stdout = open(file+'.rep', 'w', 0)
+        rep.MarkBedFile(file)
+

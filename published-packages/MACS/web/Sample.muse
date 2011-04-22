@@ -1,0 +1,8 @@
+#title Sample
+
+| Raw Data | [[release/test_suites/FoxA1_ChIP-seq.tar.gz][FoxA1]] |
+| Result^ | [[release/test_suites/FoxA1_MACS_peaks.xls][FoxA1]] | [[release/test_suites/NRSF_MACS_peaks.xls][NRSF]] | [[release/test_suites/CTCF_MACS_peaks.xls][CTCF]] |
+
+^ Result files are in tab-delimited format, which can be directly
+imported by EXCEL or other spreadsheet software. Parameters can also
+be found in the head of these .xls files.

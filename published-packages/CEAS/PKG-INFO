@@ -1,0 +1,20 @@
+Metadata-Version: 1.0
+Name: CEAS
+Version: 0.9.3
+Summary: CEAS -- Cis-regulatory Element Annotation System
+Home-page: http://liulab.dfci.harvard.edu/CEAS/
+Author: H. Gene Shin
+Author-email: shin@jimmy.harvard.edu
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Artistic License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Topic :: Database

@@ -1,0 +1,97 @@
+#title Frequently Asked Questions
+
+ 1. How can I install this software?
+
+    See [[Install]] page.
+   
+ 2. How long will it take to run an analysis? How much memory will it occupy?
+
+    For our FoxA1 ChIP-Seq experiment on human with 4 million 36 nt
+    tags for treatment and 5 million tags for control, it will take
+    MACS(version 1.3) less than 3 min and no more than 65M memory to
+    complete the analysis on a 2.0G Hz computer, using the default
+    parameter. Actually, every tag will take 6 bytes in memory. So for
+    instance, 500M tags will take 3G memory, considering other data
+    like peak information and temporary data, then its memory usage
+    will normally be around 4G mem.
+   
+ 3. I got a warning like 'Too few paired peaks (0) so I can not build
+    the model! Lower your MFOLD parameter may erase this error.', how
+    can I tweak MFOLD parameter?
+
+    We highly recommend you to test several MFOLD parameters. A
+    suitable MFOLD parameter for model building will lead to several
+    thousand paired peaks from the raw ChIP-seq data. But you'd better
+    not to use a MFOLD less than 10, because it will bring you too
+    many paired peaks which will stick the process.
+
+ 4. What are the "paired peaks" reported during "Build peak model"?
+    How are they related to the much larger number of peaks that are
+    called later in the process?
+
+    To find paired peaks to build model is the first step in
+    MACS. MACS uses MFOLD value to scan the whole dataset, searches
+    for highly significant enriched regions, then estimates a
+    'fragment_length' from the difference between the forward and
+    reverse tag distribution in those regions, i.e., the paired peaks
+    from forward tags and reverse tags. After this step, the MFOLD
+    value will never be used. And in the next step -- the real peak
+    calling-- MACS shifts tags according to 'fragment_length' then
+    scans data for enriched peaks comparing to the background first,
+    then the nearby regions by p-value cutoff. That's how it works.
+
+ 5. Why do many reported peaks have a fold_change that is lower than
+    MFOLD?
+
+    Fold_change in XLS is not from the same analysis for MFOLD
+    parameter. Fold_change is calculated from the enriched tags in
+    that peak region and the local lambda of poisson distribution from
+    the nearby regions.
+
+ 6. What are the three colored curves that define the peak model in
+    the R model?
+
+    The red curve represents the tag distribution in the peaks from
+    forward tags, and the blue one is the distribution from the paired
+    reverse tags. The zero point in x-axis is the midpoint of the
+    paired-peaks window. Then the 'fragment_length' is determined as
+    the distance between the summit of red and blue curves. After
+    that, red curve is moved to the right of fragment_length/2 and
+    blue one is moved to the left to form a merged distribution of the
+    black curve. That's what the 'peak model' looks like.
+
+ 7. Why doesn't MACS report FDR values for my data?
+
+    In our algorithom, the FDR is calculated based on control data. So
+    If there is no control file, the FDR column doesn't exist in the
+    output file.
+
+ 8. Could you explain how the FDR is calculated for each peak?
+
+    FDR is calculated by reversing the control and treatment data,
+    calling peaks using the same strategy, then calculating p-values
+    for these 'negative peaks'. After ranking 'positive' peaks and
+    'negative' peaks by p-values, one can calculate a FDR for a
+    certain p-value.
+
+ 9. How to use MACS on my SOLiD csfasta format files?
+
+    Giles Hall contributed a tool to convert csfasta to ELAND format
+    files, which you can download from [[Contributions][Contribution]] page.
+
+ 10. I'm looking into using the FDR values calculated from MACS, and
+    am getting some odd behavior. In one case, the relationship seems
+    inverse of what I'd expect with small p-values corresponding to
+    higher FDR's. In the other case I see that, up to a point, a
+    smaller p-value corresponds to a lower FDR. Beyond a certain
+    point, though, the FDR starts to rise with smaller p-values, which
+    seems off to me. Any thoughts out there on this? (From Tim Reddy)
+
+    In MACS, the FDR values and p-values are not necessary to be
+    correlated monotonically. For a certain p-value we calculate how
+    many peaks can be called from treatment against control, and how
+    many peaks can be called from control against treatment by this
+    p-value as cutoff. Then use these two numbers to compute FDR. At
+    last we can assign FDR for every p-value. Sometimes, there are
+    several peaks in control sample with very significant p-values, so
+    the FDR for this low p-value can be quite high.

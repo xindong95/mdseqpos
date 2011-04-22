@@ -1,0 +1,701 @@
+#!/usr/bin/env python
+#wig 97-135374817
+# """
+# #good default collist <- c("#053061","#2166AC","#4393C3","#92C5DE","#D1E5F0","#F7F7F7","#FDDBC7","#F4A582","#D6604D","#B2182B","#67001F")
+
+# 1.4
+# change hsv input to rgb.
+# use R::colorRampPalette to generate the color legend instead of do it myself.
+
+# 1.41
+# fix R plot :: image() to correct the color bar.
+
+# 1.42
+# small bugs fixed.
+# make default colorRamp nice.
+
+# 1.43
+# add 2 options:
+# (1) kmeans cluster for the wigfiles use want. 
+# (2) don't do cluster, just sort use a key wig file.
+
+# 1.44
+# (1) fix color input
+# (2) sys.stderr instead of print 
+
+# 1.45
+# (1) arguments use " to quote in xml
+# (2) add option --set-seed
+# (3) full sort for classified peaks, make result identity.
+
+# 1.47
+# (1) add color validation
+# (2) sort peaks as the order of pictrue
+# (3) output 6 columns, not 3
+
+# 1.48
+# (1) fix bug: if set '--dir' and input different upstream and downstream, it will show the wrong result!
+
+# don't use "," to seperate arguments.
+
+# """
+
+import os, sys, time, re
+import itertools
+from optparse import OptionParser
+
+import CistromeAP.jianlib.inout as inout
+import CistromeAP.jianlib.corelib as corelib
+import CistromeAP.jianlib.R as R
+from CistromeAP.jianlib.myfunc import *
+
+
+class WigProfilerwBed:
+    """WigProfiler for regions in Bed"""
+
+    def __init__(self, upstm=500, downstm=500, step=20, dir=False):
+        """Constructor"""
+
+        # parameters
+        self.upstm = upstm
+        self.downstm = downstm
+        self.step = step
+        self.dir = dir
+
+    def set_params(self, upstm, downstm, step, dir):
+        """Set parameters
+
+        Parameters:
+        1. wig: an Wig object in Cistrome.Assoc.inout
+        2. bed: a Bed object in Cistrome.Assoc.inout
+        3. upstm,downstm: span size from the center of each region
+        4. dir: if set True, the start and end of '-' will be regarded as the end and start.
+        """
+        self.upstm = upstm
+        self.downstm = downstm
+        self.step = step
+        self.dir = dir
+
+    def capture_regions(self, wig, bed):
+        """Capture the regions that will be profiled"""
+
+        wigint = self.estimate_wig_interval(wig)    # estimate the wig interval for where2
+        step = self.step
+        hf = step/2
+        binned = []
+        chroms = list(set(wig.get_chroms()).intersection(set(bed.get_chroms()))) #input^bed
+        chroms = corelib.sort_chroms(chroms)
+
+        for chrom in chroms:
+            x=wig[chrom][0]
+            y=wig[chrom][1]
+
+            # if the direction is considered, include strand info from the BED
+            if self.dir:
+                try:
+                    bediter=itertools.izip(bed[chrom]['start'],bed[chrom]['end'], bed[chrom]['strand'])
+                except KeyError:
+                    dummy=['' for i in xrange(len(bed[chrom]['start']))]
+                    bediter=itertools.izip(bed[chrom]['start'],bed[chrom]['end'], dummy)
+            else:
+                dummy=['' for i in xrange(len(bed[chrom]['start']))]
+                bediter=itertools.izip(bed[chrom]['start'],bed[chrom]['end'], dummy)
+
+            init = 0
+            for begin, cease, strand in bediter:
+                # get the center, right edge and left edge for search
+                center = (begin+cease)/2
+                if strand == '-':
+                    left = center -self.downstm - hf
+                    right = center + self.upstm + hf
+                else:
+                    left = center -self.upstm - hf
+                    right = center + self.downstm + hf
+                n = (right-left)/step
+
+                # get the region from the wig, binning
+                start, end= corelib.where2(left, right, x[init:], wigint)
+                regionx = x[init+start:init+end]
+                regiony = y[init+start:init+end]
+
+                if regionx and regiony:
+                    bins = corelib.linspace(left, right, n+1)
+                    this = binxy(bins, wigint, regionx, regiony, binfunc='middle', NaN=False)
+                else:
+                    this = [0] * n
+
+                # if -, reverse
+                if strand == '-':
+                    this.reverse()
+
+                # save the binned signal
+                binned.append(this)
+
+                # update initial search point
+                init+=start
+
+        return binned
+
+    def estimate_wig_interval(self, wig):
+        """Estimate the interval between two consecutive points.
+        This method is exactly the same as estimate_wig_interval function in inout.py.
+
+        This methods select randomly 10 regions in each chromosome and take the median of two consecutive intervals.
+        """
+
+        chroms = wig.get_chroms()
+        if not chroms: return None
+
+        n_random_positions = 10
+        intervals = []
+        for chrom in chroms:
+            len_this_chr = len(wig[chrom][0])
+            a = corelib.randints(0, len_this_chr - 2, 2 * n_random_positions)   # we need at least two element array to get difference
+            a.sort()
+            starts = [a[i] for i in xrange(len(a)) if i%2 == 0]
+            ends = [a[i] + 2 for i in xrange(len(a)) if i%2 == 1]# we need at least two element array to get difference
+
+            for start, end in itertools.izip(starts, ends):
+                intervals.append(corelib.median(corelib.diff(wig[chrom][0][start:end])))
+
+        return corelib.median(intervals)
+
+    def get_breaks(self, start, end):
+        """Return breaks for bins
+
+        Parameters:
+        1. xmin: the start value
+        2. xmax: the end value. This end value is included in the resulting breaks.
+
+        """
+        #step = self.step
+        #n = (end-start) / step + 1
+        #breaks = map(lambda x: int(round(x)), corelib.linspace(start, end, n))
+        #return breaks
+
+        xmin = int(round(float(start)/self.step)) * self.step
+        xmax = int(round(float(end)/self.step)) * self.step
+        breaks = [xmin+self.step*i for i in range((xmax-xmin)/self.step+1)]
+        return breaks
+
+    def profile(self, wig, bed):
+        """Wrapper function of WigProfilewBed.
+        Through this function, the user can set the parameters for profiling and get
+        a list of profiles of the regions.
+
+        """
+
+        start = -1 * self.upstm
+        end = self.downstm
+        return self.capture_regions(wig, bed)
+
+def prepare_optparser ():
+    """Prepare optparser object. New options will be added in this
+    function first."""
+    usage = "usage: %prog <-w wig -b bed> [options]"
+    description = "plot heatmap for 1 bed against N wigs. Please use absolute path for now."
+    # option processor
+    optparser = OptionParser(version="%prog 1.42",description=description,usage=usage,add_help_option=False)
+    optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
+    optparser.add_option("-w","--wig",dest="wig",type="string",help="input WIG file. both fixedStep/variableStep are accepted. Multiple WIG files use ',' to split")
+    optparser.add_option("-b","--bed",dest="bed",type="string",help="BED file of regions of interest.")
+    optparser.add_option("--name",dest="name",type="string",help="Name of this run. Used to name output file. If not given, the body of the bed file name will be used")
+    
+    optparser.add_option("--method",dest="hmethod",type="string",help="which method you want to use to cluster these files. select from kmeans, median, maximum, mean. default:kmeans",default="kmeans")
+    optparser.add_option("-k","--kmeans",dest="kmeans",type="int",help="for KMEANS. number of the classifications, int, default:4",default=4)
+    optparser.add_option("--k_wigindex", dest="k_wigindex",type="string",help="for KMEANS. select wig file to do clustering, eg:'1,3,4' default:all",default="all")
+    optparser.add_option("--s_wigindex", dest="s_wigindex",type="int",help="for SORT WIG. select the key wig file to get the order. default:1",default=1)
+    
+    optparser.add_option("--pf-res", dest="step", type="int", help="Profiling resolution, default: 10 bp", default=10)
+    optparser.add_option("--dir",action="store_true",dest="dir", help="If set, the direction (+/-) is considered in profiling. If no strand info given in the BED, this option is ignored. default:True",default=True)
+
+    optparser.add_option('--fontsize', dest='fontsize', type="int", help="set the font size in plot. default:2", default=2)
+    optparser.add_option('--upstream', dest='upstm', type="int", help="upstream distance from the center of peak. Profiling will start here. default:500", default=500)
+    optparser.add_option('--downstream', dest='downstm', type="int", help="downstream distance from the center of peak. default:500", default=500)
+    optparser.add_option('--col', dest='colors', type="string", help="set the colorRamp for the legend of heatmap, from low value to high, use ','to split. default: (something colorful)", default="053061,2166AC,4393C3,92C5DE,D1E5F0,F7F7F7,FDDBC7,F4A582,D6604D,B2182B,67001F")
+    optparser.add_option('--pic_width', dest='pic_width', type="int", help="width of the heatmap image. default:1600", default=1600)
+    optparser.add_option('--pic_height', dest='pic_height', type="int", help="height of the heatmap image. default:1200", default=1200)
+    optparser.add_option('--zmin', dest='zmin', type='float', help="min axis for the legend of heatmap, better to set it. optional.", default=None)
+    optparser.add_option('--zmax', dest='zmax', type='float', help="max axis for the legend of heatmap, better to set it. optional.", default=None)
+    optparser.add_option('--x_label', dest='xlabel', type="string", help="x-label for each heatmap plot,use ',' to split. optional.", default="")
+    optparser.add_option('--y_label', dest='ylabel', type="string", help="y-label for each heatmap plot,use ',' to split. optional.", default="")
+    #optparser.add_option('--title', dest='title', type="string", help="title for the whole heatmap image.", default=None)
+    optparser.add_option('--title', dest='subtitle', type="string",help="subtitles for each heatmap plot, use ',' to split. optional.", default="")
+    optparser.add_option('-z','--horizontal_line', action='store_true', dest='axhline', help="plot lines to separate kmeans class. default:False", default=False)
+    optparser.add_option('-v','--vertical_line', action='store_true', dest='axvline', help="plot vertical line at peak center. default:False", default=False)
+    optparser.add_option('--set-seed', action='store_true', dest='set_seed', help="Set a seed so that the results can be reproducible. default:False", default=False)
+
+    return optparser
+
+def opt_validate (optparser):
+    """Validate options from a OptParser object.
+    Ret: Validated options object.
+    """
+    (options,args) = optparser.parse_args()
+
+    # input BED file and GDB must be given
+    if not (options.wig and options.bed):
+        optparser.print_help()
+        sys.exit(1)
+    if options.wig:
+        options.wig = options.wig.split(",")
+        iwig = len(options.wig)
+        for wig in options.wig:
+            if not os.path.isfile(wig):
+                Info("ERROR @ Check -w (--wig). No such file exists:<%s>" %wig)
+                sys.exit(1)
+    if options.bed:
+        if not os.path.isfile(options.bed):
+            Info('ERROR @ Check -b (--bed). No such file exists:<%s>' %options.bed)
+            sys.exit(1)
+
+    if options.k_wigindex == "all": #this argument is input by user, count from 1 not 0
+        options.k_wigindex = [t for t in range(1, iwig+1)]
+    else:
+        options.k_wigindex = options.k_wigindex.split(',')
+        for i in options.k_wigindex:
+            try:
+                int(i)
+            except ValueError:
+                Info('ERROR @ --k_wigindex set error.')
+                sys.exit(1)
+            if int(i) > iwig or int(i)<1:
+                Info('ERROR @ --k_wigindex set error.')
+                sys.exit(1)
+        options.k_wigindex = [int(t) for t in options.k_wigindex]
+
+    if options.hmethod not in ("kmeans", "median", "maximum", "mean"):
+        Info("ERROR @ method not support.")
+        sys.exit(1)
+        
+    # validate limit
+    if not options.name:
+        options.name = os.path.splitext(options.bed)[0]
+        options.name = options.name.rstrip("_peaks")
+        
+    if options.kmeans>=30:
+        Info("ERROR @ kmeans level to big, input a number < 30")
+        sys.exit(1)
+
+    if options.step<10:
+        Info("WARNING @ pf-res < 10, I will use 10 instead.")
+        options.step=10
+
+    if options.fontsize<1:
+        options.fontsize = 1
+
+    if options.pic_width<1600:
+        Info("WARNING @ You'd better output a image with width > 1600p")
+        sys.exit(1)
+
+    # color
+    colors = options.colors.strip(',').split(',')
+    for eachc in colors:
+        try:
+            t=int(eachc,16)
+        except:
+            Info("ERROR @ please input correctly for color.")
+            sys.exit(1)
+    colors = ['"#%s"' %t for t in colors]
+    options.colors = ','.join(colors)
+
+    # split multiple arguments
+    options.xlabel = options.xlabel.split(',')
+    if len(options.xlabel)>iwig:
+        Info("ERROR @ xlabels more than wigs.")
+        sys.exit(1)
+    while len(options.xlabel)<iwig:
+        Info("WARNING @ xlabels less than wigs.")
+        options.xlabel.append(options.xlabel[-1])
+    options.ylabel = options.ylabel.split(',')
+    if len(options.ylabel)>iwig:
+        Info("ERROR @ ylabels more than wigs.")
+        sys.exit(1)
+    while len(options.ylabel)<iwig:
+        Info("WARNING @ ylabels less than wigs.")
+        options.ylabel.append(options.ylabel[-1])
+    options.subtitle = options.subtitle.split(',')
+    if len(options.subtitle)>iwig:
+        Info("ERROR @ subtitles more than wigs.")
+        sys.exit(1)
+    while len(options.subtitle)<iwig:
+        Info("WARNING @ subtitles less than wigs.")
+        options.subtitle.append(options.subtitle[-1])
+    #if options.zmin and options.zmin<0:
+    #    options.zmin=0
+    #if options.zmax and options.zmax<0:
+    #    options.zmax=0
+    
+    #fix some options
+    if options.hmethod != "kmeans":
+        options.axhline = False
+
+    # print arguments
+    Info("selected wig to cluster/sort:")
+    if options.hmethod == "kmeans":
+        for i in options.k_wigindex:
+            sys.stderr.write("           %s\n" %options.wig[i-1])
+    else:
+        sys.stderr.write("           %s\n" %options.wig[options.s_wigindex-1])
+
+    return options
+
+def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfilerwBed
+    profwbed=WigProfilerwBed(upstm=options.upstm, downstm=options.downstm, step=options.step, dir=options.dir) # create a profiler object
+    sitebreaks = profwbed.get_breaks(-options.upstm, options.downstm)        # get the breaks
+    peakinfo = []
+    siteprofs = []
+
+    # Doing profiling
+    chrom=''
+    chrcount=1
+    FIRST=True
+    fixedStep = False
+
+    # run sitepro on wig
+    inf = open(wig)
+    for line in inf:
+        if not line:
+            continue
+        # read a chromosome
+        if re.search(r'track',line):
+            try:
+                description=re.search(r'description="(\w+)"\s',line).group(1) # get description
+            except AttributeError:
+                pass
+            continue
+
+        if re.search(r'fixedStep', line): # check fixedStep or variableStep
+            fixedStep = True
+            step = int(re.search(r'step=(\S+)\s', line).group(1))
+            position = int(re.search(r'start=(\S+)\s', line).group(1))
+
+        if re.search(r'chrom=(\S+)\s',line): # get chrom
+            newchrom=re.search(r'chrom=(\S+)\s',line).group(1)
+            try:
+                newchrom=inout.standard_chroms[newchrom] # fix chrom name
+            except KeyError:
+                pass
+            continue
+
+        l=line.strip().split()
+
+        # the beginning
+        if chrom == '' and chrom != newchrom:
+            chrom = newchrom
+
+            # if this chromosome is not in chromosome list of the BED, just ignore it
+            Info("# %d. read and process chrom <%s>..." %(chrcount, chrom))
+            input=inout.Wig()
+
+            if fixedStep:  # if fixedStep, calculate the position from start and step
+                row = [position, l[-1]]
+                position += step
+            else: # variableStep
+                row = l
+
+            # add the new line to the Wig object
+            input.add_line(chrom, row)
+            chrcount += 1
+
+        elif chrom!='' and chrom!=newchrom:    # new chromosome
+            chroms_bed = hBed.get_chroms()
+            if chrom in chroms_bed:
+                # wig profiling for given regions of interest
+                siteprofs.extend(profwbed.profile(input, hBed))
+                peak_sub=[hBed[chrom][t] for t in head_ref]
+                peak_sub.insert(0,[chrom]*(len(peak_sub[0])))
+                peak_sub=map(list, zip(*peak_sub)) 
+                peakinfo.extend(peak_sub)
+
+            # set chrom to the new chromosome
+            chrom=newchrom
+            Info("# %d. read and process chrom <%s>..." %(chrcount, chrom))
+            input=inout.Wig() #input.wig['chr1'] = [array('l', [3000961,3000991], array('d', [1.0,1.0])]
+
+            if fixedStep:
+                row = [position, l[-1]]
+                position += step
+            else:
+                row = l
+
+            # add the new line to the Wig object
+            input.add_line(chrom, row)
+            chrcount+=1
+        else:    # in the middle of chromosome
+            if fixedStep:
+                row = [position, l[-1]]
+                position += step
+            else:
+                row = l
+            input.add_line(chrom, row)
+
+    # the last chromosome
+    chroms_bed = hBed.get_chroms()
+    if chrom in chroms_bed:
+        # doing profiling!
+        siteprofs.extend(profwbed.profile(input, hBed)) #### finished profiling
+        peak_sub=[hBed[chrom][t] for t in head_ref]
+        peak_sub.insert(0,[chrom]*(len(peak_sub[0])))
+        peak_sub=map(list, zip(*peak_sub)) 
+        peakinfo.extend(peak_sub)
+    try:
+        return peakinfo, siteprofs
+    except NameError:
+        Info("ERROR @ Can't do profile. Maybe chrom in <%s> not in <BED>. "%(wig,))
+        sys.exit(1)
+
+def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
+    """Do binning on y in order of x.
+        
+    In general, x represents time or genomic coordinates and y is corresponding signal.
+    Note that x is assumed to be sorted in ascending order; thus, this function is more 
+    specific than 'bin' function.
+        
+    Parameters:
+    1. bins: bins
+    2. x: x (time or genomic corrdinates)
+    3. y: y (a list of signal values at x points)
+    4. binfunc: function that select the representative for each bin (eg, first: the first element in a bin, last: last element in a bin etc)
+    4. NaN: True - Put float('nan') as a representative value if no values are in a bin.
+    """
+                
+    length_bins=len(bins)
+    if length_bins < 2: raise Exception('bins must have more than two elements')
+    if len(x) != len(y): raise Exception('x and y must have the same length')
+    if len(x) == 0: return []
+    
+    step = bins[1]-bins[0]
+    binned=[[] for i in bins[:-1]]
+    xlength=len(x)
+    if xlength == 0: return []
+    
+
+    # do binning, x must be sorted from the smallest to largest
+    for i in xrange(0, length_bins-1):
+        for j in xrange(len(x)):
+            if bins[i]-wigint<=x[j]<=bins[i+1]+wigint:
+                binned[i].append(y[j])
+
+    if NaN:
+        if binfunc =='mean':
+            binfunc = lambda xs: xs and 1.0*sum(xs)/len(xs) or float('nan')
+        elif binfunc =='first':
+            binfunc = lambda xs: xs and xs[0] or float('nan')
+        elif binfunc =='last':
+            binfunc = lambda xs: xs and xs[-1] or float('nan')
+        elif binfunc == 'middle':
+            binfunc = lambda xs: xs and xs[len(xs)/2] or float('nan')
+        elif binfunc =='median':
+            binfunc = lambda xs: xs and median(xs) or float('nan')
+        elif binfunc =='min':
+            binfunc = lambda xs: xs and min(xs) or float('nan')
+        elif binfunc == 'max':
+            binfunc = lambda xs: xs and max(xs) or float('nan')
+        elif binfunc == 'raw':
+            binfunc = lambda xs: xs
+    else:
+        if binfunc =='mean':
+            binfunc = lambda xs: xs and 1.0*sum(xs)/len(xs) or 0.0
+        elif binfunc =='first':
+            binfunc = lambda xs: xs and xs[0] or 0.0
+        elif binfunc == 'middle':
+            binfunc = lambda xs: xs and xs[len(xs)/2] or 0.0
+        elif binfunc =='last':
+            binfunc = lambda xs: xs and xs[-1] or 0.0
+        elif binfunc =='median':
+            binfunc = lambda xs: xs and median(xs) or 0.0
+        elif binfunc =='min':
+            binfunc = lambda xs: xs and min(xs) or 0.0
+        elif binfunc == 'max':
+            binfunc = lambda xs: xs and max(xs) or 0.0
+        elif binfunc == 'raw':
+            binfunc = lambda xs: xs
+     
+    binned = map(binfunc, binned)
+       
+    return binned 
+
+# ------------------------------------
+# Main function
+# ------------------------------------
+def main():
+    opts=opt_validate(prepare_optparser())
+
+    # read regions of interest (bed file)
+    Info("# read the bed file(s) of regions of interest...")
+    hBed = inout.Bed()
+    hBed.read(opts.bed) # hBed['chr1']['start'('end','score','name')][0:1320(line)]=3360490
+    hBed.sort()
+    wigcount = len(opts.wig)
+    head_ref = ['start','end','name','score','strand','thickStart','thickEnd'][:len(hBed.bed.values()[0].keys())] #get head as column of bed file.
+
+
+    # create rscript
+    rscript = open("%s_kmeans.r" %opts.name, "w")
+
+    rscript.write('# Options settings.\n')
+    rscript.write('upstream=%d\n' %opts.upstm)
+    rscript.write('downstream=%d\n' %opts.downstm)
+    rscript.write('step=%d\n' %opts.step)
+    rscript.write('km=%d # kmeans number\n' %opts.kmeans)
+    rscript.write('fontsize=%d\n' %opts.fontsize)
+    if opts.set_seed:
+        rscript.write('set.seed(244913100)\n')
+    rscript.write('#\n')
+
+    rscript.write('# ----- function for plotting a matrix ----- #\n')
+    rscript.write('# the function is create by python\n')
+    rscript.write('setwd("%s")\n' %os.getcwd().replace(os.sep, "/"))
+
+    # each loop do a wig
+    for iwig in range(wigcount):                                                                       #
+        Info("# profiling wig - %d"%(iwig+1,))                                                         #
+        peakinfo, siteprofs = WigProfiler(opts, hBed, opts.wig[iwig], head_ref)                        #
+        sitef = open("%s_siteprof%d"%(opts.name,iwig), "w")                                            #
+        sitef.writelines([",".join([str(m) for m in t])+"\n" for t in siteprofs])                      #
+        sitef.close()                                                                                  #
+        rscript.write('data%d<-read.table("%s_siteprof%d",sep=",",header=F)\n' %(iwig,opts.name,iwig)) # create data0, data1, ...
+    rscript.write('data<-cbind(%s)\n'%(",".join(["data%d"%t for t in range(wigcount)])) )
+
+    if opts.hmethod == "kmeans":
+        step_num = len(siteprofs[0])
+        k_usecol2cluster = []
+        for i in opts.k_wigindex:
+            k_usecol2cluster += range((step_num*(i-1)+1), (step_num*i))
+        rscript.write('k_usecol2cluster=c(%s)\n' %(','.join([str(t) for t in k_usecol2cluster]),))
+        rscript.write('k<-kmeans(data[,k_usecol2cluster],km)\n')
+        rscript.write('kcenter_sum <- apply(k$centers,1,sum)\n')
+        rscript.write('orderkcenter <- order(kcenter_sum)\n')
+        rscript.write('orderindex <- order(orderkcenter)\n')
+        rscript.write('k1_new <- orderindex[k$cluster]\n') # new class id sorted by center.
+        rscript.write('orderk<-order(k1_new)\n')
+        rscript.write('k$size <- k$size[orderkcenter]\n')
+        rscript.write('\n')
+        
+        """rscript.write('pre=1\n')
+        rscript.write('for (j in seq(1,length(k$size))){\n')
+        rscript.write('i <- k$size[j]\n')
+        rscript.write('ordersub <- order(apply(data[,k_usecol2cluster][orderk[pre:(pre+i-1)],],1,function(x) sort(x)[round(length(x)/2)]))\n')
+        rscript.write('orderk[pre:(pre+i-1)] = orderk[pre:(pre+i-1)][ordersub]\n')
+        rscript.write('k$cluster[pre:(pre+i-1)] <- j\n')
+        rscript.write('pre <- pre+i\n')
+        rscript.write('}\n\n')"""
+        for i in range(wigcount):
+            rscript.write('data%d<-data%d[orderk,]\n'%(i,i))
+        rscript.write('#\n')
+    else:
+        keyfile = "%s_siteprof%d" %(opts.name, opts.s_wigindex-1)
+        pfilel = ["%s_siteprof%d" %(opts.name, t) for t in range(wigcount)]
+        #print keyfile
+        #print pfilel
+        Orderfile(keyfile, pfilel, opts.hmethod, sep=',')
+  
+    rscript.write('# decide zmin, zmax\n')
+    rscript.write('data <- c(as.matrix(data))\n')
+    rscript.write('data <- sort(data)\n')
+    rscript.write('min <- data[1]\n')
+    rscript.write('max <- data[length(data)]\n')
+    if opts.zmin==None or opts.zmax==None:
+        rscript.write('temp<-data[round(c(0.15,0.5,0.85)*length(data))]\n')
+        rscript.write('p20<-temp[1]\n')
+        rscript.write('p50<-temp[2]\n')
+        rscript.write('p80<-temp[3]\n')
+        rscript.write('zmin=p20\n')
+        rscript.write('zmax=p80\n')
+    else:
+        rscript.write('zmin=max(%d, min)\n' %opts.zmin)
+        rscript.write('zmax=min(%d, max)\n' %opts.zmax)
+
+    rscript.write('#\n')
+    rscript.write('# set color map\n')
+    rscript.write('ColorRamp <- colorRampPalette(c(%s), bias=1)(10000)   #color list\n' %opts.colors)
+    rscript.write('ColorLevels <- seq(to=zmax,from=zmin, length=10000)   #number sequence\n')
+    rscript.write('#\n')
+    rscript.write('# set png divice\n')
+    rscript.write('png("%s_r.heatmap.png",width=%d,height=%d)\n'%(opts.name,opts.pic_width,opts.pic_height))
+    rscript.write('#\n')
+    rscript.write('#\n')
+    rscript.write('nheat=%d #number of heats\n'%wigcount)
+    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1))\n'%opts.pic_width)
+    rscript.write('par(cex=fontsize)\n')
+    rscript.write('#\n')
+
+    # draw heats
+    for i in range(wigcount):
+        data="data%d"%i
+        rscript.write('# heatmap_%d\n'%i)
+        rscript.write('%s[%s<zmin] <- zmin\n' %(data, data))
+        rscript.write('%s[%s>zmax] <- zmax\n' %(data, data))
+        rscript.write('ColorRamp_ex <- ColorRamp[round( (min(%s)-zmin)*10000/(zmax-zmin) ) : round( (max(%s)-zmin)*10000/(zmax-zmin) )]\n' %(data, data))
+        r='image(1:ncol(%s), 1:nrow(%s), t(%s), axes=FALSE, col=ColorRamp_ex, xlab="%s", ylab="%s")\n'%(data,data,data,opts.xlabel[i],opts.ylabel[i])
+        rscript.write(r)
+        if opts.subtitle:
+            rscript.write('title(main="%s",cex=2)\n'%opts.subtitle[i])
+        rscript.write('sepxy=((downstream+upstream)/step)%/%5*step\n')
+        if (opts.upstm+opts.downstm)/opts.step>=5:
+            rscript.write('axis(1,at=(seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy)+round(upstream/step)*step)/step+0.5,seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy))\n')
+        else:
+            rscript.write('axis(1,at=seq(6)-0.5,seq(-round(upstream/step)*step,by=step,length=6))\n')
+
+        rscript.write('axis(2,seq(0,nrow(%s),500),seq(0,nrow(%s),500))\n'%(data,data))
+        rscript.write('box()\n')
+        if opts.axhline:
+            rscript.write('#draw abline\n')
+            rscript.write('hi = 0\n')
+            rscript.write('for (i in k$size){\n')
+            rscript.write('hi = hi+i\n')
+            rscript.write('abline(hi+0.5,0,lwd=5)\n')
+            rscript.write('}\n')
+        if opts.axvline:
+            rscript.write('lines(rep(round(upstream/step)+0.5,2),c(-1e10,1e10),lwd=5)\n')
+
+    rscript.write('#\n')
+    rscript.write('#draw legend\n')
+    rscript.write('image(1, ColorLevels,matrix(data=ColorLevels, ncol=length(ColorLevels),nrow=1),col=ColorRamp, xlab="",ylab="",cex.axis=1,xaxt="n",yaxt="n")\n')
+    rscript.write('axis(2,seq(zmin,zmax,1),seq(zmin,zmax,1))\n')
+    rscript.write('box()\n')
+
+    rscript.write('#\n')
+    rscript.write('layout(1)\n')
+    rscript.write('dev.off()\n')
+
+    peakf = open("%s_peak"%opts.name, "w")
+    peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in peakinfo])
+    rscript.write('#\n')
+    if opts.hmethod == "kmeans":
+        rscript.write('# output class information\n')
+        rscript.write('peak<-read.table("%s_peak",sep="\\t",header=F)\n'%(opts.name))
+        rscript.write('peak<-peak[orderk,]\n')
+        rscript.write('peak<-cbind(k$cluster[orderk], peak)\n')
+        rscript.write('peak<-peak[seq(nrow(peak),1,-1),]\n')
+        rscript.write('index<-peak[,1]\n')
+        rscript.write('ref<-order(unique(index))\n')
+        rscript.write('index<-ref[index]\n')
+        rscript.write('peak[,1]<-index\n')
+        rscript.write('write.table(peak,"%s_peak_classid",sep="\\t",col.names=c(%s),row.names=F,quote=F)\n'%(opts.name, ','.join(['"%s"'%t for t in ['class-id','chrom']+head_ref])))
+    else:
+        infof = open(opts.name+"_peak_classid","w")
+        infof.write("#only kmeans method will output classification file.\n")
+        infof.close()
+    Info("# R script output successfully.")
+    rscript.close()
+    
+    # Run R directly - if any exceptions, just pass
+    #try:
+    #    p = subprocess.Popen("Rscript %s_kmeans.r"%opts.name, shell=True)
+    #    sts = os.waitpid(p.pid, 0)
+    #except:       
+    Info ('# Successfully output <%s_kmeans.r>.' %opts.name)
+
+# program running
+if __name__ == '__main__':
+    try:
+        main()
+        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig,/Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/heatmap/test_ESCK4.bed -v -z --x_label="not a label:x" --y_label="I'm ylabel1","label:y2" --title=maintitle --pic_width=2000 --pic_height=1000 --col=67001F,053061 --upstream=200 --downstream=832 --name=/Users/jianma/temp/te --method=kmeans --k_wigindex=2
+        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_MACS_wiggle/treat/s_7_JMJD3_peak_treat_afterfiting_chr1.wig,/Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_5_1718_peak_MACS_wiggle/treat/s_5_1718_peak_treat_afterfiting_chr1.wig,/Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_MACS_wiggle/control/s_7_JMJD3_peak_control_afterfiting_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_peaks.bed -v -z --x_label=JMJD3_treat,1718_treat,JMJD3_control --y_label=scale,scale,scale --title="heatmap for test" --pic_width=3200 --pic_height=1700 --name=/Users/jianma/temp/mean2 --s_wigindex=2 --method=maximum
+        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/shuzhen/data1/MACS_result/s_7_JMJD3_peak_MACS_wiggle/treat/s_7_JMJD3_peak_treat_afterfiting_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/shuzhen/data1/MACS_result/s_7_JMJD3_peak_peaks.bed -v -z  --name=/Users/jianma/temp/kk3 --title=Heatmap --x_label=X-label --y_label=Y-label --upstream=500 --downstream=500 --pf-res=10 --fontsize=2 --col=053061,2166AC,4393C3,92C5DE,D1E5F0,F7F7F7,FDDBC7,F4A582,D6604D,B2182B,67001F --pic_width=1600 --pic_height=1200 -z -v --method=kmeans -k 5
+
+    except KeyboardInterrupt:
+        Info("User interrupts me! ;-) See you!")
+        sys.exit(0)

@@ -1,0 +1,7 @@
+track type=wiggle_0
+variableStep chrom=chrI span=50
+20	.1
+70	.2
+120	.3
+170	.4
+220	.2

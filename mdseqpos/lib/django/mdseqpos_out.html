@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+   <title>Cistrome Motifs</title>
+   <script type="text/javascript" src="mdseqpos_out.js"></script>
+   <script>
+
+{% autoescape off %}
+//this needs to be converted--i.e. the nodes need to be made into Motif objs.
+var motifList_json = {{ motifList }}
+{% endautoescape %} 
+
+//Convert the json to Motif Objects
+var motifList = []
+for (var i = 0; i < motifList_json.length; i++) {
+   motifList.push(new Motif(motifList_json[i]));
+}
+
+motifModel = new MotifModel(motifList);
+   </script>
+</head>
+<frameset rows="50%, 50%">
+  <frame src="focus_frame.html" name="focus_frame">
+  <frame src="table_frame.html" name="table_frame">
+  <noframes>
+    <h1>Please use a frames compatible browser when viewing this output</h1>
+  </noframes>
+</frameset>
+</html>
