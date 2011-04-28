@@ -1,7 +1,0 @@
-<motif id="5">
-<pssm>
-<pos num="0"><A>0.1</A><C>0.3</C><G>0.2</G><T>0.4</T></pos>
-<pos num="1"><A>0.5</A><C>0.1</C><G>0.3</G><T>0.1</T></pos>
-<pos num="2"><A>0.2</A><C>0.4</C><G>0.1</G><T>0.3</T></pos>
-</pssm>
-</motif>

@@ -26,26 +26,24 @@ def check_pkg_dependencies():
         sys.exit(1)
 
 def main():
-    if not float(sys.version[:3])>=2.4:
-        sys.stderr.write("CRITICAL: Python version must be greater than or equal to 2.4! python 2.6.1 is recommended!\n")
+    if not float(sys.version[:3])>=2.6:
+        sys.stderr.write("CRITICAL: Python version must be greater than or equal to 2.6! python 2.6.6 is recommended!\n")
         sys.exit(1)
     check_pkg_dependencies()
     setup(name="mdseqpos",
-          version="0.578",
+          version="0.579",
           description="Motif finding tools",
-          author='Len Taing, Ying Lei, Cliff Meyers, et al',
+          author='Ying Lei, Len Taing, et al',
           author_email='lentaing@jimmy.harvard.edu',
-          url='http://liulab.dfci.harvard.edu/mdseqpos',
+          url='http://liulab.dfci.harvard.edu/ap',
           package_dir={'mdseqpos' : 'lib'},
           packages=['mdseqpos'],
           package_data={'mdseqpos': ['django/*.html', 'django/static/*',
-                                     #'MDmodule/*.c',
-                                     'MDmodule/bgdist/*',
                                      'weblogo/*.*', 'weblogo/LICENSE', 
                                      'weblogo/seqlogo', 'weblogo/README', 
                                      'weblogo/cache/*', 'weblogo/img/*', 
                                      'weblogo/release/*', 
-                                     'tools/*',
+                                     'img/*', 'tools/*',
                                      'database/*']},
           scripts=['bin/MDSeqPos.py', 'bin/MotifScan.py'],
           ext_modules = [
@@ -93,6 +91,6 @@ def main():
         os.chmod(twoBitToFa_path, file_exe_perm)
     except ImportError, e:
         pass
-        
+    
 if __name__ == '__main__':
     main()

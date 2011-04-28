@@ -153,9 +153,8 @@ struct inputParam {
   char *seed;
   /* file pointers for input sequence, background sequence, background 
      distribution, output file, output with MtfReg scoring */
-  //FILE *bfp, *ofp, *xfp;
-  FILE *ofp, *xfp;
-  PyObject *isp, *bsp, *bfp;
+  FILE *bfp, *ofp, *xfp;
+  PyObject *isp, *bsp;
 };
 
 /******************************
@@ -304,7 +303,6 @@ void printResults(struct motif **motifs, struct inputParam *input, struct
 void printUsage();
 void randomize(struct sequence *seqs, struct freq *seqcdf, int mkv);
 void readBgFreq(FILE *fp, struct freq *bglog, int *mkv);
-//void readBgFreq(PyObject *listObj, struct freq *bglog, int *mkv);
 int readBgFreqLine(FILE *bf, double *bgfreq);
 void readInputFiles(struct inputParam *input, struct freq *seqcdf,
                     struct freq *bglog, struct sequence **seqs); 
@@ -356,13 +354,13 @@ static PyMethodDef myMethods[] = {
 
 PyMODINIT_FUNC init_MDmod(void)
 {
-  PyObject *m;
-  //PyObject *tmp;
-  /*import_array();*/
-  m=Py_InitModule("_MDmod", myMethods);
-  pyError = PyErr_NewException("MDmod.error", NULL, NULL);
-  Py_INCREF(pyError);
-  PyModule_AddObject(m, "error", pyError);
+	PyObject *m;
+    PyObject *tmp;
+	/*import_array();*/
+	m=Py_InitModule("_MDmod", myMethods);
+	pyError = PyErr_NewException("MDmod.error", NULL, NULL);
+    Py_INCREF(pyError);
+    PyModule_AddObject(m, "error", pyError);
 };
 
 /******************************
@@ -456,11 +454,12 @@ int main_o(int argc, char *argv[]) {
  ******************************/
 static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
   struct timeval begintv;
-  int i,j,k;
-  PyObject *t = NULL;
+  int i,j,k, dims[2];
+  PyObject *bsp, *isp, *t;
   PyObject *pssmObj;
   double temp[4];
-  static char *kwlist[] = {"i","b","f","w","k","t","s","n","r","m",NULL};
+  int w ;
+  static char *kwlist[] = {"i","b","w","k","t","s","n","r","m",NULL};
 
   /* init input */
   memset( &input, 0, sizeof(struct inputParam) );
@@ -474,13 +473,12 @@ static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
   input.bgmkv = 1;
   input.seed = (char *)malloc( 100*sizeof(char) );
   input.seed[0] = '\0';
-  //input.isp = input.bsp = NULL;
-  //input.bfp = input.xfp = NULL;
+  input.isp = input.bsp = NULL;
+  input.bfp = input.xfp = NULL;
   input.ofp = stderr;
   input.w = DEFAULTW;
-  input.isp = NULL;
-  input.bsp = NULL;
-  input.bfp = NULL;
+  input.isp = isp;
+  input.bsp = bsp;
   input.back = 1;
 
 /* the O! parses for a Python object (bsp) checked to be of type PyList_Type */
@@ -488,8 +486,8 @@ static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
      return NULL;
 */
 
-  if (!PyArg_ParseTupleAndKeywords( args, keywds, "O!O!O!|iiiiiis", kwlist, &PyList_Type, &(input.isp), &PyList_Type, &(input.bsp), &PyFile_Type, &(input.bfp), &(input.w), &(input.bgmkv), &(input.top), &(input.scan), &(input.iterate),  &(input.report), &(input.seed) ))
-     return NULL;
+  if (!PyArg_ParseTupleAndKeywords( args, keywds, "O!O!|iiiiiis", kwlist, &PyList_Type, &(input.isp), &PyList_Type, &(input.bsp), &(input.w), &(input.bgmkv), &(input.top), &(input.scan), &(input.iterate),  &(input.report), &(input.seed) ))
+     return;
 
   gettimeofday(&begintv, NULL);
   initRand();
@@ -606,8 +604,8 @@ static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
 /* TODO at the moment it just does the defaults */
 void parseInputPy( struct inputParam *input, PyObject *isp, PyObject *bsp, int w ){
   extern char *optarg;
-  //int inttemp, opt, i, len;
-  //double dtemp;
+  int inttemp, opt, i, len;
+  double dtemp;
   
   /* init input */
   memset(input, 0, sizeof(struct inputParam));
@@ -717,10 +715,16 @@ void readInputFiles(struct inputParam *input, struct freq *seqcdf,
   }
   
   /* calculate background base distribution */
-  if (input->bsp && PyList_Size(input->bsp) > 0)  {
-    /* reading from background sequence file */
+  if (input->bfp) { /* reading from background probability file */
+    if (input->bgmkv < 0)
+      input->bgmkv = 3;
+    readBgFreq(input->bfp, bglog, &(input->bgmkv));
+  } else {
+    if (input->bsp) /* reading from background sequence file */
+
+    /* TODO change first arg to python object */
     readSeqFile(input->bsp, NO, NULL, &seqCt, input);
-    
+
     /* keep this line here in case user wants to use input as bg */
     calcSeqLog(bglog, &seqCt, &(input->bgmkv));
     if (!input->back) {
@@ -731,14 +735,8 @@ void readInputFiles(struct inputParam *input, struct freq *seqcdf,
       errorExit("Can't open bgfreq file.");
     printBgFreq(fp, bglog, input->bgmkv);
     fclose(fp);
-  } else {
-    if (input->bfp) { /* reading from background probability file */
-      if (input->bgmkv < 0)
-	input->bgmkv = 3;
-      readBgFreq(PyFile_AsFile(input->bfp), bglog, &(input->bgmkv));
-    }
   }
-
+  
   /* find the min match for alignment */
   temp = 0;
   for (i = 0; i < ALPHASIZE; i++) {
@@ -762,7 +760,7 @@ void readSeqFile(PyObject *listObj, int isSeq, struct sequence **seqs, struct
     char name[MAXLINE], seq[MAXLINE];
     /* char line[MAXLINE]; */
     char *line;
-    int i, len; //, flag = 0;
+    int i, len, flag = 0;
     struct sequence *tail = isSeq ? *seqs : NULL;
     int numLines;
     PyObject *strObj;
@@ -1053,7 +1051,6 @@ void readBgFreq(FILE *fp, struct freq *bglog, int *mkv) {
   }
 }
 
-
 /******************************
  *
  * Func: readBgFreqLine
@@ -1285,7 +1282,7 @@ void genRandSeq0(int *seq, int len, struct freq *schar) {
  * Checked 3/20/01
  ******************************/
 void genRandSeq1(int *seq, int len, struct freq *schar) {
-  int i, j, p1 = 0;
+  int i, j, p1;
   double random;
 
   random = drand();
@@ -1314,7 +1311,7 @@ void genRandSeq1(int *seq, int len, struct freq *schar) {
  * Checked 3/20/01
  ******************************/
 void genRandSeq2(int *seq, int len, struct freq *schar) {
-  int i, j, p1 = 0, p2 = 0;
+  int i, j, p1, p2;
   double random;
 
   random = drand();
@@ -1351,7 +1348,7 @@ void genRandSeq2(int *seq, int len, struct freq *schar) {
  * Checked 3/20/01
  ******************************/
 void genRandSeq3(int *seq, int len, struct freq *schar) {
-  int i, j, p1 = 0, p2 = 0, p3 = 0;
+  int i, j, p1, p2, p3;
   double random;
 
   random = drand();
@@ -2143,7 +2140,7 @@ void printCandidates(struct inputParam *input, struct motif **motifs) {
  ******************************/
 void getConsensus(int w, struct motif *mtf) {
   double maxs;
-  int i, j, maxp = 0, sum;
+  int i, j, maxp, sum;
   
   for (i = 0; i < w; i++) {
     maxs = -1000; 
@@ -2720,7 +2717,7 @@ void finishUp(struct timeval *begintv, FILE *ofp) {
 /* TODO */
 int main(int argc, char *argv[]){
     PyObject *seq, *t;
-    //FILE *fp = NULL;
+    FILE *fp = NULL;
 
     fprintf( stdout, "Start %d\n", 1 ); 
     seq = ( PyObject * )Py_BuildValue( "[sssssssss]",
@@ -2738,6 +2735,6 @@ int main(int argc, char *argv[]){
     t = Py_BuildValue( "OO", seq, seq );
     MDmod( NULL, t, NULL );
 
-    return 0;
+    return;
 }
 

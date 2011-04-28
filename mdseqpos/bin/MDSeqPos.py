@@ -1,216 +1,178 @@
 #! /usr/bin/env python
 
-"""
-SYNOPSIS: This tool searches for known and new (denovo) motifs that are in
-regions specified by a bed file.
-"""
+"""A command-line script for running MDmodule and SeqPos."""
 
 import os
 import sys
-import optparse
-import time
-import random
 import shutil
-import json
+import time
+import mdseqpos
 
-from django.template import loader, Context
-from django.core.management import setup_environ
-
-from mdseqpos.motif import MotifList
+from optparse import OptionParser
 from mdseqpos.chipregions import ChipRegions
+from mdseqpos.motif import MotifList, MotifTree
+
 import mdseqpos.settings as settings
 
-setup_environ(settings)
-#os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+USAGE = """Usage: MDSeqPos.py [options] BEDFILE GENOME
 
-USAGE = """USAGE: MDSeqPos.py BEDFILE GENOME
 Arguments:
-   BEDFILE - regions file
-   GENOME  - assembly which the regions pertain to, e.g. 'hg18', 'mm9', etc.
-             as defined in BUILD_DICT in lib/settings.py
-   
-Options:
-   -d - flag to run denovo motif search (default: False)
-   -m - comma separated list of known motifs dbs to use in the motif search,
-        e.g. -m pbm.xml,transfac.xml
-   -n - name of the output XML file which stores new motifs found during a
-        denovo search, e.g. -n foo.xml (default: denovo.xml)
-   -p - pvalue cutoff for the motif signficance, (default: 0.001)
-   -s - name of species to filter the results with--if multiple species, comma
-        separate them, e.g. hs,mm,dm
-   -w - width of the region to be scanned for motifs; depends on resoution of
-        assay, (default: 600 basepairs)
-   -v - verbose: print out debug information (default: False)
-   --maxmotif - the maximum number of motifs to report (defaut: 100)
-"""
-_DEBUG = False
-_OUTPUT_DIR = "results"
+  BEDFILE              name of an existing BED file containing ChIP regions,
+                       to be scanned for motifs
+  GENOME               abbreviation identifying the genome build that is
+                       used in the BED file (must be 'hg18', 'mm3', or ... )"""
 
-#REMOVE _DEBUG as a parameter
-def read_known_motifs(motif_dbs, _DEBUG):
-    """Given a list of xml file names, this function tries to load the motifs
-    in those databases
-    """
-    DATA_DIR = os.path.join(settings.DEPLOY_DIR, 'database')
+#DEPLOY_DIR = mdseqpos.__path__[0]
+DATA_DIR = os.path.join(settings.DEPLOY_DIR, 'database')
+STATIC_IMG_DIR = os.path.join(settings.DEPLOY_DIR, 'img')
 
-    known_motifs = MotifList()
-    for db in motif_dbs:
-        if _DEBUG: print "loading (time): %s (%s)" % (db, time.time())
-        tmp = MotifList()
-        tmp.from_xml_file(os.path.join(DATA_DIR, db))
-        known_motifs.extend(tmp)
-        if _DEBUG: print "load Complete (time): %s (%s)" % (db, time.time())
-    return known_motifs
+#KNOWN_MOTIFS_FILE = 'known.xml'
 
-def sample(p):
-    """Given an array of probabilities, which sum to 1.0, randomly choose a 'bin',
-    e.g. if p = [0.25, 0.75], sample returns 1 75% of the time, and 0 25%;
-    NOTE: p in this program represents a row in the pssm, so its length is 4"""
-    r = random.random()
-    i = 0
-    while r > p[i]:
-        r -= p[i]
-        i += 1
-    return i
+RESULTS_DIR = 'results/'
+NEW_MOTIFS_FILE = 'denovo.xml'
+OUTPUT_FILE = 'mdseqpos_out.html'
 
-def pssm_to_fasta(pssm, fastafilename, n=1000):
-    """Generate a fastafile that approximates the base frequences of the pssm"""
-    base = ('A', 'C', 'G', 'T')
-    fastafile = open(fastafilename, 'w')
-    for seqnum in xrange(n):
-        seqstr = "".join(base[sample(p)] for p in pssm)
-        print >> fastafile, ">%d" % seqnum
-        print >> fastafile, seqstr
-    fastafile.close()
+if __name__ == '__main__':
+    # parse command line arguments
+    # 
+    # Required Arguments:
+    # 1. chip_regions_file_name -- BED file of ChIP regions
+    # 2. genome -- genome identifier (e.g. 'hg18')
+    # 
+    # Optional Arguments:
+    # 1. known_motifs_file_name -- input XML file where known motifs are stored
+    # 2. new_motifs_file_name -- output XML file to store new motifs
+    # 3. html_file_name -- name of output HTML file
+    # 
+    parser = OptionParser(usage=USAGE)
+    parser.add_option('-m', '--known-motifs', default=None, help="name of input XML file containing known motifs, to be scanned against ChIP regions--if multuple xml files, comma-separate them, e.g. pbm.xml,transfac.xml")
+    parser.add_option('-M', '--known-motifs-directory', default=DATA_DIR, help="directory of input XML file containing known motifs")
+    parser.add_option('-n', '--new-motifs', default=NEW_MOTIFS_FILE, help="name of output XML file for storing new motifs discovered by de novo scan of ChIP regions")
+    parser.add_option('-N', '--new-motifs-directory', default=RESULTS_DIR, help="directory of output XML file for storing new motifs")
+    parser.add_option('-o', '--output', default=OUTPUT_FILE, help="name of output HTML file for display of MDSeqPos results")
+    parser.add_option('-O', '--output-directory', default=RESULTS_DIR, help="directory of output HTML file")
+    parser.add_option('-I', '--img-output-directory', default=os.path.join(RESULTS_DIR, "img"), help="directory of output motif logo img file")
+    parser.add_option('-d', '--denovo', action="store_true", help="Flag to run denovo motif search (default: False)")
+    parser.add_option('-p', '--pval', default=0.001, help="p-value cutoff for motif significance, 0.001 default") 
+    parser.add_option('-w', '--width', default=600, help="width of region to be scanned for motif depends on resolution of assay, 600bp default") 
+    parser.add_option('--maxmotif', default=100, help="maximum number of motifs to report, 100 default, overrides pval cut off ")
+    parser.add_option('-s', '--species-list', default=None, help="name of species to filter the results with--if multuple species, comma-separate them, e.g. hs,mm,dm")
 
-def make_logo(motif, width, height, img_dir):
-    """Generate motif logo, place it in the img_dir and return its file name.
-    """
-    # create directory for holding motif logos if directory does not
-    # already exist
-    if not os.path.exists(img_dir):
-        os.makedirs(img_dir)
-    # generate temporary FASTA file which approximates the motif PSSM; input for seqlogo
-    fasta_file_name = os.path.join(_OUTPUT_DIR, 'temp.fa')
-    pssm_to_fasta(motif.pssm, fasta_file_name)
-    logo_file_name = os.path.join(img_dir, motif.id)
-    # run the seqlogo command
-    command = "%s -f %s -o %s -w %d -h %d -F PNG -c -n -Y" % \
-              (os.path.join(settings.DEPLOY_DIR, 'weblogo', 'seqlogo'),
-               fasta_file_name, logo_file_name, width, height)
-    os.system(command)
-    # delete the temporary FASTA file
-    os.remove(fasta_file_name)
-                    
-    # return the filename of the motif logo, strip out the _OUTPUT_DIR
-    logo_file_name += '.png'
-    return logo_file_name.replace(_OUTPUT_DIR+"/",'')
-
-def save_to_html(motifList):
-    """Saves the list of motifs as an html file named 'mdseqpos_out.html'.
-    The motif logos associated with mdseqpos_out.html will be stored
-    under _OUTPUT_DIR/img i.e. results/img.
-    """
-    #make results and results/img
-    if not os.path.exists(_OUTPUT_DIR):
-        os.makedirs(_OUTPUT_DIR)
-    if not os.path.exists(os.path.join(_OUTPUT_DIR, 'img')):
-        os.makedirs(os.path.join(_OUTPUT_DIR, 'img'))
-
-    #make the motif logos, put them in results/img
-    for (i, m) in enumerate(motifList):
-        #NOTE: logoImg isn't part of the class definition, but we add it on to the instance
-        #in hopes that the Motif.to_json will know how to serialize it.
-        motifList[i].logoImg = make_logo(motifList[i], 192 / 20.0, 120 / 20.0,
-                                         os.path.join(_OUTPUT_DIR, 'img'))
-
-    #create the output file--
-    mdseqpos_out_file = open(os.path.join(_OUTPUT_DIR,"mdseqpos_out.html"), 'w')
-    motifList_json = motifList.to_json() 
-    t = loader.get_template('mdseqpos_out.html')
-    c = Context({'motifList': motifList_json}) 
-    mdseqpos_out_file.write(t.render(c))
-
-    #copy over supporting files--i.e. everything in the django/static dir
-    for (path, dirs, files) in os.walk(os.path.join(settings.DEPLOY_DIR, 'django', 'static')):
-        for f in files:
-            shutil.copyfile(os.path.join(path, f), os.path.join(_OUTPUT_DIR, f))
-
-    #END save_to_html
-            
-def main():
-    parser = optparse.OptionParser(usage=USAGE)
-    parser.add_option('-d', '--denovo', default=False, action="store_true",
-                      help="flag to run denovo motif search (default: False)")
-    parser.add_option('-m', '--known-motifs', default=None,
-                      help="comma separated list of known motifs dbs to use \
-                      in the motif search, e.g. -m pbm.xml,transfac.xml")
-    parser.add_option('-n', '--new-motifs', default='denovo.xml',
-                      help="name of the output XML file which stores new \
-                      motifs found during adenovo search, e.g. -n foo.xml \
-                      (default: denovo.xml)")
-    parser.add_option('-p', '--pval', default=0.001,
-                      help="pvalue cutoff for motif significance, \
-                      (default: 0.001)")
-    parser.add_option('-s', '--species-list', default=None, help="name of \
-                      species to filter the results with--if multuple \
-                      species, comma-separate them, e.g. hs,mm,dm")
-    parser.add_option('-w', '--width', default=600,
-                      help="width of the region to be scanned for motifs; \
-                      depends on resoution of assay, (default: 600 basepairs)")
-    parser.add_option('-v', '--verbose', default=False, action="store_true",
-                      help="flag to print debugging info (default: False)")
-    parser.add_option('--maxmotif', default=100,
-                      help="maximum number of motifs to report,(default: 100)")
-    
-    #parse the command line options
+    parser.set_defaults(denovo=False)
     (opts, args) = parser.parse_args(sys.argv)
-    if len(args) < 3: parser.error("Please specify a bedfile and/or a genome")
-    bedfile_name = args[1]
+    if len(args) < 3:
+        parser.error("must provide 2 required arguments specifying BEDFILE and GENOME")
+    # required arguments
+    chip_regions_file_name = args[1]
     genome = args[2]
-    _DEBUG = opts.verbose
-    
-    #READ in the regions that are specified in the BED file
-    if _DEBUG: print "read regions start time: %s" % time.time()
-    #HERE we should rely on a standard package to read in bed files; stub it
-    chip_regions = ChipRegions(bedfile_name, genome)
-    if _DEBUG: print "read regions end time: %s" % time.time()
 
-    #LOAD the motifs (both known and denovo)
-    known_motifs, new_motifs = None, None
-    if opts.known_motifs:
-        motif_dbs = [x.strip() for x in opts.known_motifs.split(',')]
-        known_motifs = read_known_motifs(motif_dbs, _DEBUG)
+    width = int(opts.width)
+    pvalcutoff = float(opts.pval)
+    maxmotif = int(opts.maxmotif)
 
+    print 'start time', time.time()
+    # retrieve ChIP regions from BED file
+    chip_regions = ChipRegions(chip_regions_file_name, genome)
+    print 'bed read time', time.time()
+
+    known_motifs = None
+    # handle/load known motifs
+    if opts.known_motifs is not None:
+        # known motifs directory and file name
+        #if opts.known_motifs_directory[-1] != '/':
+        #    opts.known_motifs_directory += '/'
+        if not os.path.exists(opts.known_motifs_directory):
+            os.makedirs(opts.known_motifs_directory)
+        #Motif dbs are comma separated
+        known_motifs_file_names = [os.path.join(opts.known_motifs_directory,
+                                                name)
+                                   for name in opts.known_motifs.split(",")]
+
+        # retrieve known motifs from known motifs XML file
+        known_motifs = MotifList()
+        for motif_db in known_motifs_file_names:
+            print "LOADING: %s" % motif_db
+            tmp = MotifList()
+            tmp.from_xml_file(motif_db)
+            known_motifs = known_motifs + tmp
+	print 'xml parse time', time.time()
+
+    new_motifs = None
+    # handle new motifs
     if opts.denovo:
-        if _DEBUG: print "starting denovo search...(time: %s)" % time.time()
-        new_motifs = chip_regions.mdmodule(width=int(opts.width))
-        if _DEBUG: print "completed denovo search...(time: %s)" % time.time()
-        new_motifs.save_to_xml(os.path.join(_OUTPUT_DIR, opts.new_motifs))
+        print 'Performing Denovo'
+        # new motifs directory and file name
+        #if opts.new_motifs_directory[-1] != '/':
+        #    opts.new_motifs_directory += '/'
+        if not os.path.exists(opts.new_motifs_directory):
+            os.makedirs(opts.new_motifs_directory)
+        new_motifs_file_name = os.path.join(opts.new_motifs_directory,
+                                            opts.new_motifs)
+        # find new motifs in ChIP regions
+        new_motifs = chip_regions.mdmodule(width=width)
         
-    #Combine both known and new motifs
-    all_motifs = None
-    if known_motifs and new_motifs:
-        all_motifs = MotifList(known_motifs + new_motifs)
-    elif known_motifs:
+        # save new motifs in XML file
+        new_motifs_file = open(new_motifs_file_name, 'w')
+        new_motifs_file.write(new_motifs.to_xml())
+        new_motifs_file.close()
+
+    # set all_motifs to either: new_motifs, known_motifs or new + known motifs
+    if new_motifs is None and known_motifs is None:
+        #Error--but for now, just an empty thing
+        all_motifs = None
+    elif new_motifs is None:
         all_motifs = known_motifs
-    else:
+    elif known_motifs is None:
         all_motifs = new_motifs
+    else:
+        all_motifs = new_motifs + known_motifs
 
-    #Run seqpos stats on all_motifs
-    if _DEBUG: print "starting seqpos stats...(time: %s)" % time.time()
-    for m in all_motifs: m.seqpos(chip_regions, width=int(opts.width))
-    if _DEBUG: print "completed seqpos stats...(time: %s)" % time.time()
+    # run seqpos statistic for each motif
+    print "running seqpos stat for each motif..."
+    all_motifs.seqpos(chip_regions, width=width)
 
-    #CULL the results to see only the relevant results, and output
-    sig_motifs = all_motifs.cull(float(opts.pval), int(opts.maxmotif))
-    
+    #cull the motifs
+    sig_motifs = all_motifs.cull(pvalcutoff, maxmotif)
+
     #filter by species?
-    if opts.species_list:
+    if opts.species_list is not None:
         species_list = opts.species_list.split(',')
         sig_motifs = sig_motifs.filterBySpecies(species_list)
-
-    save_to_html(sig_motifs)
     
-if __name__ == '__main__':
-    main()
+    if sig_motifs is not None:
+        # set motif to cluster on ( source motif from database or observed motif )
+        sig_motifs.set_cluster_motif(motif_type='observed')
+        # cluster all motifs using hierarchical clustering
+        if len(sig_motifs) > 0: 
+            motif_tree = sig_motifs.cluster()
+            print 'clustering time', time.time()
+        else: #No motifs found! return an empty MotifTree
+            print 'No motifs found'
+            motif_tree = MotifTree(None, None, None)
+        # using SeqPos, score all motifs in motif tree against the ChIP regions
+        #motif_tree.seqpos(chip_regions)
+	#print 'seqpos time', time.time()
+
+        # MOTIF Analysis complete, prepare output
+        # output directory and file name
+        #if opts.output_directory[-1] != '/':
+        #    opts.output_directory += '/'
+        if not os.path.exists(opts.output_directory):
+            os.makedirs(opts.output_directory)
+        output_file_name = os.path.join(opts.output_directory, opts.output)
+        # images directory
+        img_dir = opts.img_output_directory
+        if not os.path.exists(img_dir):
+            os.makedirs(img_dir)
+        
+        # save motif clustering to HTML file
+        output_file = open(output_file_name, 'w')
+        output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
+                                             img_dir=img_dir))
+        output_file.close()
+	print 'html time', time.time()
+
+        # copy static images to images directory
+        for filename in os.listdir(STATIC_IMG_DIR):
+            if os.path.isfile(filename):
+                shutil.copy(STATIC_IMG_DIR + filename, img_dir)

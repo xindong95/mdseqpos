@@ -45,27 +45,15 @@ if __name__ == '__main__':
     # 4. fasta_file, fasta_dir -- output FASTA file
     # 
     parser = OptionParser(usage=USAGE)
-    parser.add_option('-m', '--known-motifs-file', default=KNOWN_MOTIFS_FILE,
-                      help="name of input XML file containing known motifs")
-    parser.add_option('-M', '--known-motifs-dir', default=KNOWN_MOTIFS_DIR,
-                      help="directory of input XML file containing known motifs")
-    parser.add_option('-n', '--new-motifs-file', default=NEW_MOTIFS_FILE,
-                      help="name of input XML file containing new motifs discovered by \
-                      de novo scan of ChIP regions")
-    parser.add_option('-N', '--new-motifs-dir', default=NEW_MOTIFS_DIR,
-                      help="directory of input XML file containing new motifs")
-    parser.add_option('-b', '--bed-file', default=BED_FILE,
-                      help="output BED file containing the genomic regions that are MotifScan\
-                      hits")
-    parser.add_option('-B', '--bed-dir', default=BED_DIR,
-                      help="directory of the output BED file")
-    parser.add_option('-f', '--fasta-file', default=FASTA_FILE,
-                      help="output FASTA file containing the genomic sequences that are\
-                      MotifScan hits")
-    parser.add_option('-F', '--fasta-dir', default=FASTA_DIR,
-                      help="directory of the output FASTA file")
-    parser.add_option('-p', '--pssm-file', default=None,
-                      help="input a pssm file that represents the motif")
+    parser.add_option('-m', '--known-motifs-file', default=KNOWN_MOTIFS_FILE, help="name of input XML file containing known motifs")
+    parser.add_option('-M', '--known-motifs-dir', default=KNOWN_MOTIFS_DIR, help="directory of input XML file containing known motifs")
+    parser.add_option('-n', '--new-motifs-file', default=NEW_MOTIFS_FILE, help="name of input XML file containing new motifs discovered by de novo scan of ChIP regions")
+    parser.add_option('-N', '--new-motifs-dir', default=NEW_MOTIFS_DIR, help="directory of input XML file containing new motifs")
+    parser.add_option('-b', '--bed-file', default=BED_FILE, help="output BED file containing the genomic regions that are MotifScan hits")
+    parser.add_option('-B', '--bed-dir', default=BED_DIR, help="directory of the output BED file")
+    parser.add_option('-f', '--fasta-file', default=FASTA_FILE, help="output FASTA file containing the genomic sequences that are MotifScan hits")
+    parser.add_option('-F', '--fasta-dir', default=FASTA_DIR, help="directory of the output FASTA file")
+    parser.add_option('-p', '--pssm-file', default=None, help="input a pssm file that represents the motif")
     (opts, args) = parser.parse_args(sys.argv)
     
     # required arguments
@@ -77,7 +65,12 @@ if __name__ == '__main__':
     if opts.known_motifs_file == 'NULL':
         known_motifs_path = None
     else:
-        known_motifs_path = os.path.join(opts.known_motifs_dir, opts.known_motifs_file)
+        known_motifs_path = os.path.join(opts.known_motifs_dir,
+                                         opts.known_motifs_file)
+        #if opts.known_motifs_dir[-1] == '/':
+        #    known_motifs_path = opts.known_motifs_dir + opts.known_motifs_file
+        #else:
+        #    known_motifs_path = opts.known_motifs_dir + '/' + opts.known_motifs_file
         
     # set new motifs file path
     if opts.new_motifs_file == 'NULL':
@@ -85,14 +78,26 @@ if __name__ == '__main__':
     else:
         if opts.new_motifs_dir is None:
             new_motifs_path = opts.new_motifs_file
-        else:
-            new_motifs_path = os.path.join(opts.new_motifs_dir, opts.new_motifs_file)
+            new_motifs_path = os.path.join(opts.new_motifs_dir,
+                                           opts.new_motifs_file)
+        #elif opts.new_motifs_dir[-1] == '/':
+        #    new_motifs_path = opts.new_motifs_dir + opts.new_motifs_file
+        #else:
+        #    new_motifs_path = opts.new_motifs_dir + '/' + opts.new_motifs_file
             
     # set BED file path
     bed_path = os.path.join(opts.bed_dir, opts.bed_file)
+    #if opts.bed_dir[-1] == '/':
+    #    bed_path = opts.bed_dir + opts.bed_file
+    #else:
+    #    bed_path = opts.bed_dir + '/' + opts.bed_file
         
     # set FASTA file path
     fasta_path = os.path.join(opts.fasta_dir, opts.fasta_file)
+    #if opts.fasta_dir[-1] == '/':
+    #    fasta_path = opts.fasta_dir + opts.fasta_file
+    #else:
+    #    fasta_path = opts.fasta_dir + '/' + opts.fasta_file
     
     # retrieve known motifs
     motifs = MotifList()
@@ -113,7 +118,8 @@ if __name__ == '__main__':
                 desired_motif = motif
                 break
     else: #use a pssm as the flatfile
-        desired_motif = Motif.from_flat_file(opts.pssm_file)
+        desired_motif = Motif()
+        desired_motif.from_flat_file(opts.pssm_file)
     
     # retrieve ChIP regions
     chip_regions = ChipRegions(chip_regions_path, genome)

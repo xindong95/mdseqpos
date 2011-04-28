@@ -40,6 +40,24 @@ function ModelEvent(modelRef) {
     }
 }
 
+/**
+ * Class: Motif
+ * this function contains all of the information for any individual motif
+ * fields: id, factors, consensus sequence, pssm - motif matrix, logoImg,
+ * hit score, cutoff score, zscore, pvalue, and gene group
+ * 
+ * note: we don't have gene group information yet
+ * 
+ * The input should be a hashtable of the fields and their associated value
+ */
+//DELETE THIS???
+function MotifHelper(id, factors, consensus, pssm, logoImg, hits, 
+		     cutoff, zscore, pval) {
+    return new Motif({"id":id, "factors":factors, "consensus":consensus,
+		"pssm":pssm, "logoImg":logoImg, "hits":hits, "cutoff":cutoff,
+		"zscore":zscore, "pval":pval});
+}
+
 //this function returns the maximum score of the pssm row
 function max_score(row) {
     if ((row == null) || (row.length != 4)) {
@@ -129,23 +147,18 @@ function shortenConsensus(consensus, row_scores) {
     return s;
 }
 
-/**
- * Class: Motif
- * this function contains all of the information for any individual motif
- * fields: id, symbols, consensus sequence, pssm - motif matrix, logoImg,
- * hit score, cutoff score, zscore, pvalue, and gene group
- * 
- * note: we don't have gene group information yet
- * 
- * The input should be a hashtable of the fields and their associated value
- */
 function Motif(paramObjs) {	
-    this.fields = ["id", "symbols", "entrezs", "refseqs", "species", 
-		   "consensus", "pssm", "logoImg"];
-    //fields in seqpos_results
-    this.results_fields = ["numhits", "cutoff", "zscore", "pvalue", 
-			   "meanposition"];
+    this.fields = ["id", "factors", "entrezs", "refseqs", "species", 
+		   "consensus", "pssm", "logoImg", "hits", "cutoff", "zscore",
+		   "pval", "position"];
     var outer = this;
+
+    /* OBSOLETE
+    this.treeNode = null; //this corresponds to the motif's treeNode object
+    this.setTreeNode = function(node) {
+    	outer.treeNode = node;
+    }
+    */
 
     //1. set the values
     //e.g. this is short-hand for: this.id = paramObjs.id
@@ -155,16 +168,6 @@ function Motif(paramObjs) {
 	this["get"+outer.fields[i]] = function(field) {
 	    return function(){return outer[field]; }
 	}(outer.fields[i]);
-    }
-    //do the same for fields in seqpos_results
-    for (var i = 0; i < outer.results_fields.length; i++) {
-	//alert(outer.results_fields[i]);
-	this[outer.results_fields[i]] = 
-	    paramObjs.seqpos_results[outer.results_fields[i]];
-	//paramObjs.sepos_results[outer.results_fields[i]];
-	this["get"+outer.results_fields[i]] = function(field) {
-	    return function(){return outer[field]; }
-	}(outer.results_fields[i]);
     }
     
     //construct the consensus string:                                      
@@ -203,6 +206,7 @@ function Motif(paramObjs) {
 function MotifModel(motifList) {
     this.originalMotifList = motifList; //READ-ONLY!
     this.motifList = motifList;
+    //this.motifTree = motifTree; OBSOLETE
 
     this.currentMotif = null;
     this.previousMotif = null;
@@ -240,7 +244,7 @@ function MotifModel(motifList) {
 	var tmp = [];
 	for (var i = 0; i < outer.motifList.length; i++) {
             if ((outer.motifList[i][field] == 'None') ||
-                (field =='symbols' && outer.motifList[i][field].length == 0)) {
+                (field =='factors' && outer.motifList[i][field].length == 0)) {
 		nones.push(outer.motifList[i]);
 	    } else {
 		tmp.push(outer.motifList[i]);
@@ -261,6 +265,29 @@ function MotifModel(motifList) {
 	return tmp;
     }
 
+    //returns the json tree that jit expects, i.e.
+    // {id: .., name:.., data:.., children: [...]}
+    /* OBSOLETE
+    this.getMotifTree = function() { 
+	return outer.treeBuilder(outer.motifTree); 
+    }
+    
+    //given a node in the motifTree, it returns the json 
+    //description of that subtree.
+    this.treeBuilder = function(node) {
+	if (node == null) {
+	    return {};
+	}
+	var children = [];
+	for (var i = 0; i < node.children.length; i++) {
+	    children.push(outer.treeBuilder(node.children[i]));
+	}
+	return {"id":node.node.getid(),
+		"name":node.node.getconsensus(),
+		"data":{"motif":node.node, "parent":node.parent},
+		"children": children};
+    }
+    */
 }
 
 function quicksort(motifList, field) {

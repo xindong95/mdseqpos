@@ -1,25 +1,22 @@
-"""
-SYNOPSIS: A module for ChIP regions.
+#! /usr/bin/env python
 
-Adapted from Cliff Meyer's cistrome.py module.
-"""
+"""A module for ChIP regions.
+
+Adapted from Cliff Meyer's cistrome.py module."""
 
 import os
-import sys
-from operator import itemgetter
+import commands
+#import sys
+
 from copy import deepcopy
+from motif import Motif, MotifList
+from mdseqpos._MDmod import MDmod
+from mdseqpos._seq import seqscan
 
-#NOTE: when seqscan is modified to take pssms that aren't numpy arrays,
-#then i can remove this!
-import numpy
+import mdseqpos.settings as settings
+import mdseqpos.count
+from bayesian_motif_comp import SENSE
 
-from _MDmod import MDmod
-import _seq
-import motif
-import settings
-import count
-
-#NOTE: this should maybe be moved to lenlib.core.regions - for maximum reuse
 class ChipRegions:
     """A class for ChIP regions.
     
@@ -37,20 +34,15 @@ class ChipRegions:
         self.hitscore = []
         self.genome = None
         if bedfilename is not None:
+            self.bedfilename = bedfilename
             self.read(bedfilename)
         if genome is not None:
             self.genome = genome
-        self.preprocessed_regions = False
-
-    def preprocess(self, width, margin):
-        """Preprocess the chip regions, you only need to do this once (this
-        is also destructive) so that is why we set the preprocessed_regions
-        flag to True.
-        """
-        self.preprocessed_regions = True;
-        self.unique()
-        self.trim(width + margin)
-                                                   
+    
+    #################
+    # input methods #
+    #################
+    
     def read(self, bedfilename):
         """Read ChIP regions from a BED file.
         
@@ -71,45 +63,11 @@ class ChipRegions:
             self.chromStart.append(int(row[1]))
             self.chromEnd.append(int(row[2]))
 
-    def len_read_sequence(self, repeatMasked=False):
-        """Read in region sequences, len style!"""
-        build_dir = os.path.join(settings.ASSEMBLY_DIR,
-                                 settings.BUILD_DICT[self.genome])
-        #SORT the reads so that we're more efficient about our File I/O
-        tuples = zip(range(len(self.chrom)), self.chrom, self.start, self.end)
-        #sort by chr and then start
-        sorted_tuples = sorted(tuples, key=itemgetter(1,2))
-
-        unsorted_seq = []
-        last_file, fpchr = None, None
-        for (order, chr, start, end) in sorted_tuples:
-            if repeatMasked:
-                chr_file = os.path.join(build_dir, 'masked', chr+'.fa.masked')
-            else:
-                #can either be in 'raw' or 'rawgenome'
-                opt1 = os.path.join(build_dir, 'raw', chr + ".fa")
-                opt2 = os.path.join(build_dir, 'rawgenome', chr + ".fa")
-                chr_file = opt1 if os.path.exists(opt1) else opt2
-                
-            #only open the files when we move to a different chr
-            if chr_file != last_file:
-                try:
-                    if fpchr: fpchr.close()
-                    fpchr = open(chr_file, 'r')
-                    last_file = chr_file
-                except:
-                    print "Could not open file:", chr_file
-                    unsorted_seq.append((order, None))
-                    continue
-            else: #continue using same fpchr
-                #SCREW it, movie time!
-                pass
-            
-    def ext_read_sequences(self, repeatMAsked=False):
+    def ext_read_sequence(self, repeatMAsked=False):
         """Uses Jim Kent's twoBitToFa to read in the sequences associated
         with the regions.  twoBitToFa is included in the mdseqpos package,
         under 'tools/twoBitToFa'.
-        
+
         The location of the two bit files are defined in settings, i.e.
         mm8's twoBit is in settings.TWOBIT_DIR/mm8.2bit
         """
@@ -126,7 +84,7 @@ class ChipRegions:
         #print "CMD is %s" % cmd
         (status, log) = commands.getstatusoutput(cmd)
         #print "Status is %s, Log is:\n%s\n" % (status, log)
-        
+
         #read in the sequences from the fasta file:
         f = open('delete_this.fa')
         try:
@@ -142,7 +100,7 @@ class ChipRegions:
             if tmp: self.sequence.append(tmp.upper())
         finally:
             f.close()
-            
+
         #NOTE: the first sequence is always empty--so we drop it
         if self.sequence and len(self.sequence) > 0:
             self.sequence = self.sequence[1:]
@@ -150,8 +108,9 @@ class ChipRegions:
         #delete temporary files
         if os.path.exists('delete_this.fa'): os.remove('delete_this.fa')
         if os.path.exists('temp.bed'): os.remove('temp.bed')
-        
-        
+        #print "SEQUENCE is: %s" % self.sequence
+        #sys.exit(-1)
+    
     def read_sequence(self, repeatMasked=False):
         """Retrieve sequences for ChIP regions.
         
@@ -160,12 +119,12 @@ class ChipRegions:
         build_dir = os.path.join(settings.ASSEMBLY_DIR,
                                  settings.BUILD_DICT[ self.genome ])
         self.sequence = []
-        for i,x in enumerate(self.chrom):
+        for i,x in enumerate( self.chrom ):
             chr   = x
             left  = self.chromStart[i]
             right = self.chromEnd[i]
             if repeatMasked == True:
-                chr_file = os.path.join(build_dir, 'masked', chr+'.fa.masked')
+                chr_file = os.path.join(build_dir, 'masked', chr + '.fa.masked')
                 try:
                     fpchr = open(chr_file, 'r')
                 except:
@@ -173,36 +132,49 @@ class ChipRegions:
                     self.sequence.append(None)
                     continue
             else:
-                subdir = os.listdir(build_dir)
+                subdir = os.listdir( build_dir )
                 if "raw" in subdir:
-                    chr_file = os.path.join(build_dir, 'raw', chr + ".fa")
+                    chr_file = os.path.join( build_dir, 'raw', chr + ".fa" )
                 else:
-                    chr_file = os.path.join(build_dir, 'rawgenome', chr+".fa")
+                    chr_file = os.path.join( build_dir, 'rawgenome', chr + ".fa" )
                 try:
-                    fpchr = open(chr_file, 'r')
+                    fpchr = open( chr_file, 'r' )
                 except:
                     print "Could not open file:", chr_file
-                    self.sequence.append(None)
+                    self.sequence.append( None )
                     continue
             fpchr.readline()
-            here = fpchr.tell()
+            here = fpchr.tell( )
             line = fpchr.readline()
             line = line.rstrip()
             line_len = len(line)
             left  -= 1
             right -= 1
-            start = (left  / line_len) * (line_len + 1) + (left  % line_len)  
-            stop  = (right / line_len) * (line_len + 1) + (right % line_len)  
+            start = ( left  / line_len ) * ( line_len + 1 ) + ( left  % line_len )  
+            stop  = ( right / line_len ) * ( line_len + 1 ) + ( right % line_len )
+
             try:
-                fpchr.seek(start + here)
+                fpchr.seek( start + here - 25 )
             except:
-                print 'ERROR: invalid chr location', start, here, left, right, line_len, x
-                sys.exit()
-            seq = fpchr.read(stop - start)
-            seq = seq.replace('\n', '')
-            self.sequence.append(seq.upper())
+                print 'WARNING: requesting invalid chr location before chromosome start', start, here, left, right, line_len, x
+                fpchr.close()
+                continue
+            try:
+                fpchr.seek( stop + here + 25 )
+            except:
+                print 'WARNING: requesting invalid chr location over chromosome end', stop, here, left, right, line_len, x
+                fpchr.close()
+                continue
+
+            seq = fpchr.read( stop - start )
+            seq = seq.replace( '\n', '' )
+            self.sequence.append( seq.upper() )
             fpchr.close()
-        
+    
+    ##################
+    # output methods #
+    ##################
+    
     def to_fasta(self):
         """Return ChIP regions as a string in FASTA format.
         
@@ -220,7 +192,20 @@ class ChipRegions:
         for i,chrom in enumerate(self.chrom):
             bed_out += chrom+"\t"+str(self.chromStart[i])+"\t"+str(self.chromEnd[i])+"\t"+self.sequence[i]+"\t"+str(self.hitscore[i])+"\t"+self.strand[i]+"\n"
         return bed_out
-        
+
+    def to_4col_bed(self):
+        """Return ChIP regions as a string in BED format. --only chr start end
+        """
+        bed_out = ''
+        for i,chrom in enumerate(self.chrom):
+            bed_out += chrom+"\t"+str(self.chromStart[i])+"\t"+\
+                       str(self.chromEnd[i])+"\tIGNORE_THIS\n"
+        return bed_out
+    
+    ########################
+    # manipulation methods #
+    ########################
+    
     def trim(self, length=600):
         """Trim all ChIP regions to a given length.
         
@@ -241,68 +226,54 @@ class ChipRegions:
     def copy(self):
         """Return a deep copy of self."""
         return deepcopy(self)
-            
-    def mdmodule(self, motif_widths=(7, 10, 13, 16), width=600):
+    
+    ####################
+    # analysis methods #
+    ####################
+        
+    def mdmodule(self, motif_widths=(7, 10, 13, 16), width=600 ):
         """Run a de novo motif scan of ChIP regions.
         
         De novo motifs will be returned as a MotifList object.
         
         Adapted from Cliff Meyer's ChIP_region.MDscan() method.
         Directly calls Xiaole Shirley Liu's _MDmod program."""
-        motifs = motif.MotifList()
+        motifs = MotifList()
         # prepare input sequences
         input = self.copy()
         input.unique()
-        input.trim(int(width/2))
+        input.trim( int(width/2) )
         input.read_sequence(True)
-
-        #OBSOLETE: DELETE!!
         # prepare background sequences
         background = self.copy()
         background.unique()
-        background.trim(int(width))
+        background.trim( int(width) )
         background.read_sequence(True)
-
-        #read in the bgfreq for the appropriate assembly
-        bg_file = open(os.path.join(settings.DEPLOY_DIR, "MDmodule", "bgdist",
-                                    self.genome+".bg"), 'r')
-        
         # scan for motifs
         for motif_width in motif_widths:
-            raw_pssms = MDmod(i=input.sequence, b=background.sequence,
-                              f=bg_file,
-                              w=motif_width, t=50, s=50, n=100, r=10)
+            raw_pssms = MDmod(i=input.sequence, b=background.sequence, w=motif_width, t=50, s=50, n=100, r=10)
             for raw_pssm in raw_pssms:
                 motif_id = 'denovo%d' % len(motifs)
-                tmp = motif.Motif()
-                tmp.id = motif_id
-                tmp.pssm = raw_pssm
-                motifs.append(tmp)
+                motifs.append(Motif(motif_id, raw_pssm))
         return motifs
-
-    #SHOULD make this a static method??--need to pass in chipregions.??
+    
     def motifscan(self, motif):
         """Scan sequences with a motif.
         
         Motif must be provided as a Motif object.
         Hits will be returned as a ChipRegions object.
         
-        Directly calls [Somebody]'s _seq program.
-        """
-        SENSE = 0
+        Directly calls [Somebody]'s _seq program."""
         self.read_sequence(True)
 
         # LEN: BINOCH UPGRADE
-        bgseqprob_mat = count.count(self.sequence)
+        bgseqprob_mat = mdseqpos.count.count(self.sequence)
         markov_order = 2
-        prob_option = _seq.CUTOFF_OPTION
+        prob_option = mdseqpos._seq.CUTOFF_OPTION
 
-        #GRR: THIS IS THE ONLY numpy dependency, and it is b/c seqscan
-        #expects self.pssm to be a numpy array!
-        pssm = numpy.array(motif.pssm, float)
-        s_idx, start, end, orient, score = \
-               _seq.seqscan(self.sequence, pssm, bgseqprob_mat,
-                            markov_order, prob_option)
+        s_idx, start, end, orient, score = seqscan(self.sequence, motif.pssm,
+                                                   bgseqprob_mat, markov_order,
+                                                   prob_option)
         hits = ChipRegions()
         hits.genome = self.genome
 

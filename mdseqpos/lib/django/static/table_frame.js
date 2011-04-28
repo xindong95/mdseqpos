@@ -29,8 +29,8 @@ function MotifTableView(motifs, container) {
 	outer.imgMap[field].src = imgSrc;
     }
 
-    this.fields = ["id", "symbols", "consensus", "numhits", "cutoff", 
-		   "zscore", "pvalue", "meanposition"];    
+    this.fields = ["id", "factors", "consensus", "hits", "cutoff", 
+		   "zscore", "pval", "position"];    
     this.makeHTML = function() {
 	var tbl = document.createElement('table');
 	tbl.className = "datatable"
@@ -41,7 +41,7 @@ function MotifTableView(motifs, container) {
 	    var field = outer.fields[i];
 	    var tmp = document.createElement('th');
 	    var span = document.createElement('span');
-	    span.innerHTML = (field != "pvalue") ? field:"-10*log(pvalue)";
+	    span.innerHTML = (field != "pval") ? field:"-10*log(pval)";
 	    tmp.appendChild(span);
 	    var img = document.createElement("img");
 	    img.src = 'down.png';
@@ -70,10 +70,10 @@ function MotifTableView(motifs, container) {
 	    motifTRMap[outer.motifs[i].getid()] = newTr;
 	    for (var j = 0; j < outer.fields.length; j++) {
 		var tmp = document.createElement('td');
-                if (outer.fields[j] == 'pvalue') { //SPECIAL CASE
+                if (outer.fields[j] == 'pval') { //SPECIAL CASE
                     //pvals are transformed
-                    var pvalue = outer.motifs[i][outer.fields[j]];
-                    tmp.innerHTML = -10*Math.log(pvalue);
+                    var pval = outer.motifs[i][outer.fields[j]];
+                    tmp.innerHTML = -10*Math.log(pval);
                 } else {
                     tmp.innerHTML = outer.motifs[i][outer.fields[j]];
 		}
@@ -127,6 +127,7 @@ function ColumnClickCntlr() {
 
 
 //EDIT this --like the styling rules are NOT ok--well maybe
+//NOTE: scroll parameter is now ignored b/c we dropped tree nav; OBSOLETE
 function highlightMtfRow(scroll) {
     var prevMtf = motifModel.previousMotif;
     var currMtf = motifModel.currentMotif;
@@ -141,6 +142,28 @@ function highlightMtfRow(scroll) {
 	//set the new row
 	var currRow = motifTRMap[currMtf.getid()];
 	currRow.style.border = "2px solid #CC6";
+	/* OBSOLETE
+	if (scroll) {
+	    //automatically center the row by scrolling--window.scrollTo(x,y) 
+	    //NOTE: we will only be changing the y coordinate--using the ratio
+	    //of where the motif is found
+	    var motifList = motifTableView.motifs;
+	    var found = false;
+	    var i = 0;
+	    for (; !found && (i < motifList.length); i++) {
+		if (motifList[i].id == currMtf.id) {
+		    found = true;
+		}
+	    }
+	    if (found) {
+		//scroll using the RATIO of where it is in the list
+		//window.scrollMaxY is the max scroll height of the document
+		scrollToY = 
+		    Math.floor((i / motifList.length) * window.scrollMaxY);
+		window.scrollTo(0, scrollToY);
+	    }
+	}
+	*/
     }
 }
 
@@ -197,11 +220,9 @@ function initPage(){
 	if (motifModel.motifList != null) {
 	    for (var i = 0; i < motifModel.motifList.length; i++) {
 		species = motifModel.motifList[i].getspecies();
-		if (species != null) {
-		    for (var j = 0; j < species.length; j++) {
-			if (!checkStrInList(species[j], species_list)) {
-			    species_list.push(species[j]);
-			}
+		for (var j = 0; j < species.length; j++) {
+		    if (!checkStrInList(species[j], species_list)) {
+			species_list.push(species[j]);
 		    }
 		}
 	    }

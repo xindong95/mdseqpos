@@ -55,19 +55,13 @@ function displayMotif(motif, container, showNewWindowBtn, showPssmBtn, dom) {
     var newUl = dom.createElement('ul');
     newTd.appendChild(newUl);
 
-    var fields = ["id", "symbols", "consensus", "numhits", "cutoff",
-                  "zscore", "pvalue", "meanposition"];
+    var fields = ["id", "factors", "consensus", "hits", "cutoff",
+                  "zscore", "pval", "position"];
     for (var i = 0; i < fields.length; i++) {
         var newLi = dom.createElement('li');
 	var field = fields[i];
-        //var fieldname = field;
-	var val = motif[field] == null ? "" : motif[field];
-	//SPECIAL CASE: pvalue-
-	if (field == "pvalue") {
-	    field = "-10*log(pvalue)";
-	    val = -10*Math.log(val);
-	}
-	newLi.innerHTML = field+": "+val;
+        var fieldname = (field != "pval") ? field : "-10*log(pval)";
+	newLi.innerHTML = fieldname+":"+motif[field];
         newUl.appendChild(newLi);
     }
 
