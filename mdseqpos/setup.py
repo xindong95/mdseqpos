@@ -31,7 +31,7 @@ def main():
         sys.exit(1)
     check_pkg_dependencies()
     setup(name="mdseqpos",
-          version="0.578",
+          version="0.579",
           description="Motif finding tools",
           author='Ying Lei, Len Taing, et al',
           author_email='lentaing@jimmy.harvard.edu',
