@@ -166,6 +166,8 @@ class ChipRegions:
                 fpchr.close()
                 continue
 
+            fpchr.seek( start + here )
+
             seq = fpchr.read( stop - start )
             seq = seq.replace( '\n', '' )
             self.sequence.append( seq.upper() )

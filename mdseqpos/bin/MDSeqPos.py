@@ -134,6 +134,8 @@ if __name__ == '__main__':
     #cull the motifs
     sig_motifs = all_motifs.cull(pvalcutoff, maxmotif)
 
+    print len(sig_motifs),"out of",len(all_motifs),"are significantly near peak centers."
+
     #filter by species?
     if opts.species_list is not None:
         species_list = opts.species_list.split(',')
@@ -141,14 +143,14 @@ if __name__ == '__main__':
     
     if sig_motifs is not None:
         # set motif to cluster on ( source motif from database or observed motif )
-        sig_motifs.set_cluster_motif(motif_type='observed')
+        #sig_motifs.set_cluster_motif(motif_type='observed')
         # cluster all motifs using hierarchical clustering
-        if len(sig_motifs) > 0: 
-            motif_tree = sig_motifs.cluster()
-            print 'clustering time', time.time()
-        else: #No motifs found! return an empty MotifTree
-            print 'No motifs found'
-            motif_tree = MotifTree(None, None, None)
+        #if len(sig_motifs) > 0: 
+        #    motif_tree = sig_motifs.cluster()
+        #    print 'clustering time', time.time()
+        #else: #No motifs found! return an empty MotifTree
+        #    print 'No motifs found'
+        #    motif_tree = MotifTree(None, None, None)
         # using SeqPos, score all motifs in motif tree against the ChIP regions
         #motif_tree.seqpos(chip_regions)
 	#print 'seqpos time', time.time()
