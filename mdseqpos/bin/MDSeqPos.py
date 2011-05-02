@@ -143,14 +143,14 @@ if __name__ == '__main__':
     
     if sig_motifs is not None:
         # set motif to cluster on ( source motif from database or observed motif )
-        #sig_motifs.set_cluster_motif(motif_type='observed')
+        sig_motifs.set_cluster_motif(motif_type='observed')
         # cluster all motifs using hierarchical clustering
-        #if len(sig_motifs) > 0: 
-        #    motif_tree = sig_motifs.cluster()
-        #    print 'clustering time', time.time()
-        #else: #No motifs found! return an empty MotifTree
-        #    print 'No motifs found'
-        #    motif_tree = MotifTree(None, None, None)
+        if len(sig_motifs) > 0: 
+            motif_tree = sig_motifs.cluster()
+            print 'clustering time', time.time()
+        else: #No motifs found! return an empty MotifTree
+            print 'No motifs found'
+            motif_tree = MotifTree(None, None, None)
         # using SeqPos, score all motifs in motif tree against the ChIP regions
         #motif_tree.seqpos(chip_regions)
 	#print 'seqpos time', time.time()
@@ -168,10 +168,10 @@ if __name__ == '__main__':
             os.makedirs(img_dir)
         
         # save motif clustering to HTML file
-        #output_file = open(output_file_name, 'w')
-        #output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
-        #                                     img_dir=img_dir))
-        #output_file.close()
+        output_file = open(output_file_name, 'w')
+        output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
+                                             img_dir=img_dir))
+        output_file.close()
 	print 'html time', time.time()
 
         # copy static images to images directory
