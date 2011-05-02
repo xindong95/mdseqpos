@@ -168,10 +168,10 @@ if __name__ == '__main__':
             os.makedirs(img_dir)
         
         # save motif clustering to HTML file
-        output_file = open(output_file_name, 'w')
-        output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
-                                             img_dir=img_dir))
-        output_file.close()
+        #output_file = open(output_file_name, 'w')
+        #output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
+        #                                     img_dir=img_dir))
+        #output_file.close()
 	print 'html time', time.time()
 
         # copy static images to images directory
