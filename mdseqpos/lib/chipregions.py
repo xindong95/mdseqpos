@@ -279,6 +279,8 @@ class ChipRegions:
 
         for i,idx in enumerate(s_idx):
             #sorry for the i vs idx confusion, but they're really different!
+            #print "%s\t%s" % (idx, type(idx))
+            idx = int(idx)
             hits.chrom.append(self.chrom[idx])
             hits.chromStart.append(int(self.chromStart[idx] + int(start[i])))
             hits.chromEnd.append(int(self.chromStart[idx] + int(end[i])))

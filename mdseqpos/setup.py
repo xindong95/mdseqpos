@@ -27,11 +27,11 @@ def check_pkg_dependencies():
 
 def main():
     if not float(sys.version[:3])>=2.6:
-        sys.stderr.write("CRITICAL: Python version must be greater than or equal to 2.6! python 2.6.6 is recommended!\n")
+        sys.stderr.write("CRITICAL: Python version must be greater than or equal to 2.4! python 2.6.1 is recommended!\n")
         sys.exit(1)
     check_pkg_dependencies()
     setup(name="mdseqpos",
-          version="0.579",
+          version="0.590",
           description="Motif finding tools",
           author='Ying Lei, Len Taing, et al',
           author_email='lentaing@jimmy.harvard.edu',
@@ -74,7 +74,7 @@ def main():
         'Programming Language :: Python',
         'Topic :: Database',
         ],
-          requires=['numpy (>=1.3.0)', 'Django (>=1.1.1)'],
+          requires=['numpy (>=1.3.0)', 'lxml (>=2.2.2)', 'Django (>=1.1.1)'],
       )
 
     #POST DISTUTILS touchups:

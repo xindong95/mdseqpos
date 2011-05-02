@@ -11,6 +11,7 @@ import distutils.dir_util
 
 import mdseqpos.settings as settings
 import mdseqpos.count
+from mdseqpos.database import MotifParser
 
 import re
 
@@ -439,6 +440,34 @@ class Motif:
         # clear seqpos results
         self.seqpos_results = None
         #print self
+
+    @staticmethod
+    def from_dict(d):
+        """Returns a new motif with the values specified in the dictionary.
+        The dictionary is expected to follow the format specified by the
+        MotifParser
+        ref: http://cistrome.dfci.harvard.edu/trac/wiki/MotifParser
+        """
+        fields = ['id', 'status', 'source', 'sourcefile', 'dbd', 'pmid', ]
+        lists = ['entrezs', 'refseqs', 'symbols', 'synonyms',]
+        #special lists: species, numseqs
+        #missing: fullname, curators
+        tmp = Motif()
+        for f in fields:
+            #EVERY item in d is a list, so we have to make them into values
+            val = ','.join(d[f])
+            setattr(tmp, f, val)
+
+        for l in lists:
+            #we want to set the value, chop off the s for the dictionary
+            setattr(tmp, l, d[l[:-1]])
+
+
+        tmp.pssm = numpy.array(d['pssm'][0])            
+        tmp.species = d['species']
+        tmp.numseqs = d['numseqs']
+        
+        return tmp
     
     ##################
     # output methods #
@@ -833,7 +862,7 @@ class Motif:
         s_idx, start, end, orient, score = seqscan(regions.sequence, self.pssm,
                                                    bgseqprob_mat, markov_order,
                                                    prob_option)
-        lengths = [len(regions.sequence[s_idx[elm]]) for elm in s_idx]
+        lengths = [len(regions.sequence[int(s_idx[elm])]) for elm in s_idx]
 
         #adjust score
         score = (numpy.log(score + MOTIFMIN))
@@ -969,18 +998,11 @@ class MotifList(list):
     
     def from_xml_file(self, xml_file_name):
         """Read list of motifs from XML file and append to MotifList."""
-        # parse motif XML
-        tree = etree.parse(xml_file_name)
-        # retrieve root tag
-        root = tree.getroot()
-        if root.tag != 'motifs':
-            return  # error
-        # extract motif data
-        for child in root:
-            new_motif = Motif()
-            new_motif.from_xml_etree(child)
-            self.append(new_motif)
-    
+        #NOTE: here is where we rely on jian's MotifParser class
+        p = MotifParser.MotifParser(xml_file_name)
+        motifs = [Motif.from_dict(p.motifs[m]) for m in p.motifs]
+        self.extend(MotifList(motifs))
+        
     ##################
     # output methods #
     ##################

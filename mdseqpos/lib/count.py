@@ -1,6 +1,6 @@
 #!python   
 import sys    
-from collections import defaultdict   
+#from collections import defaultdict   
 import math
 #sys.path.append( '/cluster/homes/cliff/PYTHON/cistrome' )
 #import cistrome
@@ -38,7 +38,7 @@ nucleotides = ['A', 'C', 'G', 'T']
 def count(seqs, length=3):
     #print seqs
     #for a missing key, the dict entry is initialized to zero   
-    counts = defaultdict(int)   
+    counts = {}#defaultdict(int)   
 
     #count the length-element subsequences in each sequence   
     for k in range(1, length+1):
