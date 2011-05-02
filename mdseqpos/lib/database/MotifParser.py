@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from xml.etree import ElementTree
+from xml.etree.ElementTree import ElementTree
 import xml.dom.minidom as minidom
 import os, sys
 
@@ -9,6 +9,7 @@ def Info(string):
 
 def List2Str(l, con=SEP):
     """use SEP to join list"""
+    l = [str(t) for t in l]
     return con.join(l)
 
 def PssmValidator(pssm):
@@ -217,9 +218,9 @@ class MotifParser:
         for attr in attrs.items():
             temp_dict = {}
             for i in sub_motifs.motifs.items():
-                if not attr[1] and not i[1][attr[0]]:
+                if not attr[1] and not i[1][attr[0]]: #search for empty
                     temp_dict[i[0]] = i[1]
-                elif attr[1] in i[1][attr[0]]:
+                elif attr[1].upper() in [t.upper() for t in i[1][attr[0]]]:
                     temp_dict[i[0]] = i[1]
             sub_motifs.motifs = temp_dict
         Info("Extract %d records." %sub_motifs.Length())
@@ -280,16 +281,21 @@ class MotifParser:
                 del(res_motifs.motifs[i])
         return res_motifs
 
-    def ToXml(self, xmlfile, xsl=False):
-        """MP.ToXML(xmlfile)
-        Output the MP Object to xmlfile."""
+    def ToXml(self, xmlfile, xsl=False, sortkey=''):
+        """MP.ToXML(xmlfile, xsl=False, sortkey='')
+        Output the MP Object to xmlfile.
+        sortkey = lambda x:x['id'] #something like that"""
         doc = minidom.Document()
         motifs = doc.createElement("motifs")
         doc.appendChild(motifs)
         
         t_motifs = self.motifs.values()
-        t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
+        if sortkey:
+            t_motifs.sort(key=sortkey)
+        else:
+            t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
         #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:])
+        #t_motifs.sort(key=lambda x:'|'.join(x['dbd'])+' '+x['symbol'][0].upper())
         for mo in t_motifs:
             # Create the main element
             motif = doc.createElement("motif")
@@ -368,11 +374,11 @@ class MotifParser:
 	<TBODY>
 		<xsl:for-each select="motifs/motif">
 		<TR>
-			<TD><a target="_blank"><xsl:attribute name="href"><xsl:value-of select="normalize-space(sourcefile)" /></xsl:attribute><xsl:value-of select="@id" /></a></TD>
+			<TD><a href="pwm/{@id}.pwm" target="_blank"><xsl:value-of select="@id" /></a></TD>
 			<TD><xsl:if test="not(source)">-</xsl:if>	<xsl:value-of select="source" /></TD>
 			<TD><xsl:if test="not(status)">-</xsl:if>	<xsl:value-of select="status" /></TD>
 			<TD><xsl:for-each select="species"><xsl:value-of select="." /></xsl:for-each></TD>
-			<TD><xsl:if test="not(symbol)">-</xsl:if>	<xsl:value-of select="symbol" /></TD>
+			<TD><xsl:for-each select="symbol"><xsl:value-of select="." /></xsl:for-each></TD>
 			<TD><xsl:for-each select="entrez">
 			    <a target="_blank"><xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/gene/?term=<xsl:value-of select="normalize-space(.)" />
 			    </xsl:attribute><xsl:value-of select="." /></a>
@@ -452,15 +458,18 @@ class MotifParser:
             outf.write(xsl_string_0)
             outf.close()
             
-    def ToTable(self, tabfile):
+    def ToTable(self, tabfile, sortkey=''):
         pssm_index = self.all_list.index("pssm")
         outf = open(tabfile,'w')
         outf.write(List2Str(self.all_list, "\t")+"\n")
         t_motifs = self.motifs.values()
-        t_motifs.sort(key=lambda x:x[self.keyName])
+        if sortkey:
+            t_motifs.sort(key=sortkey)
+        else:
+            t_motifs.sort(key=lambda x:x[self.keyName])
         for each in t_motifs:
             motif = [List2Str(each[t]) for t in self.all_list[:pssm_index]]
-            if each['pssm']:
+            if each['pssm']: #output pssm to table
                 pssm_slist = []
                 for imatrix in each['pssm']:
                     slist = [', '.join(["%.3f"%tt for tt in t]) for t in imatrix]
@@ -473,7 +482,23 @@ class MotifParser:
             motif.extend([List2Str(each[t]) for t in self.all_list[pssm_index+1:]])
             outf.write(List2Str(motif, "\t")+"\n")
         outf.close()
-        
+    
+    def Pwm2File(self, folder):
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+        for i in self.motifs.values():
+            filen = os.path.join(folder, List2Str(i[self.keyName])+'.pwm')
+            if len(i['pssm'])!=1:
+                Info('Warning: %s may have %d pssm.'%(i[self.keyName][0], len(i['pssm'])))
+            if not len(i['pssm']):
+                continue
+            outf = open(filen, 'w')
+            outf.write('A\tC\tG\tT\n')
+            for x in i['pssm'][0]:
+                x2 = ['%.3d'%t for t in x]
+                outf.write(List2Str(x, '\t') + '\n')
+            outf.close()
+            
     def Length(self):
         return len(self.motifs.keys())
         
@@ -503,13 +528,13 @@ class MotifParser:
                 self.motifs[id][tag] = []
     
             for tag in ('source', 'sourcefile', 'status', 'description', 'numseqs', 'pmid', 'dbd', \
-            'symbol', 'comment1', 'comment2', 'comment3', 'comment4', 'comment5'):
+            'comment1', 'comment2', 'comment3', 'comment4', 'comment5'):
                 if pos.find(tag)!=None:
                     self.motifs[id][tag] = [pos.find(tag).text.strip()]
                 else:
                     self.motifs[id][tag] = []
                     
-            for tag in ('species', 'entrez', 'synonym', 'refseq'):
+            for tag in ('species', 'entrez', 'synonym', 'refseq', 'symbol'):
                 if pos.find(tag+'list')!=None:
                     t = pos.find(tag+'list')
                     self.motifs[id][tag] = [i.text.strip() for i in t.findall(tag)]
