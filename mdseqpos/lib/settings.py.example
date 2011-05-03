@@ -55,6 +55,7 @@ TEMPLATE_DIRS = (DEPLOY_DIR+'/django')
 ASSEMBLY_DIR = '/data/motif/assembly/'
 BUILD_DICT = { "hg17": "humanhg17_May2004/",
                "hg18": "humanhg18/",
+               "hg19": "humanhg19/",
                "mm7": "UCSC_MM7/",
                "mm8": "mousemm8_Mar2006/",
                "mm9":"UCSC_MM9/",
