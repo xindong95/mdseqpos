@@ -38,7 +38,7 @@ MOTIFMIN = 1e-3
 
 import bayesian_motif_comp
 from mdseqpos._seq import seqscan
-import taolib.CoreLib.BasicStat.Prob as Prob
+import mdseqpos.Prob as Prob
 
 SENSE = bayesian_motif_comp.SENSE
 ANTISENSE = bayesian_motif_comp.ANTISENSE
