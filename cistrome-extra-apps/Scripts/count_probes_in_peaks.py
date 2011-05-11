@@ -25,8 +25,8 @@ import re
 import logging
 from random import sample
 from optparse import OptionParser
-from Cistrome.CoreLib.Parser import XLSIO,WiggleIO
-from Cistrome.CoreLib.BasicStat.Func import * 
+from Cistrome.taolib.CoreLib.Parser import XLSIO,WiggleIO
+from Cistrome.taolib.CoreLib.BasicStat.Func import * 
 # ------------------------------------
 # constants
 # ------------------------------------
