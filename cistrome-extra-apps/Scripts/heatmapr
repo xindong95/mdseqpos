@@ -40,6 +40,7 @@
 
 # """
 
+
 import os, sys, time, re
 import itertools
 from optparse import OptionParser
@@ -340,11 +341,24 @@ def opt_validate (optparser):
 
     return options
 
+def GetChromIntersection(wigfn_list): # get a list of chroms exist in every wig files.
+    chrom_matrix = [] #list, each element is a set of chroms
+    for fn in wigfn_list:
+        chrom_list = []
+        inf = open(fn)
+        for line in inf:
+            if re.search(r'chrom=(\S+)\s',line): # get chrom
+                chrom_list.append(re.search(r'chrom=(\S+)\s',line).group(1))
+        chrom_matrix.append(set(chrom_list))
+    
+    out = reduce(lambda x,y:x.intersection(y),chrom_matrix)
+    return list(out)
+
 def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfilerwBed
     profwbed=WigProfilerwBed(upstm=options.upstm, downstm=options.downstm, step=options.step, dir=options.dir) # create a profiler object
     sitebreaks = profwbed.get_breaks(-options.upstm, options.downstm)        # get the breaks
-    peakinfo = []
-    siteprofs = []
+    peakinfo = {}
+    siteprofs = {}
 
     # Doing profiling
     chrom=''
@@ -402,11 +416,11 @@ def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfile
             chroms_bed = hBed.get_chroms()
             if chrom in chroms_bed:
                 # wig profiling for given regions of interest
-                siteprofs.extend(profwbed.profile(input, hBed))
+                siteprofs[chrom] = profwbed.profile(input, hBed)
                 peak_sub=[hBed[chrom][t] for t in head_ref]
                 peak_sub.insert(0,[chrom]*(len(peak_sub[0])))
                 peak_sub=map(list, zip(*peak_sub)) 
-                peakinfo.extend(peak_sub)
+                peakinfo[chrom] = peak_sub
 
             # set chrom to the new chromosome
             chrom=newchrom
@@ -434,16 +448,19 @@ def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfile
     chroms_bed = hBed.get_chroms()
     if chrom in chroms_bed:
         # doing profiling!
-        siteprofs.extend(profwbed.profile(input, hBed)) #### finished profiling
+        siteprofs[chrom] = profwbed.profile(input, hBed) #### finished profiling
         peak_sub=[hBed[chrom][t] for t in head_ref]
         peak_sub.insert(0,[chrom]*(len(peak_sub[0])))
         peak_sub=map(list, zip(*peak_sub)) 
-        peakinfo.extend(peak_sub)
-    try:
-        return peakinfo, siteprofs
-    except NameError:
-        Info("ERROR @ Can't do profile. Maybe chrom in <%s> not in <BED>. "%(wig,))
-        sys.exit(1)
+        peakinfo[chrom] = peak_sub
+    
+    siteprofs_list = []
+    peakinfo_list = []
+    for chrom in sorted(chroms_bed):
+        siteprofs_list.extend(siteprofs[chrom])
+        peakinfo_list.extend(peakinfo[chrom])
+
+    return peakinfo_list, siteprofs_list
 
 def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
     """Do binning on y in order of x.
@@ -527,9 +544,15 @@ def main():
     hBed = inout.Bed()
     hBed.read(opts.bed) # hBed['chr1']['start'('end','score','name')][0:1320(line)]=3360490
     hBed.sort()
+    
+    #delete chroms if no info of that chrom in any of the wigs.
+    chrom_list = GetChromIntersection(opts.wig)
+    for chrom in hBed.keys():
+        if chrom not in chrom_list:
+            del hBed.bed[chrom]
+    
     wigcount = len(opts.wig)
     head_ref = ['start','end','name','score','strand','thickStart','thickEnd'][:len(hBed.bed.values()[0].keys())] #get head as column of bed file.
-
 
     # create rscript
     rscript = open("%s_kmeans.r" %opts.name, "w")
