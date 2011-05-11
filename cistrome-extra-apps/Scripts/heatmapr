@@ -36,7 +36,9 @@
 # 1.48
 # (1) fix bug: if set '--dir' and input different upstream and downstream, it will show the wrong result!
 
-# don't use "," to seperate arguments.
+# 1.49
+# (1) fix bug: if chroms in bed file but not in wig file, output siteprofs may have different lines.
+# (2) fix bug: if several input wig file with different chrom order, may get the run result.
 
 # """
 
@@ -196,7 +198,7 @@ def prepare_optparser ():
     usage = "usage: %prog <-w wig -b bed> [options]"
     description = "plot heatmap for 1 bed against N wigs. Please use absolute path for now."
     # option processor
-    optparser = OptionParser(version="%prog 1.42",description=description,usage=usage,add_help_option=False)
+    optparser = OptionParser(version="%prog 1.49",description=description,usage=usage,add_help_option=False)
     optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
     optparser.add_option("-w","--wig",dest="wig",type="string",help="input WIG file. both fixedStep/variableStep are accepted. Multiple WIG files use ',' to split")
     optparser.add_option("-b","--bed",dest="bed",type="string",help="BED file of regions of interest.")

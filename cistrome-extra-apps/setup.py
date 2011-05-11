@@ -29,7 +29,6 @@ def main():
 
           scripts=[
               'Scripts/bed_correlation.py',
-              'Scripts/bed_extract_chrom.py',
               'Scripts/conservation_plot.py',
               'Scripts/count_probes_in_peaks.py',
               'Scripts/count_probes_in_ranges.py',
