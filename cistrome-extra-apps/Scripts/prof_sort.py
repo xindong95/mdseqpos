@@ -71,13 +71,13 @@ def prepare_optparser():
 
 def opt_validate(optparser):
     (options,args) = optparser.parse_args()
-    options.pfile = options.pfile.split(',')
     if not (options.pfile and options.kfile):
         optparser.print_help()
         sys.exit(1)
     if options.method not in ["median"]:
         Info("method can't find")
         sys.exit(1)
+    options.pfile = options.pfile.split(',')
     pass
     return options
 
