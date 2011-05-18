@@ -198,6 +198,45 @@ function checkStrInList(s, list) {
     return false;
 }
 
+function dumpTable() {
+    //based on popupWindow and popupPSSM in focus_frame.js
+    var win = window.open("focus_frame_2.html", '',"width=900, height=480,"+
+                          "resizable=yes, scrollbars=yes,toolbar=no,"+
+                          "location=no, menubar=no, status=yes");
+
+    //NEED to create the motif elements AFTER the page load
+    win.onload = function(event) {
+	//BUILD the new window's DOM
+        win.document.title = "Seqpos Output";
+        var tmp = win.document.createElement('div');
+        win.document.body.appendChild(tmp);
+
+        var pre = win.document.createElement('pre');
+        //pre.innerHTML = "Hello World!";
+        pre.style.fontSize="10pt";
+	tmp.appendChild(pre);
+
+        //build the table:
+        var txtTbl = "";
+        var fields = ["id", "factors", "consensus", "hits", "cutoff",
+                      "zscore", "pval", "position"];
+        //build table header
+        for (var i=0; i < fields.length; i++) {
+            txtTbl += ((fields[i]!="pval")?fields[i]:"-10*log(pval)")+"\t";
+        }
+        txtTbl += "\n";
+
+        //dump the data
+        for (var i = 0; i < motifModel.motifList.length; i++) {
+            for (var j = 0; j < fields.length; j++) {
+                txtTbl += motifModel.motifList[i][fields[j]]+"\t";
+            }
+            txtTbl += "\n";
+        }
+        pre.innerHTML = txtTbl;
+    }
+}
+
 function initPage(){
     //problem--this is undefined.
     motifTableView = new MotifTableView(motifModel.motifList, 
@@ -210,6 +249,14 @@ function initPage(){
 	rst_btn.onclick = function(event) {
 	    motifTableView.resetMtfs();
 	}
+    }
+
+    //a txt btn to output the table as a txt (so the user can save it)
+    txt_btn = document.getElementById('txt_btn');
+    if (txt_btn != null) {
+        txt_btn.onclick = function(event) {
+            dumpTable();
+        }
     }
 
     //setup the species menu
