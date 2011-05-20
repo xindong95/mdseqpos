@@ -1,0 +1,28 @@
+The information here is intended to assist you in installing MAT from source code. Since MAT uses Python's distutils, this should be a fairly automatic process. We have successfully installed MAT on several platforms including Linux-x86, Linux-AMD64, Solaris-AMD64, Mac OSX and Windows Vista. We usually recommend 2 Gb memory for the whole genome tiling array data analysis.
+
+   1) For Mac OSX users, please install python from darwinports or Macport. Macpython (default python in MacOS) and python from FINK are not recommended.
+   2) For Windows Vista users, here are some hints from Edward Oakeley @fmi.ch  "I managed to get MAT to compile on Vista (it’s a struggle) the secret is to download the Debian Linux ports of all the build tools and install the Debian versions on Vista. If you do that then the Debian make and GCC seems a little happier than the Microsoft ported versions of make and GCC and it will build and install without a problem. This gives you a Windows native port but it will only work on versions of Vista that include the UNIX subsystem (Enterprise and Ultimate)."
+ 
+MAT Build Dependencies
+
+   1. Python >= 2.4 with module numarray >= 1.3.2;
+   2. gcc/g++ >= 3.2.2
+   3. SWIG >= 1.3.24
+        
+
+Brief Install Process from Source Code (Thank Giles Hall for the installation script!)
+
+   1. Download the MAT source code and install/upgrade the dependencies listed above if necessary
+   2. tar xzvf MAT-xxx.tar.gz
+   3. cd MAT-xxx
+   4. Do a default installation :
+          python setup.py install
+      This will try to install MAT in python's site-packages directory and even install the command "MAT" in your bin directory.
+       
+   5. For more flexibility (if you need to do a "user" level install):
+          python setup.py  install  --home=<dir>
+      which will install MAT under <dir>/lib/python/MAT and the command "MAT" in <dir>/bin. Since you picked <dir>, you need to add <dir>/bin to your PATH and set the python library search path:
+          setenv PYTHONPATH "<dir>/lib/python:$PYTHONPATH"
+      This command will need to be repeated each time you login, thus you may want to add this command to your .cshrc script in your home directory.
+       
+   6. Enjoy MAT 
