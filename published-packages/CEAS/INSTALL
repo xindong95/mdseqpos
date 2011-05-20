@@ -1,0 +1,32 @@
+** Requirements **
+
+1. CEAS was developed based on Python 2.5.1; thus, Python higher than 2.5.1 is recommended to be installed for running CEAS w/o any potential version mismatch problems.
+2. MySQLdb Python package is optional; however, if users want to directly use gene annotation tables from UCSC, MySQL and MySQLdb must be installed before installing CEAS.
+
+
+** Installation Steps **
+
+Unix-like OS (UNIX, Linux, or Mac OS X):
+
+1. Extract CEAS-X.X.X.tar.gz by typing on the command line;
+
+      $ tar xvf CEAS-X.X.X.tar.gz
+
+2. Enter the folder created by tar (i.e. ./CEAS-X.X.X) and type the following on the command line.
+
+      $ cd CEAS-X.X.X
+
+      $ sudo python setup.py install
+
+Note that the installer must have the proper security privilege to install CEAS at /usr/local/bin; otherwise, the user can install CEAS at the home as follows.
+
+      $ python setup.py install --prefix=$HOME
+
+where $HOME stands for the user's home. Then, add a line to the log-in shell script (i.e. .bashrc in case of bash shell)
+
+      export $PYTHONPATH=$PYTHONPATH:$HOME/lib/python2.5/site-packages
+
+where 'python2.5' should be changed to the Python version that the user uses. 
+
+
+refer from: http://liulab.dfci.harvard.edu/CEAS/install.html
