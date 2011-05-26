@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from xml.etree.ElementTree import ElementTree
+from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
 import os, sys
 
@@ -28,9 +28,8 @@ def PssmValidator(pssm):
 
 class MotifParser:
     """
-    CHANGE TEMP:
-    sort in ToXml(),shift to Shirley's db schema.
-    xsl style shift to Shirley's.
+    Update 110524:
+    for symbol, use :: to seperate components.
     
     MotifParser (MP)
     function: parser motif xml file and return a MP Object "p", you can get the dictionary by "p.motifs"
@@ -44,9 +43,9 @@ class MotifParser:
     ParserTable(self, tablefile)	#Parser from a "\t" splitted table txt file. Get a MP Object.
     ToXml(self, xmlfile, xsl=False)	#Output the MP Object to xmlfile. if xsl=True, also output the xsl file.
     ToTable(self, tabfile)			#Output the MP Object to table txt file.
-    GetAttr(self, attr)    #Get all data of the attribute. Return a list.
-    SearchMotif(self, **attrs)    #search a set of specific motifs in the MP Object. Return a MP Object.
-    String(self, mid)   #Return a specific motif in a formatted string and readable type.
+    GetAttr(self, attr)             #Get all data of the attribute. Return a list.
+    SearchMotif(self, **attrs)      #search a set of specific motifs in the MP Object. Return a MP Object.
+    String(self, mid)               #Return a specific motif in a formatted string and readable type.
       
     Details of the dictionary of MP object:
       'id'           list of string    identification in each db.
@@ -85,7 +84,12 @@ class MotifParser:
         self.all_list = self.attr_list + self.tag_list + self.special_list
         
         if xmlfile:
-            self.Parser(xmlfile)
+            if xmlfile[-3:] == 'xml':
+                self.Parser(xmlfile)
+            elif xmlfile[-3:] == 'txt':
+                self.ParserTable(xmlfile)
+            else:
+                Info("Can't parser the file, xml or txt?")
             
     def Refresh(self):
         """Refresh self.all_list, if you ever use sth like self.tag_list.append"""
@@ -107,6 +111,8 @@ class MotifParser:
             if not key:
                 Info('ERROR: No %s found for node.' %self.keyName)
                 sys.exit(1)
+            if key in self.motifs.keys():
+                Info("WARNING: %s has exist in instance."%key)
             self.motifs[key] = {}
 
             #add attribs and tags for each element.
@@ -153,6 +159,8 @@ class MotifParser:
         for line in inf:
             linel = line.rstrip('\n').split('\t')
             key = linel[headIndex[self.keyName]] #eg. key = MA00004
+            if key in self.motifs.keys():
+                Info("WARNING: %s has exist in instance"%key)
             self.motifs[key] = {}
 
             for iattr in self.attr_list:
@@ -189,7 +197,7 @@ class MotifParser:
                         
     def GetAttr(self, attr, deldup = False):
         """MP.GetAttr(attr, deldup = False)
-        Get all data of the attribute / tag. Return a list."""
+        Get all data of the attribute / tag. Return a string."""
         if attr not in self.all_list:
             print "Wrong input attr, select attr from: \n:",List2Str(self.all_list, ",")
             return ''
@@ -198,11 +206,14 @@ class MotifParser:
             return ''
         res = []
         for i in self.motifs.values():
-            res.extend(i[attr])
+            if attr == 'symbol':
+                res.extend(i[attr])
+            else:
+                res.extend(i[attr])
         if deldup:
             res = list(set(res))
         res.sort()
-        return List2Str(res)
+        return List2Str(res).replace("::",SEP)
         
     def SearchMotif(self, **attrs):
         """search a set of specific motifs in the MP Object. Return a MP Object
@@ -220,7 +231,7 @@ class MotifParser:
             for i in sub_motifs.motifs.items():
                 if not attr[1] and not i[1][attr[0]]: #search for empty
                     temp_dict[i[0]] = i[1]
-                elif attr[1].upper() in [t.upper() for t in i[1][attr[0]]]:
+                elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
                     temp_dict[i[0]] = i[1]
             sub_motifs.motifs = temp_dict
         Info("Extract %d records." %sub_motifs.Length())
@@ -250,6 +261,11 @@ class MotifParser:
             
         print List2Str(motif_string,"")
 
+    def Patch(self, mp2):
+        """patch motif in mp2 to self, simply replace the motif in self, identified by motif id."""
+        for item in mp2.motifs.items():
+            self.motifs[item[0]] = item[1]
+            
     def __add__(self, mp2):
         """MP1.__add__(MP2) <==> MP1+MP2
         Add two MP into one, delete duplicates with same motif id(use MP2 to replace MP1). Return a MP object."""
@@ -294,8 +310,9 @@ class MotifParser:
             t_motifs.sort(key=sortkey)
         else:
             t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
-        #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:])
-        #t_motifs.sort(key=lambda x:'|'.join(x['dbd'])+' '+x['symbol'][0].upper())
+            #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+ x['id'][0])
+            #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:]) #sort as symbol, then id, shirley asked
+        #t_motifs.sort(key=lambda x:'|'.join(x['dbd'])+' '+x['symbol'][0].upper()) #sort as dbd, then symbol
         for mo in t_motifs:
             # Create the main element
             motif = doc.createElement("motif")
