@@ -50,6 +50,7 @@ def main():
               'Scripts/wigToBed.py',
               'Scripts/wigLiftover.py',
               'Scripts/standardize_wig.py',
+              'Scripts/venn_diagram.py',              
               # jian's codes
               'Scripts/prof_sort.py',
               'Scripts/PCGA.py',
