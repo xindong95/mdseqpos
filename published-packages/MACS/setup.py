@@ -37,7 +37,7 @@ def main():
     setup(name="MACS",
           version="1.4.0rc3",
           description="Model Based Analysis for ChIP-Seq data",
-          author='Yong Zhang; Tao (τν) Liu',
+          author='Yong Zhang; Tao Liu',
           author_email='zy@jimmy.harvard.edu; taoliu@jimmy.harvard.edu',
           url='http://liulab.dfci.harvard.edu/MACS/',
           package_dir={'MACS14' : 'lib'},
