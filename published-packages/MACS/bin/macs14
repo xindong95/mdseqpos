@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-01-28 17:33:05 Tao Liu>
+# Time-stamp: <2011-06-02 15:57:46 Tao Liu>
 
 """Description: MACS 1.4 main executable
 
@@ -247,8 +247,6 @@ Example: %prog -t ChIP.bam -c Control.bam -f BAM -g h -n test -w --call-subpeaks
                          help="When set, a single wiggle file will be saved for treatment and input. Default: False")
     optparser.add_option("--score-wig",dest="scorewig",action="store_true",
                          help="When set, an extra wiggle file will be saved by calling a postprocess script to combine treatment and input wig files to build a score file. This option only works when input data is available. Default: False")
-    optparser.add_option("--score-method",dest="scoremethod",type="string",default="fc"
-                         help="When --score-wig is on, MACS needs to know how to build score file from treatment and input. Available choices are: 'fc' for foldchange between wig signals, 'pvalue' for pvalues of poisson test, and 'asinhdiff' for the difference between asinh transformated signals. Please read more detail in the 00README file. Default: fc")    
     optparser.add_option("--wigextend",dest="wigextend",type="int",
                          help="If set as an integer, when MACS saves wiggle files, it will extend tag from its middle point to a wigextend size fragment. By default it is modeled d. Use this option if you want to increase the resolution in wiggle file. It doesn't affect peak calling.")
     optparser.add_option("--space",dest="space",type="int",
