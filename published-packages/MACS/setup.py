@@ -43,7 +43,7 @@ def main():
           package_dir={'MACS14' : 'lib'},
           packages=['MACS14', 'MACS14.IO', 'MACS14.Math'],
           scripts=['bin/macs14','bin/elandmulti2bed.py','bin/elandresult2bed.py','bin/elandexport2bed.py',
-                   'bin/sam2bed.py','bin/wignorm'],
+                   'bin/sam2bed.py'],
 #          console=['bin/macs14'],
 #          app    =['bin/macs14'],
           classifiers=[
