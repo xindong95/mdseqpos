@@ -2,7 +2,7 @@
 # weili@jimmy.harvard.edu
 
 
-import sys, time, os.path, AffyFileParser, re, ConfigParser, zipfile, os, hashlib
+import sys, time, os.path, AffyFileParser, re, ConfigParser, zipfile, os, md5
 import cPickle as pickle
 from numpy import *
 from glob import glob
@@ -258,7 +258,7 @@ class Mybpmap(object):
         self.ExpIndex = []                                      # X[UniqIndex][ExpIndex] =  X
         self.ReadIndex = []                                     # index for reading probes
         self.base = {'A':0,'C':1, 'G':2, 'T':3, 'a':0,'c':1, 'g':2, 't':3}
-        self.checksum = hashlib.md5(open(bpmapname).read()).hexdigest()     # md5 checksum for the bpmap file
+        self.checksum = md5.new(open(bpmapname).read()).hexdigest()     # md5 checksum for the bpmap file
         # Affy  class
         self.seq = AffyFileParser.CGDACSequenceItem()
         self.hit = AffyFileParser.GDACSequenceHitItemType()
@@ -324,7 +324,7 @@ class Mybpmap(object):
             else:
                 index = arange(self.seq.GetNumberHits())
             for ihit in index:
-                self.seq.GetHitItem(int(ihit), self.hit, 1)
+                self.seq.GetHitItem(ihit, self.hit, 1)
                 for name in pars:
                     if name == 'Chr':
                         self.Chr.append(ChrInd)
@@ -515,10 +515,10 @@ class Mycels(object):
         '''
         intensity = []
         for cel in self.cels:
-            if outlier and cel.IsOutlier(int(x), int(y)):
+            if outlier and cel.IsOutlier(x, y):
                 intensity.append(1)
             else:
-                intensity.append(cel.GetIntensity(int(x), int(y)))
+                intensity.append(cel.GetIntensity(x, y))
             if intensity[-1] <= 0:                    # cel file check
                 raise Exception, ('Abnormal value %s at X %s Y %s, please check your cel file %s' % (
                     intensity[-1], x, y, cel.GetFileName()))
