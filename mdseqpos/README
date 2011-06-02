@@ -7,6 +7,7 @@ URL:'http://cistrome.dfci.harvard.edu/ap'
 INSTALLATION INSTRUCTIONS:
 1. install package dependencies:
    a. django v. 1.1.1 or greater
+   b. ghostscript
    c. numpy v. 1.3.0 or greater
 2. copy lib/settings.py.example to lib/settings.py
 3. specify where your UCSC assemblies are by modifying ASSEMBLY_DIR and 
