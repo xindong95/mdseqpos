@@ -28,6 +28,7 @@ def main():
               ],
 
           scripts=[
+              # Tao's scripts
               'Scripts/bed_correlation.py',
               'Scripts/conservation_plot.py',
               'Scripts/count_probes_in_peaks.py',
@@ -45,16 +46,18 @@ def main():
               'Scripts/wig_extract_chrom.py',
               'Scripts/wiggle_reformat.py',
               'Scripts/xyz2image.py',
-              # jaquie's codes
+              # Jaquie's codes
               'Scripts/bedToWig2.py',
               'Scripts/wigToBed.py',
               'Scripts/wigLiftover.py',
               'Scripts/standardize_wig.py',
               'Scripts/venn_diagram.py',              
-              # jian's codes
+              # Jian's codes
               'Scripts/prof_sort.py',
               'Scripts/PCGA.py',
-              'Scripts/heatmapr',              
+              'Scripts/heatmapr',
+              # Len's codes
+              'Scripts/expressPkgr.py',
               ],
 
           classifiers=[
