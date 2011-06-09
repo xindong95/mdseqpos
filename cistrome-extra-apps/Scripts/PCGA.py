@@ -142,8 +142,8 @@ class PCA:
         count = 0
         flag_line = 0 # mark the position of genelist having read.
         for peak in self.peakList:
-            if not re.findall("chr\d+", peak[0]):
-                continue
+            #if not re.findall("chr\d+", peak[0]):
+            #    continue
             geneList = []
             strandList = []
             disList = []
