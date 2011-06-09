@@ -46,6 +46,7 @@ def main():
               'Scripts/wig_extract_chrom.py',
               'Scripts/wiggle_reformat.py',
               'Scripts/xyz2image.py',
+              'Scripts/convert_ids.py',              
               # Jaquie's codes
               'Scripts/bedToWig2.py',
               'Scripts/wigToBed.py',

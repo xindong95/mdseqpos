@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-03-22 17:48:56 Tao Liu>
+# Time-stamp: <2011-06-08 21:12:20 Tao Liu>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -231,7 +231,7 @@ def makeBmpFile(avgValues, wd, h,w, width, title, bedlabel):
     rscript += "ymin <- min("+ ",".join(tmplist) +")\n"    
     rscript += "yquart <- (ymax-ymin)/4\n"
 
-    rscript += 'plot(x,y0,type="l",col=rainbow(%d)[1],main=\"%s\",xlab="Relative Distance from the Center (bp)",ylab="Average Phastcons",ylim=c(ymin-yquart,ymax+yquart))\n' % (len(avgValues),title)
+    rscript += 'plot(x,y0,type="l",col=rainbow(%d)[1],main=\"%s\",xlab="Distance from the Center (bp)",ylab="Average Phastcons",ylim=c(ymin-yquart,ymax+yquart))\n' % (len(avgValues),title)
     for i in range(1,len(avgValues)):
         rscript += 'lines(x,y'+str(i)+',col=rainbow(%d)[%d])\n' % (len(avgValues),i+1)
     rscript += 'abline(v=0)\n'
