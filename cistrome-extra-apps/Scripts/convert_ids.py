@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-06-08 16:25:31 Tao Liu>
+# Time-stamp: <2011-06-09 22:43:24 Tao Liu>
 """
 Convert gene ids through bioconductor.
 """
@@ -9,20 +9,21 @@ import sys
 
 rprog="""
 sink(file=NULL,type='message')
-rconvert=function(idfile, outfile)
-{
-library(%s)
+suppressPackageStartupMessages(library(%s))
+
+idfile  <- '%s'
+outfile <- '%s'
 
 genelist <- as.character(as.vector(read.table(idfile)[[1]]))
 
 # conversion 
 %s
 
+converted <- converted[!is.na(converted)]
+
 # write to output
 write.table(converted,outfile,quote=F,col.names=F,row.names=F)
-}
-
-suppressWarnings(suppressMessages(rconvert('%s','%s')))
+#
 
 """
 
@@ -70,37 +71,39 @@ def main():
     convert_script=""
     if rule == "E2R":
         convert_script += "x<-"+gene_universe+"REFSEQ\n"
-        convert_script += "converted <- grep('NM',unlist(as.list(x[genelist]),use.names=F),value=T)\n"
+        convert_script += "converted <- grep('NM',unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F),value=T)\n"
     elif rule == "R2E":
         convert_script += "x<-"+gene_universe+"REFSEQ2EG\n"
-        convert_script += "converted <- unlist(as.list(x[genelist]),use.names=F)\n"
+        convert_script += "converted <- unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F)\n"
     elif rule == "E2S":
         convert_script += "x<-"+gene_universe+"SYMBOL\n"
-        convert_script += "converted <- unlist(as.list(x[genelist]),use.names=F)\n"
+        convert_script += "converted <- unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F)\n"
     elif rule == "S2E":
         convert_script += "x<-"+gene_universe+"SYMBOL2EG\n"
-        convert_script += "converted <- unlist(as.list(x[genelist]),use.names=F)\n"
+        convert_script += "converted <- unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F)\n"
     elif rule == "S2R":
         # first convert SYMBOL to ENTREZ
         convert_script += "x<-"+gene_universe+"SYMBOL2EG\n"
-        convert_script += "tmpentrez <- unlist(as.list(x[genelist]),use.names=F)\n"
+        convert_script += "tmpentrez <- unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F)\n"
         # then from ENTREZ to REFSEQ
         convert_script += "x<-"+gene_universe+"REFSEQ\n"
-        convert_script += "converted <- grep('NM',unlist(as.list(x[tmpentrez]),use.names=F),value=T)\n"
+        convert_script += "converted <- grep('NM',unlist(as.list(mget(tmpentrez,x,ifnotfound=NA)),use.names=F),value=T)\n"
     elif rule == "R2S":
         # first convert REFSEQ to ENTREZ
         convert_script += "x<-"+gene_universe+"REFSEQ2EG\n"
-        convert_script += "tmpentrez <- unlist(as.list(x[genelist]),use.names=F)\n"
+        convert_script += "tmpentrez <- unlist(as.list(mget(genelist,x,ifnotfound=NA)),use.names=F)\n"
         # then from ENTREZ to SYMBOL
         convert_script += "x<-"+gene_universe+"SYMBOL\n"
-        convert_script += "converted <- unlist(as.list(x[tmpentrez]),use.names=F)\n"
+        convert_script += "converted <- unlist(as.list(mget(tmpentrez,x,ifnotfound=NA)),use.names=F)\n"
     else:
         raise Exception("Unrecognized conversion %s" % rule)
-    p = subprocess.Popen("R --vanilla", shell=True,executable="/bin/bash", stdin=subprocess.PIPE,stdout=open(os.devnull,"w"))#, stderr=subprocess.STDOUT)
-    t = rprog % (gene_universe+".db",convert_script,input_file,output_file)
-    output = p.communicate(t)[0]
+    p = subprocess.Popen("R --vanilla", shell=True,executable="/bin/bash", stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+    t = rprog % (gene_universe+".db",input_file,output_file,convert_script)
+    (output,error) = p.communicate(t)
     if p.returncode != 0:
         sys.stderr.write("Error occurs during conversion! You may need to revise your parameters.\n")
+        sys.stderr.write("Output: %s\n" % output)
+        sys.stderr.write("Error: %s\n" % error)        
 
 if __name__ == "__main__":
     main()
