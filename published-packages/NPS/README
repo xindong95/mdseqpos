@@ -1,0 +1,17 @@
+--2009.11.10--
+Added 'hg19' and 'mm9.' 
+
+--2009.12.01--
+Trying to get rid of the dependency on rpy by using Tao's Prob module.
+
+--2010.08.25 --
+SeqTagProcess.py will produce a wig file named with the name specified by OUTFILE.
+
+
+
+http://liulab.dfci.harvard.edu/NPS/
+
+Usage:
+SeqTag.py NPS.par 
+
+NPS.par: it's the config file with options.

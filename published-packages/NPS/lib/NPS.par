@@ -1,0 +1,45 @@
+#############################################################################
+#
+# Parameters for ChIP Sequence data analysis.
+#
+
+#
+# Input and output files
+#
+INFILE = HM_hg18.bed
+OUTFILE = HM_hg18_peak_Nov19_2007.txt
+
+#
+# Preprocessing
+#
+SPENAME = hg18
+EXTENSION = 75
+SHIFT = 37
+WANT_SORT = yes
+
+#
+# Wavelet denoising
+#
+WANT_DENOISE = yes
+DECOMP_LEVEL = 2
+WAVELET = coif4
+THRESHOLD_EST = heursure
+THRESHOLD_TYPE = soft
+SCALE = mln
+
+#
+# Peak finding
+#
+INTERVAL = 10
+GENOME_LEN = 2.4e9
+PVALUE = 1e-5
+TAG_NUM = 186e6
+LOG = 3
+SLOPE = 2
+MIN_WIDTH = 80
+MAX_WIDTH = 250
+MIN_HEIGHT = 
+MAX_HEIGHT = 10000
+PEAK_INFLECTION_RATIO = 1.2
+MED_WSIZE = 5
+BIAS_RATIO = 4
