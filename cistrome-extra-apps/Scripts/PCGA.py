@@ -119,6 +119,8 @@ class PCA:
             if line.startswith("#") or not line.strip(): #skip "#" lines and empty lines
                 continue
             line = line.split() #.bed-> 0:chrom 1:pStart 2:pEnd 3:peakName 4:-10*log10(pvalue)
+            if len(line) < 5:
+                line.extend(['NA', '0'][len(line)-5:])
             self.peakList.append(line)
             count += 1
         peakf.close()
