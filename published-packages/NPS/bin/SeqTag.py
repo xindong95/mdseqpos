@@ -25,6 +25,7 @@ def mainloop(sortedbedfile, par = {}):
     par['PEAK_INFLECTION_RATIO'] = 1.2
     par['BIAS_RATIO'] = 4
     par['OUTFILE'] = filename
+    par['OUTFILEWIG'] = wigfilename
     and some other parameters needed
     """
     
@@ -33,6 +34,7 @@ def mainloop(sortedbedfile, par = {}):
     cluster = []
     plus = []
     outfile = open(par['OUTFILE'], 'w')
+    outfilewig = open(par['OUTFILEWIG'], 'w')
     tag_thr = int(par['TAG_THR'])
     
     print>>outfile, "chr\tstart\tend\tname\t-10*log10(pvalue)"
@@ -127,6 +129,9 @@ def mainloop(sortedbedfile, par = {}):
     pf = PeakFinder(denoised, package['POSITION_FILE'], par)
     peakregions = pf.findPeaks()
     
+    print>>sys.stderr, 'Saving as a wig file', chrold, '......', time.asctime()
+    change2wig(outfilewig,package['POSITION_FILE'],denoised)
+
     print >>sys.stderr, 'Ratio filtering for', chrold, '......', time.asctime()
     peakcount, peakregions_filtered = ratio_filter(peakcount, peakregions = peakregions, cluster = cluster, plus = plus)
     for peak in peakregions_filtered:
@@ -202,6 +207,30 @@ def change2postion(chrname, cluster, tag_thr=2):
     num = []
     return package
 
+def change2wig(wigfile,position,new):
+               
+    # get the chromosome name from the POSITION_FILE.
+    chrname=position[0].split()[0]
+    print >>wigfile,"track type=wiggle_0\nvariableStep chrom=%s span=%d" %(chrname,1)
+    
+    itr= 0
+    for pos in position:
+        pos = pos.split()
+        islandbeg=int(pos[1])
+        islandend=int(pos[2])
+        linebeg=int(pos[3])
+        lineend=int(pos[4])
+        
+        i = 0
+        segment=new[linebeg-1:lineend]
+        for loc in xrange(islandbeg,islandend+1,10):
+            print >> wigfile, "%d\t%d" %(loc,int(round(segment[i])))
+            i+=1
+            itr+=1
+    
+    # check
+    if itr!=len(new):
+        print >>sys.stderr, 'Mismatch between POSITION_FILE and NEW_FILE!'
 
 def  ratio_filter(peakcount, peakregions = [], cluster = [], plus = []):
     """ratio_filter(peakregions, cluster, plus)

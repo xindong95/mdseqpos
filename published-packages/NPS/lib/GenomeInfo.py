@@ -37,9 +37,14 @@ chrlength['hg19'] = {"chr1": 249250621, "chr2": 243199373, "chr3": 198022430, "c
                      "chr21": 48129895, "chr22": 51304566, "chrX": 155270560, "chrY": 59373566, "chrM": 16571}
 
 # D.melanogaster genome info
-chrlength['dm2']={'chr2L':22407834, 'chr2R':20766785, 'chr2h':1694122, 'chr3L':23771897,\
+chrlength['dm2'] = {'chr2L':22407834, 'chr2R':20766785, 'chr2h':1694122, 'chr3L':23771897,\
                   'chr3R':27905053, 'chr3h':2955737, 'chr4':1281640, 'chr4h':88110,\
                   'chrX':22224390, 'chrXh':359526, 'chrYh':396896, 'chrU':8724946,'chrM':19517}
+
+chrlength['dm3'] = {'chr2L':23011544, 'chr2LHet':368872, 'chr2R':21146708, 'chr2RHet':3288761, \
+                    'chr3L':24543557, 'chr3LHet':2555491, 'chr3R':27905053, 'chr3RHet':2517507, \
+                    'chr4':1351857, 'chrU':10049037, 'chrUextra':29004656, 'chrX':22422827, \
+                    'chrXHet':204112, 'chrYHet':347038, 'chrM':19517}
 
 # yeast genome from SGD
 chrlength['sc'] = {'chr1':230208, 'chr2':813178, 'chr3':316617, 'chr4':1531919, \
@@ -62,6 +67,11 @@ chrlength['mm8'] = {'chr1':197069962, 'chr2':181976762, 'chr3':159872112, 'chr4'
                     'chr17':95177420, 'chr18':90736837, 'chr19':61321190, 'chrX':165556469,\
                     'chrY':16029404, 'chrM':16299}        
 
+chrlength['ce4'] = {'chrI':15072419, 'chrII':15279316, 'chrIII':13783681, 'chrIV':17493784, \
+                    'chrM':13794, 'chrV':20919398, 'chrX':17718852}
+
+chrlength['ce6'] = {'chrI':15072421, 'chrII':15279323, 'chrIII':13783681, 'chrIV':17493785, \
+                    'chrV':20919568, 'chrX':17718854 , 'chrM':13794}
 
 class GenomeInfo(object):
     def __init__(self, genomeversion):

@@ -14,4 +14,5 @@ http://liulab.dfci.harvard.edu/NPS/
 Usage:
 SeqTag.py NPS.par 
 
-NPS.par: it's the config file with options.
+SeqTag.py <- Main program
+NPS.par <- It's the config file with options in it.
