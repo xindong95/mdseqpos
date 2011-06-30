@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # 2. new_motifs_file_name -- output XML file to store new motifs
     # 3. html_file_name -- name of output HTML file
     # 
-    parser = OptionParser(usage=USAGE)
+    parser = OptionParser(version="%prog 1.01", usage=USAGE)
     parser.add_option('-m', '--known-motifs', default=None, help="name of input XML file containing known motifs, to be scanned against ChIP regions--if multuple xml files, comma-separate them, e.g. pbm.xml,transfac.xml")
     parser.add_option('-M', '--known-motifs-directory', default=DATA_DIR, help="directory of input XML file containing known motifs")
     parser.add_option('-n', '--new-motifs', default=NEW_MOTIFS_FILE, help="name of output XML file for storing new motifs discovered by de novo scan of ChIP regions")
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser.add_option('-d', '--denovo', action="store_true", help="Flag to run denovo motif search (default: False)")
     parser.add_option('-p', '--pval', default=0.001, help="p-value cutoff for motif significance, 0.001 default") 
     parser.add_option('-w', '--width', default=600, help="width of region to be scanned for motif depends on resolution of assay, 600bp default") 
-    parser.add_option('--maxmotif', default=100, help="maximum number of motifs to report, 100 default, overrides pval cut off ")
+    parser.add_option('--maxmotif', default=0, help="maximum number of motifs to report. Default: 0, means output all motifs fit pval cut off.")
     parser.add_option('-s', '--species-list', default=None, help="name of species to filter the results with--if multuple species, comma-separate them, e.g. hs,mm,dm")
 
     parser.set_defaults(denovo=False)
@@ -70,10 +70,10 @@ if __name__ == '__main__':
     pvalcutoff = float(opts.pval)
     maxmotif = int(opts.maxmotif)
 
-    print 'start time', time.time()
+    print 'start time', time.ctime()
     # retrieve ChIP regions from BED file
     chip_regions = ChipRegions(chip_regions_file_name, genome)
-    print 'bed read time', time.time()
+    print 'bed read time', time.ctime()
 
     known_motifs = None
     # handle/load known motifs
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             tmp = MotifList()
             tmp.from_xml_file(motif_db)
             known_motifs = known_motifs + tmp
-	print 'xml parse time', time.time()
+	print 'xml parse time', time.ctime()
 
     new_motifs = None
     # handle new motifs
@@ -147,13 +147,13 @@ if __name__ == '__main__':
         # cluster all motifs using hierarchical clustering
         if len(sig_motifs) > 0: 
             motif_tree = sig_motifs.cluster()
-            print 'clustering time', time.time()
+            print 'clustering time', time.ctime()
         else: #No motifs found! return an empty MotifTree
             print 'No motifs found'
             motif_tree = MotifTree(None, None, None)
         # using SeqPos, score all motifs in motif tree against the ChIP regions
         #motif_tree.seqpos(chip_regions)
-	#print 'seqpos time', time.time()
+	#print 'seqpos time', time.ctime()
 
         # MOTIF Analysis complete, prepare output
         # output directory and file name
@@ -172,7 +172,7 @@ if __name__ == '__main__':
         output_file.write(motif_tree.to_html(dst_dir=opts.output_directory,
                                              img_dir=img_dir))
         output_file.close()
-	print 'html time', time.time()
+	print 'html time', time.ctime()
 
         # copy static images to images directory
         for filename in os.listdir(STATIC_IMG_DIR):
