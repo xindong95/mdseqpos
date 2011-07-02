@@ -42,7 +42,7 @@ def main():
     check_pkg_dependencies()
     check_settings_file()
     setup(name="mdseqpos",
-          version="0.591",
+          version="0.592",
           description="Motif finding tools",
           author='Ying Lei, Len Taing, et al',
           author_email='lentaing@jimmy.harvard.edu',

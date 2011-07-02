@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # 2. new_motifs_file_name -- output XML file to store new motifs
     # 3. html_file_name -- name of output HTML file
     # 
-    parser = OptionParser(version="%prog 1.01", usage=USAGE)
+    parser = OptionParser(usage=USAGE)
     parser.add_option('-m', '--known-motifs', default=None, help="name of input XML file containing known motifs, to be scanned against ChIP regions--if multuple xml files, comma-separate them, e.g. pbm.xml,transfac.xml")
     parser.add_option('-M', '--known-motifs-directory', default=DATA_DIR, help="directory of input XML file containing known motifs")
     parser.add_option('-n', '--new-motifs', default=NEW_MOTIFS_FILE, help="name of output XML file for storing new motifs discovered by de novo scan of ChIP regions")
