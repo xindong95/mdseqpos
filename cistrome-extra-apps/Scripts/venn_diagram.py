@@ -17,7 +17,7 @@ def read_bed_file(bedfilename):
         if line.startswith('track') or line.startswith('browse') or line.startswith('#') or not line:
             # skip comment lines, config lines for browser and empty lines
             continue
-        data = line.split('\t')
+        data = line.split()
         if data[0] not in datadict:
             datadict[data[0]] = []
         datadict[data[0]].append((int(data[1]),int(data[2])))
