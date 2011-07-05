@@ -41,8 +41,8 @@ logging.basicConfig(level=20,
                     filemode="w"
                     )
 
-
-hgWiggle = 'hgWiggle'                   # hgWiggle executable in the system
+#hgWiggle = 'hgWiggle'                   # hgWiggle executable in the system
+bigWigSummary = 'bigWigSummary'
 
 # ------------------------------------
 # Misc functions
@@ -116,12 +116,12 @@ def main():
     
     files_phasdb = os.listdir('.')
     for file_phasdb in files_phasdb:
-        if file_phasdb.endswith('.wib'):
-            name = file_phasdb.rstrip('.wib')
+        if file_phasdb.endswith('.bw'):
+            name = file_phasdb.rstrip('.bw')
             phas_chrnames.append(name)
 
     if not phas_chrnames:
-        error("%s has no valid phastcons db wib&wig files!" % options.phasdb)
+        error("%s has no valid phastcons db bw files!" % options.phasdb)
         sys.exit(1)
         
     info("number of bed files: %d" % bedfilenum)
@@ -154,56 +154,41 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
         if c in bchrs:
             chrs.append(c)
 
-    sumscores = [0]*width
-    n = 0
-    tmpfname = tempfile.mkstemp(prefix="consplotscore")[1]
-    tmpbedfname = tempfile.mkstemp(prefix="consplotbed")[1]
-    # fix regions in bed file
+    sumscores = []
     for chrom in chrs:
         pchrom = bed.peaks[chrom]
         for i in range(len(pchrom)):
             mid = int((pchrom[i][0]+pchrom[i][1])/2)
             left = int(mid - width/2)
             right = int(mid + width/2)
-
+            
             if left < 0:
-                pchrom[i] = (0,width,1,1,1,1,1,1)
-            else:
-                pchrom[i] = (left,right,1,1,1,1,1,1)
+                left = 0
+                right = width
+                
+            args = [bigWigSummary, chrom+'.bw', chrom, str(left), str(right), str(width)]
+            p = subprocess.Popen(args,stdout=subprocess.PIPE)
+            dat = p.stdout.read()
+            if not dat:
+                continue
+            dat = dat.strip().split('\t')
+            sumscores.append(dat)
+            
+    sumscores = map(list, zip(*sumscores))
+    sumscores = [[float(tt) for tt in t if tt != 'n/a'] for t in sumscores]
+    conscores = [sum(t)/len(t) for t in sumscores]
 
-    bedfhd = open (tmpbedfname,'w')
-    bedfhd.write(bed.tobed())
-    bedfhd.close()
-
-    for chrom in chrs:
-        tmpf = open(tmpfname,'w')
-        info ("extract chromosome %s" % (chrom))
-        p = subprocess.Popen([hgWiggle,'-bedFile=%s' % tmpbedfname,chrom],stdout=tmpf)
-        p.communicate()
-        tmpf.close()
-
-        wio = WiggleIO.WiggleIO(open(tmpfname))
-        wtrack = wio.build_wigtrack()
-        wtrack.sort()
-
-        scores = bed.extract_wiggle_pv(wtrack)
-        add_scores ( sumscores, scores )
-        n +=  len(scores)
-    os.unlink(tmpfname)
-    os.unlink(tmpbedfname)
-    # calculate average score
-    return map(lambda x:float(x)/n, sumscores)
+    return  conscores #list of float with 3000 len
         
-    
-def add_scores ( sumscores, scores ):
-    """Calculate the avg scores for each positions in a width window.
-    
-    """
-    n = len(scores)
-    for score_win in scores:
-        for (p,s) in score_win:
-            sumscores[p-1] += s
-    return True
+#def add_scores ( sumscores, scores ):
+#    """Calculate the avg scores for each positions in a width window.
+#    
+#    """
+#    n = len(scores)
+#    for score_win in scores:
+#        for (p,s) in score_win:
+#            sumscores[p-1] += s
+#    return True
     
 def makeBmpFile(avgValues, wd, h,w, width, title, bedlabel):
     
