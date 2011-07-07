@@ -371,7 +371,7 @@ def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfile
     # run sitepro on wig
     inf = open(wig)
     for line in inf:
-        if not line:
+        if not line.strip():
             continue
         # read a chromosome
         if re.search(r'track',line):
