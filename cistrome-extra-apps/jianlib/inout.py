@@ -127,6 +127,8 @@ class Bed(object):
         type_coversion={'int':'l','float':'d'}
         self.bed={}
         for line in f.xreadlines():
+            if not line.strip():
+                continue
             if line.startswith('track') or line=='' or line=='\n' or line.startswith('#') or line.startswith('browser'):continue
             l=line.strip().split()
             
@@ -867,6 +869,8 @@ class Wig:
         chrom=''
         wig={}
         for line in fwig.xreadlines():
+            if not line.strip():
+                continue
             if re.search(r'track',line): 
                 try:
                     description=re.search(r'description="([A-Za-z0-9]+)"\s',line).group(1)
