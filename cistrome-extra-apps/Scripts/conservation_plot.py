@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-06-08 21:12:20 Tao Liu>
+# Time-stamp: <2011-07-15 21:12:20 Jian Ma>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -23,13 +23,18 @@ import os
 import sys
 import re
 import logging
-from optparse import OptionParser
-import urllib2
 import subprocess
-import tempfile
-import gzip
+import math
+from optparse import OptionParser
+
 from CistromeAP.taolib.CoreLib.Parser import WiggleIO, BedIO
 from CistromeAP.taolib.CoreLib.BasicStat.Func import * 
+
+try:
+    from bx.bbi.bigwig_file import BigWigFile
+except:
+    sys.stderr.write("Need bx-python!")
+    sys.exit()
 
 # ------------------------------------
 # constants
@@ -40,22 +45,16 @@ logging.basicConfig(level=20,
                     stream=sys.stderr,
                     filemode="w"
                     )
-
-#hgWiggle = 'hgWiggle'                   # hgWiggle executable in the system
-bigWigSummary = 'bigWigSummary'
+#bigWigSummary = 'bigWigSummary'
 
 # ------------------------------------
 # Misc functions
 # ------------------------------------
 
-error   = logging.critical		# function alias
-warn    = logging.warning
-debug   = logging.debug
-info    = logging.info
-
-# ------------------------------------
-# Classes
-# ------------------------------------
+error  = logging.critical		# function alias
+warn   = logging.warning
+debug  = logging.debug
+info   = logging.info
 
 # ------------------------------------
 # Main function
@@ -149,7 +148,6 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
     bchrs.sort()
 
     chrs = []
-
     for c in phas_chrnames:
         if c in bchrs:
             chrs.append(c)
@@ -157,6 +155,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
     sumscores = []
     for chrom in chrs:
         pchrom = bed.peaks[chrom]
+        bw = BigWigFile(open(chrom+'.bw'))
         for i in range(len(pchrom)):
             mid = int((pchrom[i][0]+pchrom[i][1])/2)
             left = int(mid - width/2)
@@ -165,20 +164,19 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
             if left < 0:
                 left = 0
                 right = width
-                
-            args = [bigWigSummary, chrom+'.bw', chrom, str(left), str(right), str(width)]
-            p = subprocess.Popen(args,stdout=subprocess.PIPE)
-            dat = p.stdout.read()
-            if not dat:
+            
+            summarize = bw.summarize(chrom, left, right, width)
+            if not summarize:
                 continue
-            dat = dat.strip().split('\t')
+            dat = summarize.sum_data / summarize.valid_count
+            #dat = dat.strip().split('\t')
             sumscores.append(dat)
             
     sumscores = map(list, zip(*sumscores))
-    sumscores = [[float(tt) for tt in t if tt != 'n/a'] for t in sumscores]
+    sumscores = [[t2 for t2 in t if not math.isnan(t2)] for t in sumscores]
     conscores = [sum(t)/len(t) for t in sumscores]
 
-    return  conscores #list of float with 3000 len
+    return  conscores
         
 #def add_scores ( sumscores, scores ):
 #    """Calculate the avg scores for each positions in a width window.
@@ -229,7 +227,6 @@ def makeBmpFile(avgValues, wd, h,w, width, title, bedlabel):
     #executing the R file and forming the pdf file
     data = subprocess.call(['Rscript',fileName+'.R'])
 
-    
 if __name__ == '__main__':
     try:
         main()
