@@ -32,7 +32,7 @@ def check_settings_file():
     if os.path.isfile("lib/settings.py"):
         pass
     else:
-        std.stderr.write("CRITICAL: Please copy the lib/settings.py.sample to lib/settings.py, and modify the ASSEMBLY_DIR setting!")
+        sys.stderr.write("CRITICAL: Please copy the lib/settings.py.sample to lib/settings.py, and modify the ASSEMBLY_DIR setting!")
         sys.exit(1)
 
 def main():
