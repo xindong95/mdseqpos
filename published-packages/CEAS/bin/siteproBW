@@ -290,6 +290,8 @@ def main():
             for line in bedlist:
                 center = (int(line[1])+int(line[2]))/2
                 prange = (center-opts.span, center+opts.span)
+                if prange[0] <= 0 or prange[1] <= 0:
+                    continue
                 summarize = bw.summarize(line[0], prange[0], prange[1], 2*opts.span/opts.pf_res)
                 if not summarize:
                     continue

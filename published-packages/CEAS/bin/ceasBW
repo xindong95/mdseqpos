@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 """Module Description
 
@@ -224,25 +224,22 @@ def main():
         FIRST=True
         fixedStep = False		# variableStep == True: variableStep Wig, False: fixedStep
         
-        # begin to deal with the bw file
-        bw=BigWigFile(open(options.wig)) # use bx-python to get the information in bw file
-        chroms_lens=get_chroms_lens(options.length_file) # length of chromsomes is unknown in bw file
+
         
-        # read the bw file one chromsome by one chromsome in the selected chromsomes
+        bw=BigWigFile(open(options.wig))
+        chroms_lens=get_chroms_lens(options.length_file)
         for one_chr in chroms_GeneT:
             newchrom=one_chr
-            one_chr_len=long(chroms_lens[one_chr]) # transform from string to long integer
-            chr_wigglelike_dump_list=bw.get(one_chr,0,one_chr_len) 
-            if chr_wigglelike_dump_list==None: 
-                # if there is no information in the bw file for this chromsome, continue
+            one_chr_len=long(chroms_lens[one_chr])
+            chr_wigglelike_dump_list=bw.get(one_chr,0,one_chr_len)
+            if chr_wigglelike_dump_list==None:
                 continue
             
             for line in chr_wigglelike_dump_list:
+                # split the line
+                l=(line[0],line[2])
 
-                l=(line[0],line[2]) 
-                # extract chromsomes positions and data values, which are the first and third column
-
-                # the beginning
+            # the beginning
                 if chrom=='' and chrom!=newchrom:
                     # if the chromosome is not in gene table, continue
                     chrom=newchrom
