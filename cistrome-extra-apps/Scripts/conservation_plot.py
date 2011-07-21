@@ -155,7 +155,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
     sumscores = []
     for chrom in chrs:
         pchrom = bed.peaks[chrom]
-        bw = BigWigFile(open(chrom+'.bw'))
+        bw = BigWigFile(open(chrom+'.bw', 'rb'))
         for i in range(len(pchrom)):
             mid = int((pchrom[i][0]+pchrom[i][1])/2)
             left = int(mid - width/2)

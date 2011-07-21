@@ -280,7 +280,7 @@ def main():
     super_confid_interval = []
     
     for iw in range(len(opts.wig)):
-        bw = BigWigFile(open(opts.wig[iw]))
+        bw = BigWigFile(open(opts.wig[iw], 'rb'))
         #avg_siteprofs = []
         ibed = 0
         for ib in range(len(opts.bed)):
