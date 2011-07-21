@@ -274,7 +274,7 @@ def main():
     opts=opt_validate(prepare_optparser())
     info ("\n" + opts.argtxt)
 
-    sitebreaks = range(-opts.span, -opts.span + (2*opts.span/opts.pf_res)*opts.pf_res, opts.pf_res)
+    sitebreaks = range(-opts.span, opts.span+1 , opts.pf_res)
     
     super_avg_siteprofs = []
     super_confid_interval = []
@@ -292,7 +292,7 @@ def main():
                 prange = (center-opts.span, center+opts.span)
                 if prange[0] <= 0 or prange[1] <= 0:
                     continue
-                summarize = bw.summarize(line[0], prange[0], prange[1], 2*opts.span/opts.pf_res)
+                summarize = bw.summarize(line[0], prange[0], prange[1], 2*opts.span/opts.pf_res+1)
                 if not summarize:
                     continue
                 valid_bedlist.append(line)
