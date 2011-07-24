@@ -1263,10 +1263,10 @@ def step8_package_result ( configs ):
     if configs["sample.species"]!= "mm":
 
         info("now calcualting velcro peak overlap...........")
-        #179_peaks.bed
-        #the bed file looks like this
+        # 179_peaks.bed
+        # the bed file looks like this
     
-        #configs["sample.sample_id"]
+        # configs["sample.sample_id"]
         velcro_path = "/opt/bin/wgEncodeHg19ConsensusSignalArtifactRegions.bed"
         command_line = "intersectBed -a "+configs["sample.sample_id"]+"_peaks.bed -b "+velcro_path+" -wa >  velcro_peaks.bed"
         run_cmd(command_line)
@@ -1276,7 +1276,7 @@ def step8_package_result ( configs ):
 
         f=open(configs["sample.sample_id"]+"_peaks.bed","rU").readlines()
         all_peak = len(f)
-        #this is the result and should be included in the summery report
+        # this is the result and should be included in the summery report
         velcro_percent = float(velcro_len)/float(all_peak)
 
     if configs["others.startstep"] <= 8 and 8 <= configs["others.endstep"]:
@@ -1309,7 +1309,7 @@ def step8_package_result ( configs ):
     a(configs["ceas.output_xls"])
     # a(configs["ceas.output_pdf"])
 
-    #hanfei sun adds here
+    # hanfei sun adds here
     # a(configs["ceas.output_pdf_extra"])
 
     a(configs["ceas.output_R"])
@@ -1339,8 +1339,8 @@ def step8_package_result ( configs ):
     f.close()
 
     # this part is to write a summary file
-    #edited by bo and three lines below are romved
-    #these lines are mainly wig 
+    # edited by bo and three lines below are romved
+    # these lines are mainly wig 
     sum_fhd = open("sample"+configs["sample.sample_id"]+"_summary.txt","w")
     sum_content = """# This file summarizes the output from pipeline. Use ConfigParser to parse it.
 [replicates]
@@ -1370,7 +1370,7 @@ seqpos_zip = %s
 """ % (
 ",".join(configs["samtools.treat_output_replicates"]),
 ",".join(configs["macs.output_bed_replicates"]),
-#",".join(configs["macs.output_treat_wig_replicates"]),
+# ",".join(configs["macs.output_treat_wig_replicates"]),
 ",".join(configs["macs.output_treat_bw_replicates"]),
 configs["sample.sample_id"],
 configs["sample.username"],
@@ -1379,7 +1379,7 @@ configs["samtools.control_output"],
 configs["macs.output_xls"],
 configs["macs.output_bed"],
 configs["macs.output_summits"],
-#configs["macs.output_treat_wig"],
+# configs["macs.output_treat_wig"],
 configs["macs.output_treat_bw"],
 #configs["macs.output_control_wig"],
 configs["macs.output_control_bw"],
