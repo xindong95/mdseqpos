@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Time-stamp: <2011-03-26 23:48:03 Tao Liu>
+# Time-stamp: <2011-07-21 02:34:25 sunhf>
 
 """Script Description: A demo ChIP-seq pipeline script. From reads
 mapping to motif analysis. It will do 4 validity checks before running
@@ -344,7 +344,13 @@ def prepare_output_file_names ( configs ):
 
     configs["ceas.output_xls"] =  sampleid+"_ceas.xls"
     configs["ceas.output_pdf"] = sampleid+"_ceas.pdf"
+
+    #hanfei sun adds here
+    configs["ceas.output_pdf_extra"] = sampleid+"_ceas_CI.pdf"
+    configs["ceas.output_pdf_combined"] =sampleid+"_ceas_combined.pdf"
+    
     configs["ceas.output_R"] = sampleid+"_ceas.R"    
+    configs["ceas.output_R_extra"] = sampleid+"_ceas_CI.R"
 
     configs["venn.replicates_output_png"] = sampleid+"_venn_replicates.png"
     #configs["venn.dhs_output_png"] = sampleid+"_venn_dhs.png"
@@ -998,11 +1004,22 @@ def step3_ceas (configs):
         ceas_rel_dist_option = ""
     ceas_name_option = " --name "+configs["sample.sample_id"]+"_ceas "
     
+ 
     #note: this is hard-coded and for human only
     #need to change the -l function later
     command_line = configs["ceas.ceas_main"]+ceas_name_option+ceas_gt_option+ceas_sizes_option+ceas_bisizes_option+ceas_rel_dist_option+" -b "+peak_bed_file+" -w "+wiggle_file+ " -l /mnt/Storage/data/sync_cistrome_lib/chromLen/hg19.len"
     run_cmd(command_line)
-    
+
+
+    #hanfei Sun adds here to include exon-CEAS
+    command_line_extra = "/opt/bin/ceas-exon"+ceas_name_option+ceas_gt_option+ceas_sizes_option+ceas_bisizes_option+ceas_rel_dist_option+" -b "+peak_bed_file+" -w "+wiggle_file
+    run_cmd(command_line_extra)
+
+
+    #hanfei Sun adds here to combine two pdf file(need ghostscript)
+    command_line_extra_combine = "gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=%s -f %s %s" %(configs["ceas.output_pdf_combined"], configs["ceas.output_pdf"], configs["ceas.output_pdf_extra"]) 
+    run_cmd(command_line_extra_combine)
+
     return True
 
 def step4_venn (configs):
@@ -1130,7 +1147,7 @@ def step5_cor (configs):
                    " -r "+configs["correlation.output_R"]+" "+" ".join(wiggle_file_replicates)+\
                    " "+" ".join(map(lambda x:"-l replicate_"+str(x),xrange(1,configs["data.number_replicates"]+1)))
     run_cmd(command_line)
-    command_line = "/usr/bin/Rscript "+configs["correlation.output_R"]
+    command_line = "Rscript "+configs["correlation.output_R"]
     run_cmd(command_line)
 
     return True
@@ -1157,6 +1174,8 @@ def step6_conserv (configs):
     run_cmd(command_line)
     command_line = "mv png.R "+configs["conservation.output_R"]
     run_cmd(command_line)
+    run_cmd("convert -resize 500x500 -density 50  pdf.pdf png.png")
+    #need imagemagick,added by hanfei
     command_line = "mv png.png "+configs["conservation.output_bmp"]
     run_cmd(command_line)
     return True
@@ -1237,8 +1256,10 @@ def step7_seqpos (configs):
     return True
 
 def step8_package_result ( configs ):
-    #edited by bo
-    #check percentage of velcro peaks
+    """Package result and generate a summary file. -> a subfolder
+    named as sample#sample_id and zip it as sample#sample_id.tar.bz2
+
+    """
     if configs["sample.species"]!= "mm":
 
         info("now calcualting velcro peak overlap...........")
@@ -1257,14 +1278,7 @@ def step8_package_result ( configs ):
         all_peak = len(f)
         #this is the result and should be included in the summery report
         velcro_percent = float(velcro_len)/float(all_peak)
-        
 
-
-
-    """Package result and generate a summary file. -> a subfolder
-    named as sample#sample_id and zip it as sample#sample_id.tar.bz2
-
-    """
     if configs["others.startstep"] <= 8 and 8 <= configs["others.endstep"]:
         info("Step 8: Packaging results...")
     else:
@@ -1293,8 +1307,15 @@ def step8_package_result ( configs ):
     #a(configs["macs.output_control_wig"])
     a(configs["macs.output_control_bw"])    
     a(configs["ceas.output_xls"])
-    a(configs["ceas.output_pdf"])
+    # a(configs["ceas.output_pdf"])
+
+    #hanfei sun adds here
+    # a(configs["ceas.output_pdf_extra"])
+
     a(configs["ceas.output_R"])
+    a(configs["ceas.output_R_extra"])    
+    a(configs["ceas.output_pdf_combined"])
+
     a(configs["venn.replicates_output_png"])
     a(configs["bedtools.dhs_output_txt"])
     a(configs["correlation.output_pdf"])
@@ -1386,7 +1407,7 @@ __summarize_peaks(configs["macs.output_xls"]),
 d_value
 )
     sum_fhd.write(sum_content2)
-    #edited by bo
+    #edited by bo at 7.24
     if configs["sample.species"]!= "mm":
         sum_content3 = "verlcro overlap peak number is: "+str(velcro_len)+"\n"
         sum_content4 = "verlcro overlap percentage is: " +str(velcro_percent*100)+"%"+"\n"
