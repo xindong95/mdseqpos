@@ -128,6 +128,10 @@ def main():
     info("#2 num of union regions: %d" % union.total())
     info("#2 extract scores in first replicate")
     pscore1 = union.extract_binkeepers_pv(bk1)
+    #pscore1['chr7'] = [
+    #[(90529L, 2.0), (90561L, 2.0), (90593L, 4.0)],   # <- score for eack peak
+    #[(90529L, 2.0), (90561L, 2.0)],
+    #...]
     info("#2 extract scores in second replicate")    
     pscore2 = union.extract_binkeepers_pv(bk2)
     #info("#2 num of points %d and %d" % (len(pscore1),len(pscore2)))
