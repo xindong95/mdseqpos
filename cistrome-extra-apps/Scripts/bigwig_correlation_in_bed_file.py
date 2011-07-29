@@ -30,7 +30,7 @@ from optparse import OptionParser
 import subprocess
 #from CistromeAP.taolib.CoreLib.Parser import WiggleIO, BedIO
 from CistromeAP.taolib.CoreLib.BasicStat.Func import * 
-from jianlib.BwReader import BwIO
+from CistromeAP.jianlib.BwReader import BwIO
 try:
     from bx.bbi.bigwig_file import BigWigFile
 except:

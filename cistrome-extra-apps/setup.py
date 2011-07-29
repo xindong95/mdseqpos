@@ -52,11 +52,15 @@ def main():
               'Scripts/wigToBed.py',
               'Scripts/wigLiftover.py',
               'Scripts/standardize_wig.py',
-              'Scripts/venn_diagram.py',              
+              'Scripts/venn_diagram.py', 
+              'Scripts/qc_chIP_peakBW.py',
               # Jian's codes
               'Scripts/prof_sort.py',
               'Scripts/PCGA.py',
               'Scripts/heatmapr',
+              'Scripts/heatmaprBW',
+              'Scripts/bigwig_correlation_in_bed_file.py',
+              'Scripts/bigwig_correlation.py',
               # Len's codes
               'Scripts/expressPkgr.py',
               ],
