@@ -942,21 +942,17 @@ class MotifList(list):
         list.append(self, index, value)
         self.check_type()
 
-    def cull(self, pvalcutoff=0.001, maxmotifs=0):
+    def cull(self, pvalcutoff=0.001):
         """Filter the list based on the pvalue and the max number
         of motifs allowed in the list"""
-        sig_motifs = filter(lambda m: m.seqpos_results['pvalue'] <= pvalcutoff,
-                            self)
-        if maxmotifs > 0:
-            if len(sig_motifs) > maxmotifs:
-                #sort and return top maxmotifs
-                sorted_motifs = sorted(sig_motifs, key = lambda elem: elem.seqpos_results['zscore'])
-                del sorted_motifs[maxmotifs:]
-                return MotifList(sorted_motifs)
-            else:
-                return MotifList(sig_motifs)
-        else:
-            return MotifList(sig_motifs)
+        sig_motifs = filter(lambda m: m.seqpos_results['pvalue'] <= pvalcutoff, self)
+        return MotifList(sig_motifs)
+
+    def filterByMaxmotifs(self, maxmotifs=0):
+        #sort and return top maxmotifs
+        sorted_motifs = sorted(self, key = lambda elem: elem.seqpos_results['zscore'])
+        del sorted_motifs[maxmotifs:]
+        return MotifList(sorted_motifs)
 
     def filterBySpecies(self, species_list):
         """Filter the list by the species in species_list"""

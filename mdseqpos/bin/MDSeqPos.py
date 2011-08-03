@@ -132,7 +132,7 @@ if __name__ == '__main__':
     all_motifs.seqpos(chip_regions, width=width)
 
     #cull the motifs
-    sig_motifs = all_motifs.cull(pvalcutoff, maxmotif)
+    sig_motifs = all_motifs.cull(pvalcutoff)
 
     print len(sig_motifs),"out of",len(all_motifs),"are significantly near peak centers."
 
@@ -140,6 +140,10 @@ if __name__ == '__main__':
     if opts.species_list is not None:
         species_list = opts.species_list.split(',')
         sig_motifs = sig_motifs.filterBySpecies(species_list)
+    
+    #filter by maxmotif
+    if maxmotif > 0 and len(sig_motifs) > maxmotifs:
+        sig_motifs = sig_motifs.filterBySpecies(maxmotif)
     
     if sig_motifs is not None:
         # set motif to cluster on ( source motif from database or observed motif )
