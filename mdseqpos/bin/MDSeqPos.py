@@ -87,7 +87,7 @@ if __name__ == '__main__':
         known_motifs_file_names = [os.path.join(opts.known_motifs_directory,
                                                 name)
                                    for name in opts.known_motifs.split(",")]
-
+        
         # retrieve known motifs from known motifs XML file
         known_motifs = MotifList()
         for motif_db in known_motifs_file_names:

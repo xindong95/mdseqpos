@@ -950,9 +950,11 @@ class MotifList(list):
         if maxmotifs > 0:
             if len(sig_motifs) > maxmotifs:
                 #sort and return top maxmotifs
-                sorted_motifs = sorted(self, key = lambda elem: elem.seqpos_results['zscore'])
+                sorted_motifs = sorted(sig_motifs, key = lambda elem: elem.seqpos_results['zscore'])
                 del sorted_motifs[maxmotifs:]
                 return MotifList(sorted_motifs)
+            else:
+                return MotifList(sig_motifs)
         else:
             return MotifList(sig_motifs)
 
