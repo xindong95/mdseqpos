@@ -142,8 +142,8 @@ if __name__ == '__main__':
         sig_motifs = sig_motifs.filterBySpecies(species_list)
     
     #filter by maxmotif
-    if maxmotif > 0 and len(sig_motifs) > maxmotifs:
-        sig_motifs = sig_motifs.filterBySpecies(maxmotif)
+    if maxmotif > 0 and len(sig_motifs) > maxmotif:
+        sig_motifs = sig_motifs.filterByMaxmotifs(maxmotif)
     
     if sig_motifs is not None:
         # set motif to cluster on ( source motif from database or observed motif )
