@@ -711,6 +711,11 @@ class Motif:
         else:
             factors = "'factors':[]"
 
+        if self.dbd:
+            dbd = "'dbd':'%s'" % self.dbd
+        else:
+            dbd = "'dbd':'None'"
+
         if self.entrez is not None and len(self.entrez) > 0:
             entrez = "'entrezs':[%s]" % ','.join(["'%s'" % s for s in self.entrez])
         else:
@@ -745,7 +750,7 @@ class Motif:
         #since it is a relative path, parse out the dst_dir, from logoImg path
         logoImg = logoImg.replace(dst_dir, "")
         
-        return "{"+id+", "+factors+','+entrez+','+refseqs+','+species+\
+        return "{"+id+", "+factors+','+dbd+','+entrez+','+refseqs+','+species+\
                ", 'consensus':'None', 'pssm':"+self.pssm_to_json()+\
                ", 'logoImg':'"+logoImg+"', 'hits':"+hits+", 'cutoff':"+cutoff+\
                ", 'zscore':"+zscore+", 'pval':"+pvalue+", 'position':"+mu+"}"

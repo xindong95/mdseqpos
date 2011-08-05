@@ -148,7 +148,7 @@ function shortenConsensus(consensus, row_scores) {
 }
 
 function Motif(paramObjs) {	
-    this.fields = ["id", "factors", "entrezs", "refseqs", "species", 
+    this.fields = ["id", "factors", "dbd", "entrezs", "refseqs", "species", 
 		   "consensus", "pssm", "logoImg", "hits", "cutoff", "zscore",
 		   "pval", "position"];
     var outer = this;

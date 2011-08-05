@@ -29,7 +29,7 @@ function MotifTableView(motifs, container) {
 	outer.imgMap[field].src = imgSrc;
     }
 
-    this.fields = ["id", "factors", "consensus", "hits", "cutoff", 
+    this.fields = ["id", "factors", "dbd", "consensus", "hits", "cutoff", 
 		   "zscore", "pval", "position"];    
     this.makeHTML = function() {
 	var tbl = document.createElement('table');
@@ -41,7 +41,14 @@ function MotifTableView(motifs, container) {
 	    var field = outer.fields[i];
 	    var tmp = document.createElement('th');
 	    var span = document.createElement('span');
-	    span.innerHTML = (field != "pval") ? field:"-10*log(pval)";
+	    if (field == "pval") {
+		span.innerHTML = "-10*log(pval)";
+	    } else if (field == "dbd") {
+		span.innerHTML = "DNA BindDom";
+	    } else {
+		span.innerHTML = field;
+	    }
+	    //span.innerHTML = (field != "pval") ? field:"-10*log(pval)";
 	    tmp.appendChild(span);
 	    var img = document.createElement("img");
 	    img.src = 'down.png';
@@ -218,7 +225,7 @@ function dumpTable() {
 
         //build the table:
         var txtTbl = "";
-        var fields = ["id", "factors", "consensus", "hits", "cutoff",
+        var fields = ["id", "factors", "dbd", "consensus", "hits", "cutoff",
                       "zscore", "pval", "position"];
         //build table header
         for (var i=0; i < fields.length; i++) {
