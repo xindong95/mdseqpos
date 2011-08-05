@@ -243,6 +243,10 @@ function initPage(){
 					document.getElementById('motif_table'));
     motifTableView.init();
 
+    //init the table to be sorted by zscore
+    motifTableView.colClickCntlr.setColumn("zscore");
+    motifTableView.setImg("zscore");
+
     //A reset button to restore the table to a default state
     rst_btn = document.getElementById('reset_btn');
     if (rst_btn != null) {
