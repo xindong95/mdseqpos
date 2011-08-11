@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2010-12-16 12:53:17 Tao Liu>
+# Time-stamp: <2011-08-11 17:08:56 Tao Liu>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -144,7 +144,7 @@ def main():
             (s,e)=chrom_bins[c]
             # find the chromosome name
             if p>=s and p<e:
-                ofhd.write("%s\t%d\t%d\n" % (c,p,p+wd))
+                ofhd.write("%s\t%d\t%d\n" % (c,p-s,p-s+wd))
                 break
     ofhd.close()
 
