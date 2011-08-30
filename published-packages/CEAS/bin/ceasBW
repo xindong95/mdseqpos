@@ -803,8 +803,11 @@ def opt_validate (optparser):
     elif not options.gdb:
         error('A gene table file must be given through -g (--gt).')
         sys.exit(1)
-    elif options.gdb and not options.bed and not options.wig:
+    elif not options.bed and not options.wig:
         error('Either a BED file or a WIG file must be given.')
+        sys.exit(1)
+    elif not options.length_file:
+        error('The length file for the chromosomes must be given.(-l)')
         sys.exit(1)
    
     ##
