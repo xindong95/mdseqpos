@@ -1,8 +1,8 @@
-# Time-stamp: <2010-12-14 21:09:15 Tao Liu>
+# Time-stamp: <2011-02-14 15:49:14 Tao Liu>
 
 """Module Description
 
-Copyright (c) 2008 Tao Liu <taoliu@jimmy.harvard.edu>
+Copyright (c) 2008,2009,2010,2011 Hyunjin Shin, Tao Liu <taoliu@jimmy.harvard.edu>
 
 This code is free software; you can redistribute it and/or modify it
 under the terms of the BSD License (see the file COPYING included with
@@ -17,8 +17,8 @@ the distribution).
 # ------------------------------------
 # python modules
 # ------------------------------------
-from math import exp,log,sqrt
-
+from math import exp
+from math import log
 # ------------------------------------
 # constants
 # ------------------------------------
@@ -28,6 +28,8 @@ EXPSTEP  = exp(-LSTEP)
 # ------------------------------------
 # Misc functions
 # ------------------------------------
+
+import math
 
 def normal_01_cdf ( x ):
     """NORMAL_01_CDF evaluates the Normal 01 CDF.
@@ -111,7 +113,7 @@ def normal_cdf_inv(p, mu = None, sigma2 = None, lower=True):
             r = 1 - p
         
         if r > 0:
-            r = sqrt(- log(r))
+            r = math.sqrt(- math.log(r))
             ppnd = (((c3 * r + c2) * r + c1) * r + c0) / ((d2 * r + d1) * r + 1)
             
             if q < 0:
@@ -123,7 +125,7 @@ def normal_cdf_inv(p, mu = None, sigma2 = None, lower=True):
         ppnd = - ppnd
     
     if mu != None and sigma2 != None:
-        return ppnd * sqrt(sigma2) + mu
+        return ppnd * math.sqrt(sigma2) + mu
     else:
         return ppnd
 
@@ -131,7 +133,7 @@ def normal_cdf (z, mu = 0.0, sigma2 = 1.0, lower=True):
     
     upper = not lower
 
-    z = (z - mu) / sqrt(sigma2)
+    z = (z - mu) / math.sqrt(sigma2)
     
     ltone = 7.0
     utzero = 18.66
@@ -166,7 +168,7 @@ def normal_cdf (z, mu = 0.0, sigma2 = 1.0, lower=True):
     if z <= ltone or upper and z <= utzero:
         y = 0.5 * z * z
         if z > con:
-            alnorm = b1 * exp(- y) / (z - b2 + b3 / (z + b4 + b5 / (z - b6 + b7 / (z + b8 - b9 / (z + b10 + b11 / (z + b12))))))
+            alnorm = b1 * math.exp(- y) / (z - b2 + b3 / (z + b4 + b5 / (z - b6 + b7 / (z + b8 - b9 / (z + b10 + b11 / (z + b12))))))
         else:
             alnorm = 0.5 - z * (a1 - a2 * y / (y + a3 - a4 / (y + a5 + a6 / (y + a7))))
     else:

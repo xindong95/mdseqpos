@@ -1,7 +1,0 @@
-MANIFEST
-build/*
-dist/*
-*.pyc
-*.c
-*~
-test/*

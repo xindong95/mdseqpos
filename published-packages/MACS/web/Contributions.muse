@@ -1,9 +1,0 @@
-#title Contributions
-
-Here list some tools contributed by our collaborators and users.
-
-* Format convertion
- - [[/MACS/contrib/csfasta2eland.zip][SOLiD csfasta.ma file to ELAND format converter]], contributed by Giles Hall
-
-* Sub peaks problem
- - [[/MACS/contrib/Subpeaks.jar][Subpeaks tool]], contributed by Mali Salmon-Divon in EMBL-EBI.

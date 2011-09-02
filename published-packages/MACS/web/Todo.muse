@@ -1,7 +1,0 @@
-#title TODO list
-
-* Consider the consistency between replicats.
-
-* Provide a mappable genome size table for various species.
-
-* Polish the code.

@@ -1,8 +1,8 @@
-# Time-stamp: <2010-09-21 15:47:30 Tao Liu>
+# Time-stamp: <2011-02-16 00:34:08 Tao Liu>
 
 """Module Description
 
-Copyright (c) 2010 Tao Liu <taoliu@jimmy.harvard.edu>
+Copyright (c) 2010,2011 Tao Liu <taoliu@jimmy.harvard.edu>
 
 This code is free software; you can redistribute it and/or modify it
 under the terms of the BSD License (see the file COPYING included with
@@ -233,12 +233,16 @@ def opt_validate ( optparser ):
     else:
         options.argtxt += "# Range for calculating regional lambda is: %d bps\n" % (options.largelocal)
 
-    # wig file?
-    subdir = options.name+"_MACS_wiggle"
-    if options.store_wig:
+    # wig or bdg subdir
+    if options.store_wig or options.store_bdg:
+        if options.store_bdg:
+            # bdg has higher priority
+            subdir = options.name+"_MACS_bedGraph"
+        elif options.store_wig:
+            subdir = options.name+"_MACS_wiggle"
         # check subdir
         if os.path.exists(subdir):
-            options.error("./%s exists! Unable to create directory to store wiggle file!!" % (subdir))
+            options.error("./%s exists! Unable to create directory to store profiles!!" % (subdir))
             sys.exit(1)
         else:
             options.wig_dir_tr = subdir+"/treat/"

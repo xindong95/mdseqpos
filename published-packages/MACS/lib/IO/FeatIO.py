@@ -1,8 +1,8 @@
-# Time-stamp: <2010-07-14 23:07:44 Tao Liu>
+# Time-stamp: <2011-03-02 17:28:15 Tao Liu>
 
 """Module for Feature IO classes.
 
-Copyright (c) 2010 Tao Liu <taoliu@jimmy.harvard.edu>
+Copyright (c) 2010,2011 Tao Liu <taoliu@jimmy.harvard.edu>
 
 This code is free software; you can redistribute it and/or modify it
 under the terms of the Artistic License (see the file COPYING included
@@ -24,13 +24,16 @@ import struct
 from array import array
 from random import sample as random_sample
 from operator import itemgetter
+from math import sqrt
+
 from MACS14.Constants import *
+
 # ------------------------------------
 # constants
 # ------------------------------------
 __version__ = "FeatIO $Revision$"
 __author__ = "Tao Liu <taoliu@jimmy.harvard.edu>"
-__doc__ = "PeakIO, FWTrackI, TrackI, WigTrackI and BinKeeperI classes"
+__doc__ = "PeakIO, FWTrackI, TrackI, and WigTrackI classes"
 
 # ------------------------------------
 # Misc functions
@@ -256,7 +259,7 @@ class FWTrackII:
         """Add a location to the list according to the sequence name.
         
         chromosome -- mostly the chromosome name
-        fiveendpos -- 5' end pos, left for plus strand, neg for neg strand
+        fiveendpos -- 5' end pos, left for plus strand, right for neg strand
         strand     -- 0: plus, 1: minus
         """
         if not self.__locations.has_key(chromosome):
@@ -454,7 +457,7 @@ class FWTrackI:
         """Add a location to the list according to the sequence name.
         
         chromosome -- mostly the chromosome name
-        fiveendpos -- 5' end pos, left for plus strand, neg for neg strand
+        fiveendpos -- 5' end pos, left for plus strand, right for neg strand
         strand     -- 0: plus, 1: minus
         """
         if not self.__locations.has_key(chromosome):
@@ -707,11 +710,17 @@ class WigTrackI:
         """Naive sorting for tags. After sorting, counts are massed
         up.
 
-        Note: counts are massed up, so they will be set to 1 automatically.
         """
         for k in self.__data.keys():
-            self.__data[k] = sorted(self.__data[k])
-            
+            (p,v) = self.__data[k]
+            pv = zip(p,v)
+            pv = sorted(pv)
+            self.__data[k] = [array(BYTE4,[]),array(FBYTE4,[])]
+            pappend = self.__data[k][0].append
+            vappend = self.__data[k][1].append
+            for (tp,tv) in pv:
+                pappend(tp)
+                vappend(tv)
 
     def get_data_by_chr (self, chromosome):
         """Return array of counts by chromosome.
@@ -737,8 +746,8 @@ class WigTrackI:
 
         shift will be used to shift the coordinates. default: 0
         """
+        fhd.write("track type=wiggle_0 name=\"%s\" description=\"%s\"\n" % (name,name))
         chrs = self.get_chr_names()
-        fhd.write("track type=wiggle_0 name=\"%s\"\n" % (name))
         for chrom in chrs:
             fhd.write("variableStep chrom=%s span=%d\n" % (chrom,self.span))
             (p,s) = self.__data[chrom]
@@ -981,6 +990,134 @@ class WigTrackI:
                 pass
         return ret
 
+    def summary (self):
+        """Calculate the sum, max, min, mean, and std. Return a tuple for (sum, max, min, mean, std).
+        
+        """
+        n_v = 0
+        sum_v = 0
+        max_v = -100000
+        min_v = 100000
+        for (p,v) in self.__data.values():
+            sum_v += sum(v)
+            n_v += len(v)
+            max_v = max(max(v),max_v)
+            min_v = min(min(v),min_v)
+        mean_v = float(sum_v)/n_v
+        variance = 0.0
+        for (p,v) in self.__data.values():
+            for vv in v:
+                tmp = vv-mean_v
+                variance += tmp*tmp
+        variance /= float(n_v-1)
+        std_v = sqrt(variance)
+        return (sum_v, max_v, min_v, mean_v, std_v)
+
+    def null_model_summary (self, sample=10):
+        """Calculate the sum, max, min, mean, and std. Return a tuple for (sum, max, min, mean, std).
+
+        This is for NULL model which is a symetric normal distribution
+        abased on sample of the whole data set.
+        """
+        # sample data step
+        data_step = int(100/sample)
+
+        null_list = array(FBYTE4,[])
+        na = null_list.append
+        for (p,v) in self.__data.values():
+            i = 0
+            for vv in v:
+                i+=1
+                if i==data_step:
+                    na(vv)
+                    i=0
+                
+        
+        sum_v = sum(null_list)
+        mean_v = sum_v/float(len(null_list))
+
+        null_list_len = len(null_list)
+        null_list = sorted(null_list)
+        median_index1 = (null_list_len - 1) / 2
+        median_index2 = null_list_len / 2
+        median_v = (null_list[median_index1]+null_list[median_index2])/2.0
+
+        # make right part of nullList
+
+        for i in xrange(null_list_len/2):
+            null_list[null_list_len-i-1] = 2* median_v - null_list[i]
+        
+        std_v = std(null_list)
+
+        return (sum_v,max(null_list),min(null_list),median_v,std_v)
+
+    def normalize (self,null=False,sample_percent=10):
+        """Normalize values centered at 0 and variance as 1.
+
+        If null is True, it will use the null list to calculate mean and std.
+        When null is True, sample_percent will be passed to null_model to sample the data.
+        """
+        if null:
+            (sum_v,max_v,min_v,mean_v,std_v) = self.null_model_summary(sample=sample_percent)
+        else:
+            (sum_v,max_v,min_v,mean_v,std_v) = self.summary()
+        for (p,v) in self.__data.values():
+            for i in range(len(v)):
+                v[i] = float(v[i]-mean_v)/std_v
+        return (sum_v, max_v, min_v, mean_v, std_v)
+                
+
+    def call_peaks (self, cutoff=1, up_limit=1e310, min_length=200, max_gap=50):
+        """This function try to find some region within which, scores
+        are continuously higher than a cutoff.
+
+        cutoff:  cutoff of value, default 1
+        min_length :  minimum peak length, default 200
+        gap   :  maximum gap to merge nearby peaks
+        """
+        chrs = self.get_chr_names()
+        peaks = PeakIO()                      # dictionary to save peaks
+        for chrom in chrs:
+            (ps,ss) = self.get_data_by_chr(chrom)
+            psn = iter(ps).next         # assign the next function to a virable to speed up
+            ssn = iter(ss).next
+            x = 0
+            while True:
+                # find the first point above cutoff
+                try:
+                    p = psn()
+                    s = ssn()
+                except:
+                    break
+                x += 1                  # index for the next point
+                if s >= cutoff and s<=up_limit:
+                    peak_content = [(p,s),]
+                    break               # found the first point above cutoff
+
+            for i in range(x,len(ps)):
+                p = psn()
+                s = ssn()
+                if s < cutoff or s > up_limit:
+                    continue
+                # for points above cutoff
+                if p - peak_content[-1][0] <= max_gap:
+                    peak_content.append((p,s))
+                else:
+                    # a new peak
+                    peak_length = peak_content[-1][0]-peak_content[0][0]+self.span
+                    if peak_length >= min_length:
+                        summit = None
+                        summit_score = None
+                        for (m,n) in peak_content:
+                            if not summit_score or summit_score < n:
+                                summit = m
+                                summit_score = n
+                        peaks.add(chrom,peak_content[0][0],peak_content[-1][0]+self.span,
+                                  summit=summit-peak_content[0][0],peak_height=summit_score)
+                        #print chrom,peak_content[0][0],peak_content[-1][0]+self.span,peak_length
+                    peak_content = [(p,s),]
+        return peaks
+
     def total (self):
         t = 0
         chrs = set(self.__data.keys())
@@ -989,99 +1126,291 @@ class WigTrackI:
             t += len(p)
         return t
 
-class BinKeeperI:
-    """BinKeeper keeps point data from a chromosome in a bin list.
 
-    Example:
-    >>> w = WiggleIO('sample.wig')
-    >>> bk = w.build_binKeeper()
-    >>> bk['chrI'].pp2v(1000,2000) # to extract values in chrI:1000..2000
+class bedGraphTrackI:
+    """Class for bedGraph type data.
+
+    In bedGraph, data are represented as non-overlapping regions in
+    the whole genome. I keep this assumption in all the functions. If
+    data has overlaps, some functions will definitely give incorrect result.
+    
     """
-    def __init__ (self,bin=8,chromosomesize=1e9):
-        """Initializer.
+    def __init__ (self):
+        self.__data = {}
+        self.maxvalue =-10000
+        self.minvalue = 10000
 
-        Parameters:
-        bin : size of bin in Kilo Basepair
-        chromosomesize : size of chromosome, default is 1G
+    def add_loc (self,chromosome,startpos,endpos,value):
+        if not self.__data.has_key(chromosome):
+            self.__data[chromosome] = [array(BYTE4,[]),array(BYTE4,[]),array(FBYTE4,[])] # for (startpos,endpos,value)
+        self.__data[chromosome][0].append(startpos)
+        self.__data[chromosome][1].append(endpos)
+        self.__data[chromosome][2].append(value)        
+        if value > self.maxvalue:
+            self.maxvalue = value
+        if value < self.minvalue:
+            self.minvalue = value
+        
+    def sort (self):
+        """Naive sorting for tags. Sort the data by the start
+        position.
+
         """
-        self.binsize = bin*1024
-        self.binnumber = int(chromosomesize/self.binsize)+1
-        self.cage = []
-        a = self.cage.append
-        for i in xrange(self.binnumber):
-            a([array(BYTE4,[]),array(FBYTE4,[])])
+        for k in self.__data.keys():
+            (ps,pe,v) = self.__data[k]
+            pv = zip(ps,pe,v)
+            pv = sorted(pv)
+            self.__data[k] = [array(BYTE4,[]),array(BYTE4,[]),array(FBYTE4,[])]
+            psappend = self.__data[k][0].append
+            peappend = self.__data[k][1].append            
+            vappend = self.__data[k][2].append
+            for (tps,tpe,tv) in pv:
+                psappend(tps)
+                peappend(tpe)                
+                vappend(tv)
 
-    def add ( self, p, value ):
-        """Add a position into BinKeeper.
+    def get_data_by_chr (self, chromosome):
+        """Return array of counts by chromosome.
 
-        Note: position must be sorted before adding. Otherwise, pp2v
-        and pp2p will not work.
+        The return value is a tuple:
+        ([start pos],[end pos],[value])
         """
-        bin = p/self.binsize
-        self.cage[bin][0].append(p)
-        self.cage[bin][1].append(value)        
+        if self.__data.has_key(chromosome):
+            return self.__data[chromosome]
+        else:
+            return None
 
-    def p2bin (self, p ):
-        """Return the bin index for a position.
+    def get_chr_names (self):
+        """Return all the chromosome names stored.
         
         """
-        return p/self.binsize
+        l = set(self.__data.keys())
+        return l
 
-    def p2cage (self, p):
-        """Return the bin containing the position.
+    def write_bedGraph (self, fhd, name):
+        """Write all data to fhd in Wiggle Format.
+
+        shift will be used to shift the coordinates. default: 0
+        """
+        fhd.write("track type=bedGraph name=\"%s\" description=\"%s\"\n" % (name,name))
+        chrs = self.get_chr_names()
+        for chrom in chrs:
+            (ps,pe,v) = self.__data[chrom]
+            psnext = iter(ps).next
+            penext = iter(pe).next            
+            vnext = iter(v).next            
+            for i in xrange(len(ps)):
+                startpos = psnext()
+                endpos = penext()
+                score = snext()
+                fhd.write("%d\t%d\t%.4f\n" % (startpos,endpos,score))                
+
+    def filter_score (self, cutoff=0):
+        """Filter using a score cutoff. Return a new bedGraph.
         
         """
-        return self.cage[p/self.binsize]
+        ret = bedGraphTrackI()
+        chrs = set(self.__data.keys())
+        for chrom in chrs:
+            (ps,pe,s) = self.__data[chrom]
 
-    def __pp2cages (self, p1, p2):
-        assert p1<=p2
-        bin1 = self.p2bin(p1)
-        bin2 = self.p2bin(p2)+1
-        t = [array(BYTE4,[]),array(FBYTE4,[])]
-        for i in xrange(bin1,bin2):
-            t[0].extend(self.cage[i][0])
-            t[1].extend(self.cage[i][1])            
+            ret.__data[chrom] = [array(BYTE4,[]),array(BYTE4,[]),array(FBYTE4,[])]
+            (nps,npe,ns) = ret.__data[chrom] # new pos start, new pos end, new score
+            npsa = nps.append
+            npea = npe.append
+            nsa = ns.append
+
+            psnext = iter(ps).next
+            penext = iter(pe).next            
+            snext = iter(s).next            
+            for i in xrange(len(ps)):
+                startpos = psnext()
+                endpos = penext()                
+                score = snext()
+                if score > cutoff:
+                    npsa(startpos)
+                    npea(endpos)
+                    nsa(score)
+        return ret
+
+    def filter_score_below (self, cutoff=0):
+        """Keep points below a score cutoff. Return a new bedGraphTrackI.
+        
+        """
+        ret = bedGraphTrackI()
+        chrs = set(self.__data.keys())
+        for chrom in chrs:
+            (ps,pe,s) = self.__data[chrom]
+
+            ret.__data[chrom] = [array(BYTE4,[]),array(BYTE4,[]),array(FBYTE4,[])]
+            (nps,npe,ns) = ret.__data[chrom] # new pos start, new pos end, new score
+            npsa = nps.append
+            npea = npe.append
+            nsa = ns.append
+
+            psnext = iter(ps).next
+            penext = iter(pe).next            
+            snext = iter(s).next            
+            for i in xrange(len(ps)):
+                startpos = psnext()
+                endpos = penext()                
+                score = snext()
+                if score < cutoff:
+                    npsa(startpos)
+                    npea(endpos)
+                    nsa(score)
+        return ret
+
+    def summary (self):
+        """Calculate the sum, max, min, mean, and std. Return a tuple for (sum, max, min, mean, std).
+        
+        """
+        n_v = 0
+        sum_v = 0
+        max_v = -100000
+        min_v = 100000
+        for (s,e,v) in self.__data.values():
+            # for each chromosome
+            for i in range(len(s)):
+                # for each region
+                l = e[i]-s[i]
+                sum_v += v[i]*l
+                n_v += l
+            max_v = max(max(v),max_v)
+            min_v = min(min(v),min_v)
+        mean_v = float(sum_v)/n_v
+        variance = 0.0
+        for (s,e,v) in self.__data.values():
+            for vv in v:
+                tmp = vv-mean_v
+                variance += tmp*tmp
+        variance /= float(n_v-1)
+        std_v = sqrt(variance)
+        return (sum_v, max_v, min_v, mean_v, std_v)
+
+    def null_model_summary (self, sample_step=100):
+        """Calculate the sum, max, min, mean, and std. Return a tuple for (sum, max, min, mean, std).
+
+        This is for NULL model which is a symetric normal distribution
+        based on sample% of the whole data set.
+        """
+        # sample data step
+        data_step = sample_step
+
+        null_list = array(FBYTE4,[])
+        na = null_list.append
+        for (s,e,v) in self.__data.values():
+            i = 0
+            for vv in v:
+                i+=1
+                if i==data_step:
+                    na(vv)
+                    i=0
+        
+        sum_v = sum(null_list)
+        mean_v = sum_v/float(len(null_list))
+
+        null_list_len = len(null_list)
+        null_list = sorted(null_list)
+        median_index1 = (null_list_len - 1) / 2
+        median_index2 = null_list_len / 2
+        median_v = (null_list[median_index1]+null_list[median_index2])/2.0
+
+        # make right part of nullList
+
+        for i in xrange(null_list_len/2):
+            null_list[null_list_len-i-1] = 2* median_v - null_list[i]
+        
+        std_v = std(null_list)
+
+        return (sum_v,max(null_list),min(null_list),median_v,std_v)
+
+    def normalize (self,null=False,sample_step=10):
+        """Normalize values centered at 0 and variance as 1.
+
+        If null is True, it will use the null list to calculate mean and std.
+        When null is True, sample_percent will be passed to null_model to sample the data.
+        """
+        if null:
+            (sum_v,max_v,min_v,mean_v,std_v) = self.null_model_summary(sample_step=sample_step)
+        else:
+            (sum_v,max_v,min_v,mean_v,std_v) = self.summary()
+        for (ps,pe,v) in self.__data.values():
+            for i in range(len(v)):
+                v[i] = float(v[i]-mean_v)/std_v
+        return (sum_v, max_v, min_v, mean_v, std_v)
+                
+
+    def call_peaks (self, cutoff=1, up_limit=1e310, min_length=200, max_gap=50):
+        """This function try to find some region within which, scores
+        are continuously higher than a cutoff.
+
+        cutoff:  cutoff of value, default 1
+        min_length :  minimum peak length, default 200
+        gap   :  maximum gap to merge nearby peaks
+        """
+        chrs = self.get_chr_names()
+        peaks = PeakIO()                      # dictionary to save peaks
+        for chrom in chrs:
+            (pss,pse,ss) = self.get_data_by_chr(chrom)
+            pssn = iter(pss).next         # assign the next function to a virable to speed up
+            pesn = iter(pes).next            
+            ssn = iter(ss).next
+            x = 0
+            while True:
+                # find the first region above cutoff
+                try:                    # try to read the first data range for this chrom
+                    ps = pssn()
+                    pe = pesn()                    
+                    s = ssn()
+                except:
+                    break
+                x += 1                  # index for the next point
+                if s >= cutoff and s<=up_limit:
+                    peak_content = [(ps,pe,s),]
+                    break               # found the first range above cutoff
+
+            for i in range(x,len(ps)):
+                ps = pssn()
+                pe = pesn()
+                s = ssn()                
+                if s < cutoff or s > up_limit:
+                    continue
+                # for points above cutoff
+                # if the gap is allowed
+                if ps - peak_content[-1][1] <= max_gap:
+                    peak_content.append((ps,pe,s))
+                else:
+                    # when the gap is not allowed, close this peak
+                    peak_length = peak_content[-1][1]-peak_content[0][0]
+                    if peak_length >= min_length: # if the peak is too small, reject it
+                        summit = None
+                        summit_score = None
+                        for (tstart,tend,tscore) in peak_content:
+                            if not summit_score or summit_score < tscore:
+                                summit = int((tend+tstart)/2)
+                                summit_score = tscore
+                        peaks.add(chrom,peak_content[0][0],peak_content[-1][1],
+                                  summit=summit-peak_content[0][0],score=summit_score)
+                    # start a new peak
+                    peak_content = [(ps,pe,s),]
+            # save the last peak
+            if peak_length >= min_length: # if the peak is too small, reject it
+                summit = None
+                summit_score = None
+                for (tstart,tend,tscore) in peak_content:
+                    if not summit_score or summit_score < tscore:
+                        summit = int((tend+tstart)/2)
+                        summit_score = tscore
+                    peaks.add(chrom,peak_content[0][0],peak_content[-1][1],
+                              summit=summit-peak_content[0][0],score=summit_score)
+            
+        return peaks
+
+    def total (self):
+        t = 0
+        chrs = set(self.__data.keys())
+        for chrom in chrs:
+            (ps,pe,s) = self.__data[chrom]
+            t += len(ps)
         return t
-
-    def pp2p (self, p1, p2):
-        """Give the position list between two given positions.
-
-        Parameters:
-        p1 : start position
-        p2 : end position
-        Return Value:
-        list of positions between p1 and p2.
-        """
-        (ps,vs) = self.__pp2cages(p1,p2)
-        p1_in_cages = bisect_left(ps,p1)
-        p2_in_cages = bisect_right(ps,p2)
-        return ps[p1_in_cages:p2_in_cages]
-
-    def pp2v (self, p1, p2):
-        """Give the value list between two given positions.
-
-        Parameters:
-        p1 : start position
-        p2 : end position
-        Return Value:
-        list of values whose positions are between p1 and p2.
-        """
-        (ps,vs) = self.__pp2cages(p1,p2)
-        p1_in_cages = bisect_left(ps,p1)
-        p2_in_cages = bisect_right(ps,p2)
-        return vs[p1_in_cages:p2_in_cages]
-
-
-    def pp2pv (self, p1, p2):
-        """Give the (position,value) list between two given positions.
-
-        Parameters:
-        p1 : start position
-        p2 : end position
-        Return Value:
-        list of (position,value) between p1 and p2.
-        """
-        (ps,vs) = self.__pp2cages(p1,p2)
-        p1_in_cages = bisect_left(ps,p1)
-        p2_in_cages = bisect_right(ps,p2)
-        return zip(ps[p1_in_cages:p2_in_cages],vs[p1_in_cages:p2_in_cages])

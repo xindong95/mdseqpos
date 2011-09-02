@@ -1,5 +1,5 @@
-README for MACS (2.0.7)
-Time-stamp: <2011-08-18 14:42:11 Tao Liu>
+README for MACS (1.4.1)
+Time-stamp: <2011-06-27 16:04:50 Tao Liu>
 
 * Introduction
 
@@ -19,32 +19,39 @@ alone, or with control sample with the increase of specificity.
 
 Please check the file 'INSTALL' in the distribution.
 
-* Usage of macs2
+* Usage
 
-Usage: macs2 <-t tfile> [-n name] [-g genomesize] [options]
+Usage: macs14 <-t tfile> [-n name] [-g genomesize] [options]
 
-Example: macs2 -t ChIP.bam -c Control.bam -f BAM -g hs -n test -B
+Example: macs14 -t ChIP.bam -c Control.bam -f BAM -g h -n test -w --call-subpeaks
 
 
-macs2 -- Model-based Analysis for ChIP-Sequencing
+macs14 -- Model-based Analysis for ChIP-Sequencing
 
 Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit.
   -t TFILE, --treatment=TFILE
-                        ChIP-seq treatment files. REQUIRED.
+                        ChIP-seq treatment files. REQUIRED. When ELANDMULTIPET
+                        is selected, you must provide two files separated by
+                        comma, e.g.
+                        s_1_1_eland_multi.txt,s_1_2_eland_multi.txt
   -c CFILE, --control=CFILE
-                        Control files.
+                        Control files. When ELANDMULTIPET is selected, you
+                        must provide two files separated by comma, e.g.
+                        s_2_1_eland_multi.txt,s_2_2_eland_multi.txt
   -n NAME, --name=NAME  Experiment name, which will be used to generate output
                         file names. DEFAULT: "NA"
   -f FORMAT, --format=FORMAT
                         Format of tag file, "AUTO", "BED" or "ELAND" or
-                        "ELANDMULTI" or "ELANDEXPORT" or "SAM" or "BAM" or
-                        "BOWTIE". The default AUTO option will let MACS decide
-                        which format the file is. Please check the definition
-                        in 00README file if you choose
-                        ELAND/ELANDMULTI/ELANDEXPORT/SAM/BAM/BOWTIE. DEFAULT:
-                        "AUTO"
+                        "ELANDMULTI" or "ELANDMULTIPET" or "ELANDEXPORT" or
+                        "SAM" or "BAM" or "BOWTIE". The default AUTO option
+                        will let MACS decide which format the file is. Please
+                        check the definition in 00README file if you choose EL
+                        AND/ELANDMULTI/ELANDMULTIPET/ELANDEXPORT/SAM/BAM/BOWTI
+                        E. DEFAULT: "AUTO"
+  --petdist=PETDIST     Best distance between Pair-End Tags. Only available
+                        when format is 'ELANDMULTIPET'. DEFAULT: 200
   -g GSIZE, --gsize=GSIZE
                         Effective genome size. It can be 1.0e+9 or 1000000000,
                         or shortcuts:'hs' for human (2.7e9), 'mm' for mouse
@@ -52,7 +59,7 @@ Options:
                         fruitfly (1.2e8), Default:hs
   -s TSIZE, --tsize=TSIZE
                         Tag size. This will overide the auto detected tag
-                        size. DEFAULT: Not set
+                        size.
   --bw=BW               Band width. This value is only used while building the
                         shifting model. DEFAULT: 300
   -p PVALUE, --pvalue=PVALUE
@@ -69,19 +76,10 @@ Options:
   --slocal=SMALLLOCAL   The small nearby region in basepairs to calculate
                         dynamic lambda. This is used to capture the bias near
                         the peak summit region. Invalid if there is no control
-                        data. If you set this to 0, MACS will skip slocal
-                        lambda calculation. *Note* that MACS will always
-                        perform a d-size local lambda calculation. The final
-                        local bias should be the maximum of the lambda value
-                        from d, slocal, and llocal size windows. DEFAULT: 1000
+                        data. DEFAULT: 1000
   --llocal=LARGELOCAL   The large nearby region in basepairs to calculate
                         dynamic lambda. This is used to capture the surround
-                        bias. If you set this to 0, MACS will skip llocal
-                        lambda calculation. *Note* that MACS will always
-                        perform a d-size local lambda calculation. The final
-                        local bias should be the maximum of the lambda value
-                        from d, slocal, and llocal size windows. DEFAULT:
-                        10000.
+                        bias. DEFAULT: 10000.
   --off-auto            Whether turn off the auto pair model process. If not
                         set, when MACS failed to build paired model, it will
                         use the nomodel settings, the '--shiftsize' parameter
@@ -103,31 +101,50 @@ Options:
                         pvalue cutoff; and the 'all' option keeps every tags.
                         If an integer is given, at most this number of tags
                         will be kept at the same location. Default: auto
-  --to-control          When set, scale the ChIP data towards Control data, by
-                        default, the control will be scaled towards ChIP.
+  --to-small            When set, scale the larger dataset down to the smaller
+                        dataset, by default, the smaller dataset will be
+                        scaled towards the larger dataset. DEFAULT: False
+  -w, --wig             Whether or not to save extended fragment pileup at
+                        every WIGEXTEND bps into a wiggle file. When --single-
+                        profile is on, only one file for the whole genome is
+                        saved. WARNING: this process is time/space consuming!!
+  -B, --bdg             Whether or not to save extended fragment pileup at
+                        every bp into a bedGraph file. When it's on, -w,
+                        --space and --call-subpeaks will be ignored. When
+                        --single-profile is on, only one file for the whole
+                        genome is saved. WARNING: this process is time/space
+                        consuming!!
+  -S, --single-profile  When set, a single wiggle file will be saved for
+                        treatment and input. Default: False
+  --space=SPACE         The resoluation for saving wiggle files, by default,
+                        MACS will save the raw tag count every 10 bps. Usable
+                        only with '--wig' option.
+  --call-subpeaks       If set, MACS will invoke Mali Salmon's PeakSplitter
+                        soft through system call. If PeakSplitter can't be
+                        found, an instruction will be shown for downloading
+                        and installing the PeakSplitter package. -w option
+                        needs to be on and -B should be off to let it work.
                         DEFAULT: False
-  --shift-control       When set, control tags will be shifted just as ChIP
-                        tags according to their strand before the extension of
-                        d, slocal and llocal. By default, control tags are
-                        extended centered at their current positions
-                        regardless of strand. You may consider to turn this
-                        option on while comparing two ChIP datasets of the
-                        same factor. DEFAULT: False
-  --half-ext            When set, MACS extends 1/2 d size for each fragment
-                        centered at its middle point. DEFAULT: False
-  -B, --bdg             Whether or not to save extended fragment pileup, local
-                        lambda and score tracks at every bp into a bedGraph
-                        file. DEFAULT: False
   --verbose=VERBOSE     Set verbose level. 0: only show critical message, 1:
                         show additional warning message, 2: show process
                         information, 3: show debug messages. DEFAULT:2
+  --diag                Whether or not to produce a diagnosis report. It's up
+                        to 9X time consuming. Please check 00README file for
+                        detail. DEFAULT: False
+  --fe-min=FEMIN        For diagnostics, min fold enrichment to consider.
+                        DEFAULT: 0
+  --fe-max=FEMAX        For diagnostics, max fold enrichment to consider.
+                        DEFAULT: maximum fold enrichment
+  --fe-step=FESTEP      For diagnostics, fold enrichment step.  DEFAULT: 20
 
 
 ** Parameters:
 
 *** -t/--treatment FILENAME
 
-This is the only REQUIRED parameter for MACS. Y
+This is the only REQUIRED parameter for MACS. If the format is
+ELANDMULTIPET, user must provide two treatment files separated by
+comma, e.g. s_1_1_eland_multi.txt,s_1_2_eland_multi.txt.
 
 *** -c/--control
 
@@ -201,7 +218,7 @@ then the --treat (and --control if needed) parameter must be two file
 names separated by comma. Each file must be in ELAND multiple-match
 format described above. e.g.
 
-macs2 --format ELANDMULTIPET -t s_1_1_eland_multi.txt,s_2_1_eland_multi.txt ...
+macs14 --format ELANDMULTIPET -t s_1_1_eland_multi.txt,s_2_1_eland_multi.txt ...
 
 If you use ELANDMULTIPET, you may need to modify --petdist parameter.
 
@@ -308,7 +325,7 @@ assembly. Here are all precompiled parameters for effective genome size:
 
 *** -s/--tsize
 
-The size of sequencing tags. If you don't specify it, MACS will try to
+The size of sequencing tags. If you DON'T specify it, MACS will try to
 use the first 10 sequences from your input treatment file to determine
 the tag size. Specifying it will override the automatic determined tag
 size.
@@ -384,38 +401,54 @@ and the 'all' option keeps every tags.  If an integer is given, at
 most this number of tags will be kept at the same location. Default:
 auto
 
-** --to-small is obsolete, check --to-control
+** --to-small 
 
-** --to-control
+When set scale the larger dataset down to the smaller dataset, by
+default, the smaller dataset will be scaled towards the larger
+dataset.
 
-When set, scale the treatment dataset to the same depth as control
-dataset, by default, the control dataset will be scaled towards the
-treatment dataset.
+** -w/--wig
+
+If this flag is on, MACS will store the fragment pileup in wiggle
+format for every chromosome. The gzipped wiggle files will be stored
+in subdirectories named NAME+'_MACS_wiggle/treat' for treatment data
+and NAME+'_MACS_wiggle/control' for control data. --single-profile
+option can be combined to generate a single wig file for the whole
+genome.
 
 ** -B/--bdg
 
-If this flag is on, MACS will store the fragment pileup, control
-lambda, -log10pvalue and -log10qvalue scores in bedGraph files. The
-bedGraph files will be stored in current directory named
-NAME+'_treat_pileup.bdg' for treatment data,
-NAME+'_control_lambda.bdg' for local lambda values from control,
-NAME+'_treat_pvalue.bdg' for Poisson pvalue scores (in -log10(pvalue)
-form), and NAME+'_treat_qvalue.bdg' for q-value scores from
-Benjamini–Hochberg–Yekutieli procedure
-<http://en.wikipedia.org/wiki/False_discovery_rate#Dependent_tests>
+If this flag is on, MACS will store the fragment pileup in bedGraph
+format for every chromosome. The bedGraph file is in general much
+smaller than wiggle file. However, The process will take a little bit
+longer than -w option, since theoratically 1bp resolution data will be
+saved. The bedGraph files will be gzipped and stored in subdirectories
+named NAME+'_MACS_bedGraph/treat' for treatment and
+NAME+'_MACS_bedGraph/control' for control data.  --single-profile
+option can be combined to generate a single bedGraph file for the
+whole genome.
 
-** --half-ext (experimental option)
+** -S/--single-profile (formerly --single-wig)
 
-When this flag is on, MACS will only extend each tag with 1/2 d
-(predicted ChIP fragment size) instead of full d. 
+If this flag is on, MACS will store the fragment pileup in wiggle or
+bedGraph format for the whole genome instead of for every
+chromosomes. The gzipped wiggle files will be stored in subdirectories
+named EXPERIMENT_NAME+'_MACS_wiggle'+'_MACS_wiggle/treat/'
++EXPERIMENT_NAME+'treat_afterfiting_all.wig.gz' or
+'treat_afterfiting_all.bdg.gz' for treatment data, and
+EXPERIMENT_NAME+'_MACS_wiggle'+'_MACS_wiggle/control/'
++EXPERIMENT_NAME+'control_afterfiting_all.wig.gz' or
+'control_afterfiting_all.bdg.gz' for control data.
 
-** -w/--wig is obsolete.
+** --space=SPACE         
 
-** -S/--single-profile is obsolete.
+By default, the resoluation for saving wiggle files is 10 bps,i.e.,
+MACS will save the raw tag count every 10 bps. You can change it along
+with '--wig' option.
 
-** --space=SPACE is obsolete since we don't generate wiggle file.
+Note this option doesn't work if -B/--bdg is on.
 
-** --call-subpeaks is currently not functional.
+** --call-subpeaks       
 
 If set, MACS will invoke Mali Salmon's PeakSplitter software through
 system call. If PeakSplitter can't be found, an instruction will be
@@ -434,13 +467,13 @@ it to 0. But the CRITICAL messages will never be hidden. If you want
 to see rich information like how many peaks are called for every
 chromosome, you can set it to 3 or larger than 3.
 
-** --diag is currently not functional.
+** --diag
 
 A diagnosis report can be generated through this option. This report
 can help you get an assumption about the sequencing saturation. This
 funtion is only in beta stage.
 
-** --fe-min, --fe-max & --fe-step are currently not functional.
+** --fe-min, --fe-max & --fe-step
 
 For diagnostics, FEMIN and FEMAX are the minimum and maximum fold
 enrichment to consider, and FESTEP is the interval of fold
@@ -453,27 +486,27 @@ let MACS choose the following fold enrichment ranges to consider:
  1. NAME_peaks.xls is a tabular file which contains information about
  called peaks. You can open it in excel and sort/filter using excel
  functions. Information include: chromosome name, start position of
- peak, end position of peak, length of peak region, absolute peak
- summit position, pileup height at peak summit, -log10(pvalue) for the
- peak summit (e.g. pvalue =1e-10, then this value should be 10), fold
- enrichment for this peak summit against random Poisson distribution
- with local lambda, -log10(qvalue) at peak summit. Coordinates in XLS
- is 1-based which is different with BED format.
+ peak, end position of peak, length of peak region, peak summit
+ position related to the start position of peak region, number of tags
+ in peak region, -10*log10(pvalue) for the peak region (e.g. pvalue
+ =1e-10, then this value should be 100), fold enrichment for this
+ region against random Poisson distribution with local lambda, FDR in
+ percentage. Coordinates in XLS is 1-based which is different with BED
+ format.
 
  2. NAME_peaks.bed is BED format file which contains the peak
  locations. You can load it to UCSC genome browser or Affymetrix IGB
- software.
+ software. The 5th column in this file is the -10*log10pvalue of peak
+ region.
 
- 3. NAME_peaks.encodePeak is BED6+4 format file which contains the
- peak locations together with peak summit, pvalue and qvalue. You can
- load it to UCSC genome browser. Definition of some specific columns
- are: 5th: -log10pvalue*10, 7th: fold-change, 8th: -log10pvalue, 9th:
- -log10qvalue, 10th: relative summit position to peak start.
+ 3. NAME_summits.bed is in BED format, which contains the peak summits
+ locations for every peaks. The 5th column in this file is the summit
+ height of fragment pileup. If you want to find the motifs at the
+ binding sites, this file is recommended.
 
- 4. NAME_summits.bed is in BED format, which contains the peak summits
- locations for every peaks. The 5th column in this file is
- -log10pvalue the same as NAME_peaks.bed. If you want to find the
- motifs at the binding sites, this file is recommended.
+ 4. NAME_negative_peaks.xls is a tabular file which contains
+ information about negative peaks. Negative peaks are called by
+ swapping the ChIP-seq and control channel.
 
  5. NAME_model.r is an R script which you can use to produce a PDF
  image about the model based on your data. Load it to R by:
@@ -483,22 +516,21 @@ $ R --vanilla < NAME_model.r
 Then a pdf file NAME_model.pdf will be generated in your current
 directory. Note, R is required to draw this figure.
 
- 6. The .bdg files are in bedGraph format which can be imported to
- UCSC genome browser or be converted into even smaller bigWig
- files. Four kinds of bdg files include treat_pileup, control_lambda,
- treat_pvalue, and treat_qvalue. 
+ 6. NAME_treat/control_afterfiting.wig.gz files in NAME_MACS_wiggle
+ directory are wiggle format files which can be imported to UCSC
+ genome browser/GMOD/Affy IGB. The .bdg.gz files are in bedGraph
+ format which can also be imported to UCSC genome browser or be
+ converted into even smaller bigWig files.
 
  7. NAME_diag.xls is the diagnosis report. First column is for various
  fold_enrichment ranges; the second column is number of peaks for that fc
  range; after 3rd columns are the percentage of peaks covered after
- sampling 90%, 80%, 70% ... and 20% of the total tags. (not available currently)
+ sampling 90%, 80%, 70% ... and 20% of the total tags.
 
- 8. NAME_pqtable.txt store the -log10pvalue, -log10qvalue, rank of
-  this pvalue, and number of bp having this pvalue.
-
-* Usage of macs2diff
-
-Will update it later...
+ 8. NAME_peaks.subpeaks.bed is a text file which IS NOT in BED
+ format. This file is generated by PeakSplitter
+ (<http://www.ebi.ac.uk/bertone/software/PeakSplitter_Cpp_usage.txt>)
+ when --call-subpeaks option is set.
 
 * Other useful links
 
@@ -507,21 +539,3 @@ Cistrome web server for ChIP-chip/seq analysis: http://cistrome.org/ap/
 bedTools -- a super useful toolkits for genome annotation files: http://code.google.com/p/bedtools/
 
 UCSC toolkits: http://hgdownload.cse.ucsc.edu/admin/exe/
-
-* Tips of fine-tuning peak calling
-
-Check the three scripts within MACSv2 package:
-
- 1. bdgcmp can be used on *_treat_pileup.bdg and *_control_lambda.bdg
- or bedGraph files from other resources to calculate score track;
-
- 2. bdgpeakcall can be used on *_treat_pvalue.bdg or the file
- generated from bdgcmp or bedGraph file from other resources to call
- peaks with given cutoff, maximum-gap between nearby mergable peaks
- and minimum length of peak.
-
- 3. Differential calling tool -- bdgdiff, can be used on 4 bedgraph
- files which are scores between treatment 1 and control 1, treatment 2
- and control 2, treatment 1 and treatment 2, treatment 2 and treatment
- 1. It will output the consistent and unique sites according to
- parameter settings for minimum length, maximum gap and cutoff.
