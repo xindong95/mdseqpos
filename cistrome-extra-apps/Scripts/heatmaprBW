@@ -254,7 +254,7 @@ def main():
             p=BwIO(bw)
             chrset = chrset.intersection(set([t['key'] for t in p.chromosomeTree['nodes']]))
     chrom_list = list(chrset)
-
+    Info('common chr in wigs: %s' %(','.join(chrom_list),))
     bedregion_filter = [t for t in bedregion if t[0] in chrom_list]
     peakf = open("%s_peak"%opts.name, "w")
     peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in bedregion_filter])
