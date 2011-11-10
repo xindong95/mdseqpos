@@ -290,7 +290,10 @@ def main():
             if opts.dir:
                 if region[5] == '-':
                     start,end = center-opts.downstm, center+opts.upstm    
-            summary = bw.summarize(region[0], start, end, (end - start) / opts.step)
+            try:
+                summary = bw.summarize(region[0], start, end, (end - start) / opts.step)
+            except OverflowError:
+                continue
             if not summary:
                 siteprofs.append([0]*((end - start) / opts.step))
                 continue
