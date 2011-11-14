@@ -210,7 +210,7 @@ def prepare_optparser ():
     optparser.add_option("--s_wigindex", dest="s_wigindex",type="int",help="for SORT WIG. select the key wig file to get the order. default:1",default=1)
     
     optparser.add_option("--pf-res", dest="step", type="int", help="Profiling resolution, default: 10 bp", default=10)
-    optparser.add_option("--dir",action="store_true",dest="dir", help="If set, the direction (+/-) is considered in profiling. If no strand info given in the BED, this option is ignored. default:True",default=True)
+    optparser.add_option("--dir",action="store_true",dest="dir", help="If set, the direction (+/-) is considered in profiling. If no strand info given in the BED, this option is ignored. default:False",default=False)
 
     optparser.add_option('--fontsize', dest='fontsize', type="int", help="set the font size in plot. default:2", default=2)
     optparser.add_option('--upstream', dest='upstm', type="int", help="upstream distance from the center of peak. Profiling will start here. default:500", default=500)
