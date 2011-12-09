@@ -97,6 +97,7 @@ def prepare_optparser ():
     optparser.add_option("-k","--kmeans",dest="kmeans",type="int",help="for KMEANS. number of the classifications, int, default:4",default=4)
     optparser.add_option("--k_wigindex", dest="k_wigindex",type="string",help="for KMEANS. select wig file to do clustering, eg:'1,3,4' default:all",default="all")
     optparser.add_option("--s_wigindex", dest="s_wigindex",type="int",help="for SORT WIG. select the key wig file to get the order. default:1",default=1)
+    optparser.add_option("-s",'--saturation', dest='saturation', type='float', help="The heatmap tool will saturate the top and lowest values to (saturation, 1-saturation) for drawing a better image, set the number between 0 to 0.5, default: 0.01",default=0.01)
     
     optparser.add_option("--pf-res", dest="step", type="int", help="Profiling resolution, default: 10 bp", default=10)
     optparser.add_option("--dir",action="store_true",dest="dir", help="If set, the direction (+/-) is considered in profiling. If no strand info given in the BED, this option is ignored. default:False",default=False)
@@ -141,6 +142,9 @@ def opt_validate (optparser):
             Info('ERROR @ Check -b (--bed). No such file exists:<%s>' %options.bed)
             sys.exit(1)
 
+    if options.saturation>=0.5 or options.saturation<=0:
+        Info('the saturation option should be between 0 and 0.5')
+        sys.exit(1)
     if options.k_wigindex == "all": #this argument is input by user, count from 1 not 0
         options.k_wigindex = [t for t in range(1, iwig+1)]
     else:
@@ -347,7 +351,7 @@ def main():
     rscript.write('min <- data[1]\n')
     rscript.write('max <- data[length(data)]\n')
     if opts.zmin==None or opts.zmax==None:
-        rscript.write('temp<-data[round(c(0.15,0.5,0.85)*length(data))]\n')
+        rscript.write('temp<-data[round(c(%f,0.5,%f)*length(data))]\n' %(opts.saturation, 1-opts.saturation))
         rscript.write('p20<-temp[1]\n')
         rscript.write('p50<-temp[2]\n')
         rscript.write('p80<-temp[3]\n')
