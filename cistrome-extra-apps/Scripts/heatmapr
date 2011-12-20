@@ -314,21 +314,21 @@ def opt_validate (optparser):
         sys.exit(1)
     while len(options.xlabel)<iwig:
         Info("WARNING @ xlabels less than wigs.")
-        options.xlabel.append(options.xlabel[-1])
+        options.xlabel.append('')
     options.ylabel = options.ylabel.split(',')
     if len(options.ylabel)>iwig:
         Info("ERROR @ ylabels more than wigs.")
         sys.exit(1)
     while len(options.ylabel)<iwig:
         Info("WARNING @ ylabels less than wigs.")
-        options.ylabel.append(options.ylabel[-1])
+        options.ylabel.append('')
     options.subtitle = options.subtitle.split(',')
     if len(options.subtitle)>iwig:
         Info("ERROR @ subtitles more than wigs.")
         sys.exit(1)
     while len(options.subtitle)<iwig:
         Info("WARNING @ subtitles less than wigs.")
-        options.subtitle.append(options.subtitle[-1])
+        options.subtitle.append('')
     #if options.zmin and options.zmin<0:
     #    options.zmin=0
     #if options.zmax and options.zmax<0:
@@ -587,6 +587,7 @@ def main():
         sitef.close()                                                                                  #
         rscript.write('data%d<-read.table("%s_siteprof%d",sep=",",header=F)\n' %(iwig,opts.name,iwig)) # create data0, data1, ...
     rscript.write('data<-cbind(%s)\n'%(",".join(["data%d"%t for t in range(wigcount)])) )
+    rscript.write('ymax<-nrow(data)\n')
 
     if opts.hmethod == "kmeans":
         step_num = len(siteprofs[0])
@@ -663,12 +664,15 @@ def main():
         if opts.subtitle:
             rscript.write('title(main="%s",cex=2)\n'%opts.subtitle[i])
         rscript.write('sepxy=((downstream+upstream)/step)%/%5*step\n')
+        rscript.write('sepy=floor(ymax/%s/10^floor(log10(ymax/%s)))*10^floor(log10(ymax/%s))\n' %(5,5,5))
         if (opts.upstm+opts.downstm)/opts.step>=5:
             rscript.write('axis(1,at=(seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy)+round(upstream/step)*step)/step+0.5,seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy))\n')
         else:
             rscript.write('axis(1,at=seq(6)-0.5,seq(-round(upstream/step)*step,by=step,length=6))\n')
 
-        rscript.write('axis(2,seq(0,nrow(%s),500),seq(0,nrow(%s),500))\n'%(data,data))
+        if i == 0:
+            #rscript.write('axis(2,seq(0,nrow(%s),500),seq(0,nrow(%s),500))\n'%(data,data))
+            rscript.write('axis(2,at=seq(from=0,to=ymax,by=sepy),seq(from=0,to=ymax,by=sepy))\n')
         rscript.write('box()\n')
         if opts.axhline:
             rscript.write('#draw abline\n')
