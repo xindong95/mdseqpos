@@ -42,8 +42,7 @@
 
 # """
 
-
-import os, sys, time, re
+import os, sys, re
 import itertools
 from optparse import OptionParser
 
@@ -51,7 +50,6 @@ import CistromeAP.jianlib.inout as inout
 import CistromeAP.jianlib.corelib as corelib
 import CistromeAP.jianlib.R as R
 from CistromeAP.jianlib.myfunc import *
-
 
 class WigProfilerwBed:
     """WigProfiler for regions in Bed"""
@@ -65,21 +63,21 @@ class WigProfilerwBed:
         self.step = step
         self.dir = dir
 
-    def set_params(self, upstm, downstm, step, dir):
-        """Set parameters
+    #def set_params(self, upstm, downstm, step, dir):
+    #    """Set parameters
+    #
+    #    Parameters:
+    #    1. wig: an Wig object in Cistrome.Assoc.inout
+    #    2. bed: a Bed object in Cistrome.Assoc.inout
+    #    3. upstm,downstm: span size from the center of each region
+    #    4. dir: if set True, the start and end of '-' will be regarded as the end and start.
+    #    """
+    #    self.upstm = upstm
+    #    self.downstm = downstm
+    #    self.step = step
+    #    self.dir = dir
 
-        Parameters:
-        1. wig: an Wig object in Cistrome.Assoc.inout
-        2. bed: a Bed object in Cistrome.Assoc.inout
-        3. upstm,downstm: span size from the center of each region
-        4. dir: if set True, the start and end of '-' will be regarded as the end and start.
-        """
-        self.upstm = upstm
-        self.downstm = downstm
-        self.step = step
-        self.dir = dir
-
-    def capture_regions(self, wig, bed):
+    def profile(self, wig, bed):
         """Capture the regions that will be profiled"""
 
         wigint = self.estimate_wig_interval(wig)    # estimate the wig interval for where2
@@ -163,34 +161,34 @@ class WigProfilerwBed:
 
         return corelib.median(intervals)
 
-    def get_breaks(self, start, end):
-        """Return breaks for bins
+    #def get_breaks(self, start, end):
+    #    """Return breaks for bins
+    #
+    #    Parameters:
+    #    1. xmin: the start value
+    #    2. xmax: the end value. This end value is included in the resulting breaks.
+    #
+    #    """
+    #    #step = self.step
+    #    #n = (end-start) / step + 1
+    #    #breaks = map(lambda x: int(round(x)), corelib.linspace(start, end, n))
+    #    #return breaks
+    #
+    #    xmin = int(round(float(start)/self.step)) * self.step
+    #    xmax = int(round(float(end)/self.step)) * self.step
+    #    breaks = [xmin+self.step*i for i in range((xmax-xmin)/self.step+1)]
+    #    return breaks
 
-        Parameters:
-        1. xmin: the start value
-        2. xmax: the end value. This end value is included in the resulting breaks.
-
-        """
-        #step = self.step
-        #n = (end-start) / step + 1
-        #breaks = map(lambda x: int(round(x)), corelib.linspace(start, end, n))
-        #return breaks
-
-        xmin = int(round(float(start)/self.step)) * self.step
-        xmax = int(round(float(end)/self.step)) * self.step
-        breaks = [xmin+self.step*i for i in range((xmax-xmin)/self.step+1)]
-        return breaks
-
-    def profile(self, wig, bed):
-        """Wrapper function of WigProfilewBed.
-        Through this function, the user can set the parameters for profiling and get
-        a list of profiles of the regions.
-
-        """
-
-        start = -1 * self.upstm
-        end = self.downstm
-        return self.capture_regions(wig, bed)
+    #def profile(self, wig, bed):
+    #    """Wrapper function of WigProfilewBed.
+    #    Through this function, the user can set the parameters for profiling and get
+    #    a list of profiles of the regions.
+    #
+    #    """
+    #
+    #    #start = -1 * self.upstm
+    #    #end = self.downstm
+    #    return self.capture_regions(wig, bed)
 
 def prepare_optparser ():
     """Prepare optparser object. New options will be added in this
@@ -363,7 +361,7 @@ def GetChromIntersection(wigfn_list): # get a list of chroms exist in every wig 
 
 def WigProfiler(options, hBed, wig, head_ref): # return a instance of WigProfilerwBed
     profwbed=WigProfilerwBed(upstm=options.upstm, downstm=options.downstm, step=options.step, dir=options.dir) # create a profiler object
-    sitebreaks = profwbed.get_breaks(-options.upstm, options.downstm)        # get the breaks
+    #sitebreaks = profwbed.get_breaks(-options.upstm, options.downstm)        # get the breaks
     peakinfo = {}
     siteprofs = {}
 
@@ -564,7 +562,7 @@ def main():
     # create rscript
     rscript = open("%s_kmeans.r" %opts.name, "w")
 
-    rscript.write('# Options settings.\n')
+    rscript.write('# Options settings.\n')          
     rscript.write('upstream=%d\n' %opts.upstm)
     rscript.write('downstream=%d\n' %opts.downstm)
     rscript.write('step=%d\n' %opts.step)
@@ -648,8 +646,8 @@ def main():
     rscript.write('#\n')
     rscript.write('#\n')
     rscript.write('nheat=%d #number of heats\n'%wigcount)
-    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1))\n'%opts.pic_width)
-    rscript.write('par(cex=fontsize)\n')
+    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1)) #pic_width/1600\n'%opts.pic_width)
+    #rscript.write('par(cex=fontsize)\n')
     rscript.write('#\n')
 
     # draw heats
