@@ -33,30 +33,48 @@ def BLiC_score(M1,M2):
     n = min(n1,n2)
  
     if n1 > n2:
-        A,B = M1,M2
+        A,B = M1,M2 # A is longer one
+        i_max = 1
     else:
         A,B = M2,M1
+        n1,n2 = n2,n1
+        i_max = -1
  
-    i_max = 0
-    for i in range( abs(n1-n2) + 1 ):
-        # TODO reverse complement
-        score   = BLiC_score_aligned( A[i:i+n, :], B )
-        #score_r = BLiC_score_aligned( A[i+n:i:-1, ::-1], B )
-        score_r = BLiC_score_aligned( A[i:i+n, :][::-1,::-1], B )
- 
+    max_score = -999
+    #for i in range( abs(n1-n2) + 1 ):
+    #    # TODO reverse complement
+    #    score   = BLiC_score_aligned( A[i:i+n, :], B )
+    #    #score_r = BLiC_score_aligned( A[i+n:i:-1, ::-1], B )
+    #    score_r = BLiC_score_aligned( A[i:i+n, :][::-1,::-1], B )
+    #    print score, score_r
+    for i in range(1-n2, n1):
+        if i<0:
+            Bsub = B[-i:n2-i, :]
+            Brev_sub = B[::-1,::-1][-i:n2-i, :]
+            Asub = A[:n2+i, :]
+        elif i <= n1-n2:
+            Bsub = B
+            Brev_sub = B[::-1,::-1]
+            Asub = A[i:i+n2, :]
+        elif n1-i < n2:
+            Asub = A[i:n1, :]      #B:    xCATCGCxxx
+            Bsub = B[:n1-i, :]     #A: xxxxxxTCGC 
+            Brev_sub = B[::-1,::-1][:n1-i, :]
+        
+        score   = BLiC_score_aligned( Asub, Bsub )
+        score_r = BLiC_score_aligned( Asub, Brev_sub )
+        #print i, '\t', Asub.shape, '\t', score, score_r
         if score_r > score: 
             flag, score = ANTISENSE, score_r
         else:
             flag = SENSE
     
-        if i == 0 or score > max_score:
+        if score > max_score:
             max_score = score
             flag_r = flag
-            if n1 > n2:
-                i_max =  i
-            else:
-                i_max = -i
+            ii = i
     
+    i_max *= ii
     return max_score, i_max, flag_r 
 
 def BLiC_score_aligned_old(M1, M2):

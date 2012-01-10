@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-07-22 13:58:29 Jian Ma>
+# Time-stamp: <2011-11-04 14:15:51 sunhf>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -151,6 +151,13 @@ def main():
         info("read wiggle track from bigwig file #%d" % (i+1))
         profile = []
         for chrom in chroms:
+
+            # The too-short chromosome will cause error in bw.summarize function below
+            # So filter them out
+            if chrom_len[chrom]/options.step/1000==0:
+                warn("A very-short chromosome (%s) found and skipped"%chrom)
+                continue
+            
             summary = bw.summarize(chrom, 0, chrom_len[chrom], chrom_len[chrom]/options.step/1000)
             if not summary:
                 continue

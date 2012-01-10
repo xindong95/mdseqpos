@@ -74,6 +74,8 @@ def main():
     optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
     
     (options,bedfiles) = optparser.parse_args()
+    options.pf_res = options.w / 100 # get 100 points to plot
+    options.w = options.pf_res * 100 # trim
 
     bedfiles = map(os.path.abspath,bedfiles)
     bedfilenames = map(os.path.basename,bedfiles)
@@ -130,11 +132,11 @@ def main():
     # for each bed file
     for f in bedfiles:
         info("extract phastcons scores using %s" % f)
-        scores = extract_phastcons(f,phas_chrnames, options.w)
+        scores = extract_phastcons(f,phas_chrnames, options.w, options.pf_res)
         avgValues.append(scores)
-    makeBmpFile(avgValues,olddir,options.height,options.width,options.w,options.title,bedlabel)
+    makeBmpFile(avgValues,olddir,options.height,options.width,options.w,options.pf_res,options.title,bedlabel)
 
-def extract_phastcons ( bedfile, phas_chrnames, width ):
+def extract_phastcons ( bedfile, phas_chrnames, width, pf_res ):
     """Extract phastcons scores from a bed file.
 
     Return the average scores
@@ -154,6 +156,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
 
     sumscores = []
     for chrom in chrs:
+        info("processing chromosome: %s" %chrom)
         pchrom = bed.peaks[chrom]
         bw = BigWigFile(open(chrom+'.bw', 'rb'))
         for i in range(len(pchrom)):
@@ -165,7 +168,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
                 left = 0
                 right = width
             
-            summarize = bw.summarize(chrom, left, right, width)
+            summarize = bw.summarize(chrom, left, right, width/pf_res)
             if not summarize:
                 continue
             dat = summarize.sum_data / summarize.valid_count
@@ -178,17 +181,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width ):
 
     return  conscores
         
-#def add_scores ( sumscores, scores ):
-#    """Calculate the avg scores for each positions in a width window.
-#    
-#    """
-#    n = len(scores)
-#    for score_win in scores:
-#        for (p,s) in score_win:
-#            sumscores[p-1] += s
-#    return True
-    
-def makeBmpFile(avgValues, wd, h,w, width, title, bedlabel):
+def makeBmpFile(avgValues, wd, h,w, width, pf_res, title, bedlabel):
     
     #creating R file in which to write the rscript which defines the correlation plot
     #create and save the file in the current working directory
@@ -199,7 +192,7 @@ def makeBmpFile(avgValues, wd, h,w, width, title, bedlabel):
     rscript = 'sink(file=file("/dev/null", "w"), type="message")\n'
     rscript += 'sink(file=file("/dev/null", "w"), type="output")\n'    
     rscript += 'pdf("%s",height=%d,width=%d)\n' %(bmpname,h,w)
-    xInfo = range(int(-width/2),int(width/2))
+    xInfo = range(int(-width/2),int(width/2), pf_res)
     rscript += 'x<-c('+','.join(map(str,xInfo[:-1]))+')\n' # throw the last point which may be buggy
     for i in range(len(avgValues)):
         avgscores = avgValues[i]

@@ -233,7 +233,7 @@ class ChipRegions:
     # analysis methods #
     ####################
         
-    def mdmodule(self, motif_widths=(7, 10, 13, 16), width=600 ):
+    def mdmodule(self, motif_widths=(7, 10, 13, 16, 19), width=600 ):
         """Run a de novo motif scan of ChIP regions.
         
         De novo motifs will be returned as a MotifList object.
