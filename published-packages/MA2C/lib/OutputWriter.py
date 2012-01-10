@@ -1,4 +1,4 @@
-# Time-stamp: <2009-07-28 16:29:40 Tao Liu>
+# Time-stamp: <2012-01-10 16:04:49 Tao Liu>
 
 """Module Description: Write output files like peak information and
 wiggle files.
@@ -97,9 +97,9 @@ def save_score_to_wig ( peak_input, tagFileInfo ):
 
     # probe length from tpmap
     span = 1
-    fhd = open(tagFileInfo["sample"]["ndfFile"])
+    fhd = open(tagFileInfo["output"]["tpmap"])
     for l in fhd:
-        if not l.startswith("#"):
+        if not l.startswith("#") and not l.startswith("PROBE"):
             span = len(l.split()[0])
             break
 
