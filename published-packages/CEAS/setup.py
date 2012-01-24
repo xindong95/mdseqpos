@@ -16,7 +16,7 @@ def main():
           url='http://liulab.dfci.harvard.edu/CEAS/',
           package_dir={'CEAS' : 'lib'},
           packages=['CEAS'],
-          scripts=['bin/ceas', 'bin/ceasBW', 'bin/sitepro', 'bin/siteproBW', 'bin/gca', 'bin/build_genomeBG'],
+          scripts=['bin/ceas', 'bin/ceasBW', 'bin/sitepro', 'bin/siteproBW', 'bin/gca', 'bin/build_genomeBG', 'bin/ChIPAssoc'],
 
           classifiers=[
             'Development Status :: 4 - Beta',
