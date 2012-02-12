@@ -59,6 +59,10 @@ BUILD_DICT = { "hg17": "humanhg17_May2004/",
                "mm7": "UCSC_MM7/",
                "mm8": "mousemm8_Mar2006/",
                "mm9":"UCSC_MM9/",
+               "ce4":"UCSC_CE4/",               
                "ce6":"UCSC_CE6/",
-               "ce4":"UCSC_CE4/",
-               "dm3":"UCSC_DM3/"}
+               "ce10":"UCSC_CE10/",
+               "dm3":"UCSC_DM3/",
+               "rn4":"UCSC_RN4/",
+               "danRer7":"UCSC_danRer7/"
+               }
