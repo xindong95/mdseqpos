@@ -15,10 +15,6 @@ def complement(seq):
 def reverse_complement(seq):
         seq = list(seq)
         seq.reverse()
-	try:
-		complement(seq)
-	except:
-		print seq
         return ''.join(complement(seq))
 
 #enumerate k-mers
