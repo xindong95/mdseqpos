@@ -253,7 +253,9 @@ class ChipRegions:
         background.read_sequence(True)
         # scan for motifs
         for motif_width in motif_widths:
-            raw_pssms = MDmod(i=input.sequence, b=background.sequence, w=motif_width, t=50, s=50, n=100, r=10)
+            raw_pssms = MDmod(i=filter(lambda x:x!=None, input.sequence),
+                              b=filter(lambda x:x!=None, background.sequence),
+                              w=motif_width, t=50, s=50, n=100, r=10)
             for raw_pssm in raw_pssms:
                 motif_id = 'denovo%d' % len(motifs)
                 motifs.append(Motif(motif_id, raw_pssm))

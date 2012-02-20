@@ -15,6 +15,10 @@ def complement(seq):
 def reverse_complement(seq):
         seq = list(seq)
         seq.reverse()
+	try:
+		complement(seq)
+	except:
+		print seq
         return ''.join(complement(seq))
 
 #enumerate k-mers
@@ -39,13 +43,12 @@ def count(seqs, length=3):
     #print seqs
     #for a missing key, the dict entry is initialized to zero   
     counts = {}#defaultdict(int)   
-
     #count the length-element subsequences in each sequence   
     for k in range(1, length+1):
         #this may be needed if there might be zero count for some k-mer
         for key in permutations(nucleotides, int(k)):
             counts[key] = 0
-        for i in seqs:   
+        for i in seqs:
             i = str(i).upper()
             ri = reverse_complement(i)
             for n in range(200, len(i) - k - 199):   

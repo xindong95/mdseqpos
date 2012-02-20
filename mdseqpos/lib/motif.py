@@ -858,16 +858,17 @@ class Motif:
             regions = chip_regions
 
         # LEN: BINOCH UPGRADE
-        bgseqprob_mat = mdseqpos.count.count(regions.sequence)
+        filter_None=lambda sequence:filter(lambda x:x!=None,sequence)
+        bgseqprob_mat = mdseqpos.count.count(filter_None(regions.sequence))
         markov_order = 2
         prob_option = mdseqpos._seq.MAX_OPTION
 
         #print "Regions sequence: \n%s\n" % regions.sequence
         
-        s_idx, start, end, orient, score = seqscan(regions.sequence, self.pssm,
+        s_idx, start, end, orient, score = seqscan(filter_None(regions.sequence), self.pssm,
                                                    bgseqprob_mat, markov_order,
                                                    prob_option)
-        lengths = [len(regions.sequence[int(s_idx[elm])]) for elm in s_idx]
+        lengths = [len(filter_None(regions.sequence)[int(s_idx[elm])]) for elm in s_idx]
 
         #adjust score
         score = (numpy.log(score + MOTIFMIN))
@@ -882,7 +883,7 @@ class Motif:
         seq = []
         for j,elem2 in enumerate(fracpos):
             if elem2 <= 1.0:
-                t = list(regions.sequence[int(s_idx[j])])
+                t = list(filter_None(regions.sequence)[int(s_idx[j])])
                 t = t[int(start[j]):int(end[j])]
                 if orient[j] == ANTISENSE:
                     seq.append(revcomp(t))
