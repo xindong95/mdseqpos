@@ -373,7 +373,7 @@ def main():
     rscript.write('#\n')
     rscript.write('#\n')
     rscript.write('nheat=%d #number of heats\n'%wigcount)
-    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1))\n'%opts.pic_width)
+    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1)) #*notes* pic_width/1600\n'%opts.pic_width)
     rscript.write('par(cex=fontsize)\n')
     rscript.write('#\n')
 
