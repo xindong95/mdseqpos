@@ -211,12 +211,12 @@ def prepare_optparser ():
     optparser.add_option("--dir",action="store_true",dest="dir", help="If set, the direction (+/-) is considered in profiling. If no strand info given in the BED, this option is ignored. default:False",default=False)
     optparser.add_option("-s",'--saturation', dest='saturation', type='float', help="The heatmap tool will saturate the top and lowest values to (saturation, 1-saturation) for drawing a better image, set the number between 0 to 0.5, default: 0.01",default=0.01)
 
-    optparser.add_option('--fontsize', dest='fontsize', type="int", help="set the font size in plot. default:2", default=2)
+    optparser.add_option('--fontsize', dest='fontsize', type="float", help="set the font size in plot. default:1", default=1)
     optparser.add_option('--upstream', dest='upstm', type="int", help="upstream distance from the center of peak. Profiling will start here. default:500", default=500)
     optparser.add_option('--downstream', dest='downstm', type="int", help="downstream distance from the center of peak. default:500", default=500)
-    optparser.add_option('--col', dest='colors', type="string", help="set the colorRamp for the legend of heatmap, from low value to high, use ','to split. default: (something colorful)", default="053061,2166AC,4393C3,92C5DE,D1E5F0,F7F7F7,FDDBC7,F4A582,D6604D,B2182B,67001F")
-    optparser.add_option('--pic_width', dest='pic_width', type="int", help="width of the heatmap image. default:1600", default=1600)
-    optparser.add_option('--pic_height', dest='pic_height', type="int", help="height of the heatmap image. default:1200", default=1200)
+    optparser.add_option('--col', dest='colors', type="string", help="set the colorRamp for the legend of heatmap, from low value to high, use ','to split. default: FFFFFF,f5c3c3,dd2222", default="FFFFFF,f5c3c3,dd2222")
+    optparser.add_option('--pic_width', dest='pic_width', type="int", help="width of the heatmap image. default:1920", default=1920)
+    optparser.add_option('--pic_height', dest='pic_height', type="int", help="height of the heatmap image. default:1440", default=1440)
     optparser.add_option('--zmin', dest='zmin', type='float', help="min axis for the legend of heatmap, better to set it. optional.", default=None)
     optparser.add_option('--zmax', dest='zmax', type='float', help="max axis for the legend of heatmap, better to set it. optional.", default=None)
     optparser.add_option('--x_label', dest='xlabel', type="string", help="x-label for each heatmap plot,use ',' to split. optional.", default="")
@@ -567,7 +567,7 @@ def main():
     rscript.write('downstream=%d\n' %opts.downstm)
     rscript.write('step=%d\n' %opts.step)
     rscript.write('km=%d # kmeans number\n' %opts.kmeans)
-    rscript.write('fontsize=%d\n' %opts.fontsize)
+    rscript.write('fontsize=%.2f\n' %(opts.fontsize*1.0*opts.pic_width/1600,))
     if opts.set_seed:
         rscript.write('set.seed(244913100)\n')
     rscript.write('#\n')
@@ -609,7 +609,8 @@ def main():
         rscript.write('orderk[pre:(pre+i-1)] = orderk[pre:(pre+i-1)][ordersub]\n')
         rscript.write('k$cluster[pre:(pre+i-1)] <- j\n')
         rscript.write('pre <- pre+i\n')
-        rscript.write('}\n\n')"""
+        rscript.write('}\n\n')
+        """
         for i in range(wigcount):
             rscript.write('data%d<-data%d[orderk,]\n'%(i,i))
         rscript.write('#\n')
@@ -646,8 +647,8 @@ def main():
     rscript.write('#\n')
     rscript.write('#\n')
     rscript.write('nheat=%d #number of heats\n'%wigcount)
-    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep((7.0*%d/1600-1)/nheat,nheat),1), heights=rep(1,nheat+1)) #*notes* pic_width/1600\n'%opts.pic_width)
-    #rscript.write('par(cex=fontsize)\n')
+    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep(12/nheat,nheat),1), heights=rep(1,nheat+1))\n')
+    rscript.write('par(cex=fontsize)\n')
     rscript.write('#\n')
 
     # draw heats
