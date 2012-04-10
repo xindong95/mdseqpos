@@ -9,3 +9,4 @@ build/
 *.pyc
 published-packages/MACS/dist
 published-packages/MACS/MACS\.egg-info
+cistrome-extra-apps/setup_jian\.py
