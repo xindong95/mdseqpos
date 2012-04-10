@@ -105,7 +105,7 @@ def prepare_optparser ():
     optparser.add_option('--fontsize', dest='fontsize', type="float", help="set the font size in plot. default:1", default=1)
     optparser.add_option('--upstream', dest='upstm', type="int", help="upstream distance from the center of peak. Profiling will start here. default:500", default=500)
     optparser.add_option('--downstream', dest='downstm', type="int", help="downstream distance from the center of peak. default:500", default=500)
-    optparser.add_option('--col', dest='colors', type="string", help="set the colorRamp for the legend of heatmap, from low value to high, use ','to split. default: (something colorful)", default="053061,2166AC,4393C3,92C5DE,D1E5F0,F7F7F7,FDDBC7,F4A582,D6604D,B2182B,67001F")
+    optparser.add_option('--col', dest='colors', type="string", help="set the colorRamp for the legend of heatmap, from low value to high, use ','to split. default: FFFFFF,f5c3c3,dd2222 (white -> red)", default="FFFFFF,f5c3c3,dd2222")
     optparser.add_option('--pic_width', dest='pic_width', type="int", help="width of the heatmap image. default:1920", default=1920)
     optparser.add_option('--pic_height', dest='pic_height', type="int", help="height of the heatmap image. default:1440", default=1440)
     optparser.add_option('--zmin', dest='zmin', type='float', help="min axis for the legend of heatmap, better to set it. optional.", default=None)
