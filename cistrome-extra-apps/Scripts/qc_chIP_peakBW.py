@@ -80,10 +80,10 @@ def main():
                          help="R output file")
     #optparser.add_option("-f","--format",dest="format",type="string",
     #                     help="bed, ma2c, mat or macs, default: ma2c",default="bed")
-    #optparser.add_option("-s","--step",dest="step",type="int",
-    #                     help="number of steps to calculate cor based on some score ranges, default: 5",default=5)
-    optparser.add_option("--res",dest="res",type="int",
-                          help="resolution to calculate scores. default: 160 (bp)",default=160)
+    optparser.add_option("-s","--step",dest="step",type="int",
+                         help="number of steps to calculate cor based on some score ranges, default: 5",default=5)
+    #optparser.add_option("--res",dest="res",type="int",
+    #                      help="resolution to calculate scores. default: 160 (bp)",default=160)
     #optparser.add_option("-m","--method",dest="method",type="string",default="sample",
     #                     help="method to process the paired two sets of data in the sampling step. Choices are 'median', 'mean','sum', and 'sample' (just take one point out of a data set). Default: sample")
 
@@ -92,6 +92,8 @@ def main():
         optparser.print_help()
         sys.exit(1)
 
+    medfunc = mean
+    
     rfhd = open(options.rfile,"w")
 
     info("#1 read peaks from bed file")
@@ -100,24 +102,75 @@ def main():
     info("#1 read score from bigwig file")
     bw1 = BigWigFile(open(options.wig1,'rb'))
     bw2 = BigWigFile(open(options.wig2,'rb'))
+    w1=BwIO(options.wig1)
+    w2=BwIO(options.wig2)
+    union_chroms = set([t['key'] for t in w1.chromosomeTree['nodes']] + [t['key'] for t in w2.chromosomeTree['nodes']])
+    
     p1 = []
     p2 = []
-    for peak in peak_merge:
-        summary = bw1.summarize(peak[0], int(peak[1]), int(peak[2]), (int(peak[2])-int(peak[1]))/options.res+1 )
-        if not summary:
+    ap1 = p1.append
+    ap2 = p2.append
+    
+    pscore1 = {}
+    pscore2 = {}
+    for i in peak_merge:
+        try:
+            pscore1[i[0]].extend(bw1.get(i[0], int(i[1]), int(i[2])))
+            pscore2[i[0]].extend(bw2.get(i[0], int(i[1]), int(i[2])))
+        except KeyError:
+            pscore1[i[0]] = []
+            pscore2[i[0]] = []
+            try:
+                pscore1[i[0]].extend(bw1.get(i[0], int(i[1]), int(i[2])))
+                pscore2[i[0]].extend(bw2.get(i[0], int(i[1]), int(i[2])))
+            except TypeError:
+                pass
+        except TypeError:
+            pass
+                
+    for chrom in union_chroms:  
+        count = 0
+        try:
+            pv1chr = pscore1[chrom]
+            pv2chr = pscore2[chrom]
+        except KeyError:
             continue
-        dat1 = summary.sum_data / summary.valid_count
-        summary = bw2.summarize(peak[0], int(peak[1]), int(peak[2]), (int(peak[2])-int(peak[1]))/options.res+1 )
-        if not summary:
-            continue
-        dat2 = summary.sum_data / summary.valid_count
-        for i in range(len(dat1)):
-            if math.isnan(dat1[i]) or math.isnan(dat2[i]):
-                continue
-            else:
-                p1.append(dat1[i])
-                p2.append(dat2[i])
-
+        #(p1chr,w1chr) = wig1.get_data_by_chr(chrom)
+        #(p2chr,w2chr) = wig2.get_data_by_chr(chrom)
+        j = 0
+        l1chr = len(pv1chr)
+        l2chr = len(pv2chr)
+        sum_region1 = []
+        sum_region2 = []
+        for i in range(l1chr):
+            count += 1
+            while j < l2chr:
+                if pv1chr[i][0] == pv2chr[j][0]:
+                    if count >= options.step:
+                        count = 0
+                        sum_region1.append(pv1chr[i][2])
+                        sum_region2.append(pv2chr[j][2])
+                        try:
+                            ap1(medfunc(sum_region1))
+                            ap2(medfunc(sum_region2))
+                        except:
+                            print sum_region1
+                            print sum_region2
+                        sum_region1 = []
+                        sum_region2 = []
+                    else:
+                        sum_region1.append(pv1chr[i][2])
+                        sum_region2.append(pv2chr[j][2])
+                    j+=1
+                    break
+                elif pv1chr[i][0] < pv2chr[j][0]:
+                    break
+                else:
+                    j+=1
+            if j >= l2chr:
+                count=0
+                break
+    
     p1name = os.path.basename(options.wig1.rsplit(".bw",2)[0])
     p2name = os.path.basename(options.wig2.rsplit(".bw",2)[0])
     rfhd.write('''library("geneplotter")  ## from BioConductor
