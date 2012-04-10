@@ -112,8 +112,8 @@ def prepare_optparser ():
     optparser.add_option('--zmax', dest='zmax', type='float', help="max axis for the legend of heatmap, better to set it. optional.", default=None)
     optparser.add_option('--x_label', dest='xlabel', type="string", help="x-label for each heatmap plot,use ',' to split. optional.", default="")
     optparser.add_option('--y_label', dest='ylabel', type="string", help="y-label for each heatmap plot,use ',' to split. optional.", default="")
-    #optparser.add_option('--title', dest='title', type="string", help="title for the whole heatmap image.", default=None)
-    optparser.add_option('--title', dest='subtitle', type="string",help="subtitles for each heatmap plot, use ',' to split. optional.", default="")
+    optparser.add_option('--title', dest='title', type="string", help="title for the whole heatmap image.", default="Heatmap")
+    optparser.add_option('--subtitle', dest='subtitle', type="string",help="subtitles for each heatmap plot, use ',' to split. optional.", default="")
     optparser.add_option('-z','--horizontal_line', action='store_true', dest='axhline', help="plot lines to separate kmeans class. default:False", default=False)
     optparser.add_option('-v','--vertical_line', action='store_true', dest='axvline', help="plot vertical line at peak center. default:False", default=False)
     optparser.add_option('--set-seed', action='store_true', dest='set_seed', help="Set a seed so that the results can be reproducible. default:False", default=False)
@@ -374,7 +374,8 @@ def main():
     rscript.write('#\n')
     rscript.write('#\n')
     rscript.write('nheat=%d #number of heats\n'%wigcount)
-    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep(12/nheat,nheat),1), heights=rep(1,nheat+1)) #*notes* pic_width/1600\n'%opts.pic_width)
+    rscript.write('par(oma = c(0, 0, 3, 0))\n')
+    rscript.write('layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep(12/nheat,nheat),1), heights=rep(1,nheat+1))\n')
     rscript.write('par(cex=fontsize)\n')
     rscript.write('#\n')
 
@@ -385,6 +386,10 @@ def main():
         rscript.write('%s[%s<zmin] <- zmin\n' %(data, data))
         rscript.write('%s[%s>zmax] <- zmax\n' %(data, data))
         rscript.write('ColorRamp_ex <- ColorRamp[round( (min(%s)-zmin)*10000/(zmax-zmin) ) : round( (max(%s)-zmin)*10000/(zmax-zmin) )]\n' %(data, data))
+        if i == 0:
+            rscript.write('par(mar=c(5.1, 3, 4.1, 0.8))\n')
+        else:
+            rscript.write('par(mar=c(5.1, 0, 4.1, 0.8))\n')
         r='image(1:ncol(%s), 1:nrow(%s), t(%s), axes=FALSE, col=ColorRamp_ex, xlab="%s", ylab="%s")\n'%(data,data,data,opts.xlabel[i],opts.ylabel[i])
         rscript.write(r)
         if opts.subtitle:
@@ -412,9 +417,11 @@ def main():
 
     rscript.write('#\n')
     rscript.write('#draw legend\n')
+    rscript.write('par(mar=c(5.1,3,4.1,2))\n')
     rscript.write('image(1, ColorLevels,matrix(data=ColorLevels, ncol=length(ColorLevels),nrow=1),col=ColorRamp, xlab="",ylab="",cex.axis=1,xaxt="n",yaxt="n")\n')
     rscript.write('axis(2,seq(zmin,zmax,1),seq(zmin,zmax,1))\n')
     rscript.write('box()\n')
+    rscript.write('mtext("%s", side = 3, line = 1, outer = TRUE, cex = 3)\n' %opts.title)
 
     rscript.write('#\n')
     rscript.write('layout(1)\n')
