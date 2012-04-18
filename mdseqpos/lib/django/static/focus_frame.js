@@ -60,7 +60,7 @@ function displayMotif(motif, container, showNewWindowBtn, showPssmBtn, dom) {
     for (var i = 0; i < fields.length; i++) {
         var newLi = dom.createElement('li');
 	var field = fields[i];
-        var fieldname = (field != "pval") ? field : "-10*log(pval)";
+        var fieldname = (field != "pval") ? field : "pval";
 	newLi.innerHTML = fieldname+":"+motif[field];
         newUl.appendChild(newLi);
     }
