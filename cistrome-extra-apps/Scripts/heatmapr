@@ -660,9 +660,9 @@ def main():
         rscript.write('%s[%s>zmax] <- zmax\n' %(data, data))
         rscript.write('ColorRamp_ex <- ColorRamp[round( (min(%s)-zmin)*10000/(zmax-zmin) ) : round( (max(%s)-zmin)*10000/(zmax-zmin) )]\n' %(data, data))
         if i == 0:
-            rscript.write('par(mar=c(5.1, 3, 4.1, 0.8))\n')
+            rscript.write('par(mar=c(5.1, 2.5, 4.1, 0.8))\n')
         else:
-            rscript.write('par(mar=c(5.1, 0, 4.1, 0.8))\n')
+            rscript.write('par(mar=c(5.1, 2.5, 4.1, 0.8))\n')
         r='image(1:ncol(%s), 1:nrow(%s), t(%s), axes=FALSE, col=ColorRamp_ex, xlab="%s", ylab="%s")\n'%(data,data,data,opts.xlabel[i],opts.ylabel[i])
         rscript.write(r)
         if opts.subtitle:
