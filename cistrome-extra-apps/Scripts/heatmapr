@@ -588,6 +588,9 @@ def main():
     rscript.write('ymax<-nrow(data)\n')
 
     if opts.hmethod == "kmeans":
+        peakf = open("%s_peak"%opts.name, "w")
+        peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in peakinfo])
+        
         step_num = len(siteprofs[0])
         k_usecol2cluster = []
         for i in opts.k_wigindex:
@@ -700,8 +703,6 @@ def main():
     rscript.write('layout(1)\n')
     rscript.write('dev.off()\n')
 
-    peakf = open("%s_peak"%opts.name, "w")
-    peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in peakinfo])
     rscript.write('#\n')
     if opts.hmethod == "kmeans":
         rscript.write('# output class information\n')
