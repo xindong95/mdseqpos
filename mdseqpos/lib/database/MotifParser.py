@@ -2,6 +2,8 @@
 from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
 import os, sys
+import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
+import mdseqpos.motif as motif
 
 SEP = "|"
 def Info(string):
@@ -13,8 +15,9 @@ def List2Str(l, con=SEP):
     return con.join(l)
 
 def PssmValidator(pssm):
-    """validate each PSSM format, no head.
-    pssm = [[], [], ... , []]"""
+    """validate each PSSM matrix format, no head.
+    pssm = [[], [], ... , []]
+    """
     #print pssm
     for pos in pssm:
         if len(pos)!=4:
@@ -25,6 +28,21 @@ def PssmValidator(pssm):
             except ValueError:
                 return False
     return True
+
+def FixPssm(p):
+    """FixPssm(p)
+    p is a MP object. This function fix the pssm, make each position sum to 1.
+    """
+    for k in p.motifs.keys():
+        for pssm in p.motifs[k]['pssm']:
+            for row in pssm:
+                rsum = sum([float(t) for t in row])
+                for t in range(len(row)):
+                    row[t] = round(float(row[t])/rsum,3)
+                    if row[t]<0.01:
+                        row[t] = 0.01
+                imax = row.index(max(row))
+                row[imax] -= sum(row)-1
 
 class MotifParser:
     """
@@ -71,14 +89,15 @@ class MotifParser:
     """
     def __init__(self, xmlfile = ''):
         """MP = MotifParser()
-        Setup a MP Object, and parser the xmlfile."""
+        Setup a MP Object, and parser the xmlfile.
+        """
         self.motifs = {}
         #self.temp_print = ''
         
         self.keyName = 'id'
         self.attr_list = [self.keyName,'edition']
         self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', \
-        'description', 'species', 'entrez', 'symbol', 'synonym', 'refseq', 'comment1', \
+        'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'comment1', \
         'comment2', 'comment3', 'comment4', 'comment5']
         self.special_list = ['pssm'] # if you add a element here, need to edit code below -,-
         self.all_list = self.attr_list + self.tag_list + self.special_list
@@ -91,26 +110,50 @@ class MotifParser:
             else:
                 Info("Can't parser the file, xml or txt?")
             
-    def Refresh(self):
-        """Refresh self.all_list, if you ever use sth like self.tag_list.append"""
+    #def Refresh(self):
+    #    """Refresh self.all_list, if you ever use sth like self.tag_list.append"""
+    #    self.all_list = self.attr_list + self.tag_list + self.special_list
+
+    def AppendTag(self, tag, appendto='tag_list'):
+        """AppendTag(self, tag, appendto='tag_list')
+        extend tags in MP object.
+        """
+        taglist = getattr(self, appendto)
+        if tag not in taglist:
+            taglist.append(tag)
         self.all_list = self.attr_list + self.tag_list + self.special_list
-    
+        
+    def Create(self, id, **argv):
+        """Create(self, id, **argv)
+        Create a single motif.
+        """
+        self.Refresh()
+        self.motifs[id] = {}
+        self.motifs[id]['id'] = id
+        for i in self.all_list:
+            if i in argv.keys():
+                self.motifs[id][i] = argv[i][:]
+            else:
+                self.motifs[id][i] = []
+        
     def Parser(self, xmlfile):
         """MP.Parser(xmlfile)
-        Parser the xmlfile."""
+        Parser the xmlfile.
+        """
         self.motifs = {}
         xmltree = ElementTree()
         try:
             xmltree.parse(xmlfile)
         except IOError:
             Info("Fail to parser the xml file. Not exist or format error?")
+            return None
 
         for pos in xmltree.findall("motif"):
             #get key and set empty element
             key = pos.get(self.keyName)
             if not key:
                 Info('ERROR: No %s found for node.' %self.keyName)
-                sys.exit(1)
+                return None
             if key in self.motifs.keys():
                 Info("WARNING: %s has exist in instance."%key)
             self.motifs[key] = {}
@@ -143,7 +186,8 @@ class MotifParser:
     def ParserTable(self, tfile):
         """Parser from a "\t" splitted table txt file. 
         The first col should be col name and in lowercase letter.
-        The pssm format like this: [[0.2,0.3,0.3,0.2],[0.1,0.8,0.05,0.05]]"""
+        The pssm format like this: [[[0.2,0.3,0.3,0.2],[0.1,0.8,0.05,0.05]]]
+        """
         self.motifs = {}
         inf = open(tfile)
         line = inf.readline()
@@ -197,7 +241,8 @@ class MotifParser:
                         
     def GetAttr(self, attr, deldup = False):
         """MP.GetAttr(attr, deldup = False)
-        Get all data of the attribute / tag. Return a string."""
+        Get all data of the attribute / tag. Return a string.
+        """
         if attr not in self.all_list:
             print "Wrong input attr, select attr from: \n:",List2Str(self.all_list, ",")
             return ''
@@ -216,9 +261,12 @@ class MotifParser:
         return List2Str(res).replace("::",SEP)
         
     def SearchMotif(self, **attrs):
-        """search a set of specific motifs in the MP Object. Return a MP Object
-        choose arguments from
-        e.g) MP2 = MP.SearchMotif(species="Homo sapiens",source="JASPAR")"""
+        """SearchMotif(self, **attrs)
+        search a set of specific motifs in the MP Object. Return a MP Object.
+        Any changes on the subset MP may influence the original MP.
+        choose arguments from self.all_list
+        e.g) MP2 = MP.SearchMotif(species="Homo sapiens",source="JASPAR")
+        """
         #print attrs
         for i in attrs.keys():
             if i not in self.all_list:
@@ -230,16 +278,17 @@ class MotifParser:
             temp_dict = {}
             for i in sub_motifs.motifs.items():
                 if not attr[1] and not i[1][attr[0]]: #search for empty
-                    temp_dict[i[0]] = i[1]
+                    temp_dict[i[0]] = i[1].copy()
                 elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
-                    temp_dict[i[0]] = i[1]
+                    temp_dict[i[0]] = i[1].copy()
             sub_motifs.motifs = temp_dict
         Info("Extract %d records." %sub_motifs.Length())
         return sub_motifs
 
     def String(self, mid):
         """Return a specific motif in a formatted string and readable type.
-        e.g) MP.String("M00913")"""
+        e.g) MP.String("M00913")
+        """
         if mid in self.motifs.keys():
             dMotif = self.motifs[mid]
         else:
@@ -261,14 +310,15 @@ class MotifParser:
             
         print List2Str(motif_string,"")
 
-    def Patch(self, mp2):
+    def Patch(self, mp2): #marked as not useful
         """patch motif in mp2 to self, simply replace the motif in self, identified by motif id."""
         for item in mp2.motifs.items():
             self.motifs[item[0]] = item[1]
             
     def __add__(self, mp2):
         """MP1.__add__(MP2) <==> MP1+MP2
-        Add two MP into one, delete duplicates with same motif id(use MP2 to replace MP1). Return a MP object."""
+        Add two MP into one, delete duplicates with same motif id(use MP2 to replace MP1). Return a MP object.
+        """
         res_motifs = MotifParser()
         res_motifs.keyName = self.keyName[:]
         res_motifs.attr_list = self.attr_list[:]
@@ -276,13 +326,20 @@ class MotifParser:
         res_motifs.special_list = self.special_list[:]
         res_motifs.all_list = self.all_list[:]
         
-        res_motifs.motifs.update(self.motifs)
-        res_motifs.motifs.update(mp2.motifs)
+        temp_dict = {}
+        for i in self.motifs.keys():
+            temp_dict[i] = self.motifs[i].copy()
+        for i in mp2.motifs.keys():
+            temp_dict[i] = mp2.motifs[i].copy()
+        #res_motifs.motifs.update(self.motifs)
+        #res_motifs.motifs.update(mp2.motifs)
+        res_motifs.motifs = temp_dict
         return res_motifs
     
     def __sub__(self, mp2):
         """MP1.__sub__(MP2) <==> MP1-MP2
-        Subtract motifs of mp2 from the MP object (identify by keys). Return a MP object."""
+        Subtract motifs of mp2 from the MP object (identify by keys). Return a MP object.
+        """
         res_motifs = MotifParser()
         res_motifs.keyName = self.keyName[:]
         res_motifs.attr_list = self.attr_list[:]
@@ -300,7 +357,8 @@ class MotifParser:
     def ToXml(self, xmlfile, xsl=False, sortkey=''):
         """MP.ToXML(xmlfile, xsl=False, sortkey='')
         Output the MP Object to xmlfile.
-        sortkey = lambda x:x['id'] #something like that"""
+        sortkey = lambda x:x['id'] #something like that.
+        """
         doc = minidom.Document()
         motifs = doc.createElement("motifs")
         doc.appendChild(motifs)
@@ -309,8 +367,8 @@ class MotifParser:
         if sortkey:
             t_motifs.sort(key=sortkey)
         else:
-            t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
-            #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+ x['id'][0])
+            #t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
+            t_motifs.sort(key=lambda x:x['symbol'])
             #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:]) #sort as symbol, then id, shirley asked
         #t_motifs.sort(key=lambda x:'|'.join(x['dbd'])+' '+x['symbol'][0].upper()) #sort as dbd, then symbol
         for mo in t_motifs:
@@ -350,7 +408,7 @@ class MotifParser:
         xmlString = xmlString.split("\n",1)
         
         #output to xmlfile
-        xmlfile_ = xmlfile.rstrip(".xml")
+        xmlfile_ = xmlfile.split(".xml")[0]
         outf = open(xmlfile_+".xml",'w')
         outf.write(xmlString[0]+"\n")
         if xmlString[0].find("xml") != -1:
@@ -379,6 +437,7 @@ class MotifParser:
 			<TD bgcolor="#FFFF99"><B>SOURCE</B></TD>
 			<TD bgcolor="#FFFF99"><B>STATUS</B></TD>
 			<TD bgcolor="#FFFF99"><B>SPECIES</B></TD>
+			<TD bgcolor="#FFFF99"><B>CELLLINE</B></TD>
 			<TD bgcolor="#FFFF99"><B>SYMBOL</B></TD>
 			<TD bgcolor="#FFFF99"><B>ENTREZ</B></TD>
 			<TD bgcolor="#FFFF99"><B>REFSEQ</B></TD>
@@ -395,6 +454,7 @@ class MotifParser:
 			<TD><xsl:if test="not(source)">-</xsl:if>	<xsl:value-of select="source" /></TD>
 			<TD><xsl:if test="not(status)">-</xsl:if>	<xsl:value-of select="status" /></TD>
 			<TD><xsl:for-each select="species"><xsl:value-of select="." /></xsl:for-each></TD>
+			<TD><xsl:for-each select="cellline"><xsl:value-of select="." /></xsl:for-each></TD>
 			<TD><xsl:for-each select="symbol"><xsl:value-of select="." /></xsl:for-each></TD>
 			<TD><xsl:for-each select="entrez">
 			    <a target="_blank"><xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/gene/?term=<xsl:value-of select="normalize-space(.)" />
@@ -435,6 +495,7 @@ class MotifParser:
 			<TD bgcolor="#FFFF99"><B>STATUS</B></TD>
 			<TD bgcolor="#FFFF99"><B>NUMSEQS</B></TD>
 			<TD bgcolor="#FFFF99"><B>SPECIES</B></TD>
+			<TD bgcolor="#FFFF99"><B>CELLLINE</B></TD>
 			<TD bgcolor="#FFFF99"><B>SYMBOL</B></TD>
 			<TD bgcolor="#FFFF99"><B>ENTREZ</B></TD>
 			<TD bgcolor="#FFFF99"><B>REFSEQ</B></TD>
@@ -454,6 +515,7 @@ class MotifParser:
 			<TD><xsl:if test="not(status)">-</xsl:if>	<xsl:value-of select="status" /></TD>
 			<TD><xsl:if test="not(numseqs)">-</xsl:if>	<xsl:value-of select="numseqs" /></TD>
 			<TD><xsl:if test="not(species)">-</xsl:if>	<xsl:for-each select="species"><xsl:value-of select="." /></xsl:for-each></TD>
+			<TD><xsl:if test="not(cellline)">-</xsl:if>	<xsl:for-each select="cellline"><xsl:value-of select="." /></xsl:for-each></TD>
 			<TD><xsl:if test="not(symbol)">-</xsl:if>	<xsl:value-of select="symbol" /></TD>
 			<TD><xsl:if test="not(entrez)">-</xsl:if>	
 			  <xsl:for-each select="entrez"><xsl:value-of select="." /></xsl:for-each></TD>
@@ -476,6 +538,7 @@ class MotifParser:
             outf.close()
             
     def ToTable(self, tabfile, sortkey=''):
+        """ToTable(self, tabfile, sortkey='')"""
         pssm_index = self.all_list.index("pssm")
         outf = open(tabfile,'w')
         outf.write(List2Str(self.all_list, "\t")+"\n")
@@ -501,6 +564,9 @@ class MotifParser:
         outf.close()
     
     def Pwm2File(self, folder):
+        """Pwm2File(self, folder)
+        Output pssm to a folder, filename is the id
+        """
         if not os.path.exists(folder):
             os.mkdir(folder)
         for i in self.motifs.values():
@@ -516,12 +582,13 @@ class MotifParser:
                 outf.write(List2Str(x, '\t') + '\n')
             outf.close()
             
-    def Length(self):
-        return len(self.motifs.keys())
+    def __len__(self):
+        return len(self.motifs)
         
     def _Parser(self, xmlfile):
         """MP.Parser(xmlfile)
-        Parser the xmlfile. Old parser version. Only for Convert"""
+        Parser the xmlfile. Old parser version. Only for Convert.
+        """
         self.motifs = {}
         xmltree = ElementTree()
         try:
@@ -570,7 +637,7 @@ class MotifParser:
                     self.motifs[id][tag] = [self.motifs[id][tag]]
 
     def _ConvertToYing(self):
-        """Only For convert"""
+        """Only For convert."""
         from parser_ying import base_ying
         import numpy
         motiflist = base_ying.MotifList()
@@ -606,11 +673,32 @@ class MotifParser:
             pm.antisense = False # reverse complements need to be taken to make tree consistent
             motiflist.append(pm)
         return motiflist
-        
+
+    def _ConvertToOldMotif(self, motifid):
+        p = motif.Motif()
+        p = p.from_dict(self.motifs[motifid])
+        return p
+    
+    def _Similarity(self, motifid1, motifid2, metric='Bayesian'):
+        """_Similarity(self, motifid1, motifid2, metric='Bayesian')
+        Return a score for the similarity between two motifs.
+        offset -- number of basepairs to shift the first motif
+        antisense -- whether to take the reverse complement of the first motif
+        """
+        if len(self.motifs[motifid1]['pssm']) == 1 and len(self.motifs[motifid2]['pssm']) == 1:
+            m1 = self._ConvertToOldMotif(motifid1)
+            m2 = self._ConvertToOldMotif(motifid2)
+            similarity_score, offset, antisense = bayesian_motif_comp.BLiC_score(m1.pssm, m2.pssm)
+            antisense = bool(antisense)
+            return similarity_score, offset, antisense
+        else:
+            Info('ERROR: It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
+
     def _ParserTable(self, tfile):
         """Parser from a "\t" splitted table txt file. 
         The first col should be col name and in lowercase letter.
-        The pssm format like this: [[0.2,0.3,0.3,0.2],[0.1,0.8,0.05,0.05]]"""
+        The pssm format like this: [[0.2,0.3,0.3,0.2],[0.1,0.8,0.05,0.05]]
+        """
         self.motifs = {}
         inf = open(tfile)
         line = inf.readline()
