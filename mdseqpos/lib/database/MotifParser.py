@@ -270,7 +270,7 @@ class MotifParser:
         #print attrs
         for i in attrs.keys():
             if i not in self.all_list:
-                Info("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list, ",")))
+                Info("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
                 return None
         sub_motifs = MotifParser()
         sub_motifs.motifs = self.motifs
