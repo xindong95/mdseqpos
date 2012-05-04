@@ -127,7 +127,7 @@ class MotifParser:
         """Create(self, id, **argv)
         Create a single motif.
         """
-        self.Refresh()
+        #self.Refresh()
         self.motifs[id] = {}
         self.motifs[id]['id'] = id
         for i in self.all_list:
