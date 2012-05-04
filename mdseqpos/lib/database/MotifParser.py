@@ -3,7 +3,7 @@ from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
 import os, sys
 import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
-import mdseqpos.motif as motif
+#import mdseqpos.motif as motif
 
 SEP = "|"
 def Info(string):
@@ -282,7 +282,7 @@ class MotifParser:
                 elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
                     temp_dict[i[0]] = i[1].copy()
             sub_motifs.motifs = temp_dict
-        Info("Extract %d records." %sub_motifs.Length())
+        Info("Extract %d records." %len(sub_motifs))
         return sub_motifs
 
     def String(self, mid):
