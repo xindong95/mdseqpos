@@ -272,8 +272,9 @@ class MotifParser:
             if i not in self.all_list:
                 Info("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
                 return None
-        sub_motifs = MotifParser()
-        sub_motifs.motifs = self.motifs
+        sub_motifs = self #MotifParser()
+        #sub_motifs.motifs = self.motifs
+
         for attr in attrs.items():
             temp_dict = {}
             for i in sub_motifs.motifs.items():
@@ -675,6 +676,7 @@ class MotifParser:
         return motiflist
 
     def _ConvertToOldMotif(self, motifid):
+        import mdseqpos.motif as motif
         p = motif.Motif()
         p = p.from_dict(self.motifs[motifid])
         return p
