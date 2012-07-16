@@ -6,23 +6,31 @@ def Info(infoStr):
 
 
 # input a file with '\t' separate, return a 2-d list.
-def TableFileInput(fileName, headDel = False, sep = "\t"):
-    """TableFileInput(fileName, headDel = False)"""
+def TableFileInput(fileName, sep="\t", skip='\x00'):
+    """TableFileInput(fileName, sep="\t", skip="\x00")
+    skip the lines start with \x00.
+    """
     if type(fileName) == file:
         inf = fileName
     elif type(fileName) == str:
-        if os.path.isfile(fileName):
+        try:
             inf = open(fileName)
-        else:
-            Info("no such file:<%s>" %fileName)
-            return 1
+        except IOError:
+            print "no such file:<%s>" %fileName
+            return 0
     l = []
-    if headDel:
-        inf.readline()
+    skipcount = 0
     for line in inf:
         line = line.rstrip("\n")
-        l.append(line.split(sep))
+        if line.startswith(skip):
+            skipcount += 1
+            continue
+        if sep == "space":
+            l.append(line.split())
+        else:
+            l.append(line.split(sep))
     inf.close()
+    print 'skip <%d> lines' %skipcount
     return l
 
 #file formated dataoutput (list/dict)
@@ -39,13 +47,11 @@ def TableFileOutput(l, filename, sep='\t'):
 
 def Orderfile(keyfile, pfile, kmethod, sep=','): #pfile is a list
     keylist = TableFileInput(keyfile, sep=',')
-    #print keylist[4726:4729]
     width = len(keylist[0])
     #print width
     index = iter(range(len(keylist)))
     map(lambda x:x.append(index.next()), keylist)
-    #print keylist[4726:4729]
-    #t = [t.append(index.next()) for t in keylist]
+
     if kmethod == "median":
         keylist.sort(key=lambda x:median([float(t) for t in x[:width]]))
     elif kmethod == "maximum":
