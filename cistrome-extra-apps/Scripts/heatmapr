@@ -54,6 +54,17 @@ import CistromeAP.jianlib.inout as inout
 import CistromeAP.jianlib.corelib as corelib
 import CistromeAP.jianlib.R as R
 import CistromeAP.jianlib.myfunc as jlib
+from CistromeAP.jianlib.BwReader import BwIO
+
+try:
+    from bx.bbi.bigwig_file import BigWigFile
+except:
+    sys.stderr.write("Need bx-python!")
+    sys.exit()
+
+#import func
+Info = jlib.Info
+VERSION = "1.50"
 
 class WigProfilerwBed:
     """WigProfiler for regions in Bed"""
@@ -104,9 +115,8 @@ class WigProfilerwBed:
                 this = [0] * n
 
             # if -, reverse
-            if strand == '-':
+            if strand == '-' and self.dir:
                 this.reverse()
-
             # save the binned signal
             binned.append(this)
 
@@ -142,13 +152,14 @@ def prepare_optparser ():
     usage = "usage: %prog <-w wig -b bed> [options]"
     description = "plot heatmap for 1 bed against N wigs. Please use absolute path for now."
     # option processor
-    optparser = OptionParser(version="%prog 1.50",description=description,usage=usage,add_help_option=False)
+    optparser = OptionParser(version="%prog "+VERSION, description=description,usage=usage,add_help_option=False)
     optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
     optparser.add_option("-w","--wig",dest="wig",type="string",help="input WIG file. both fixedStep/variableStep are accepted. Multiple WIG files use ',' to split")
     optparser.add_option("-b","--bed",dest="bed",type="string",help="BED file of regions of interest.")
     optparser.add_option("--name",dest="name",type="string",help="Name of this run. Used to name output file. If not given, the body of the bed file name will be used")
+    optparser.add_option("--wig_format",dest="wig_format",type="string",help="The wig file format, select from 'wig', 'bigwig', 'auto'. Default: auto, detect from file ext.", default="auto")
     
-    optparser.add_option("--method",dest="hmethod",type="string",help="which method you want to use to cluster these files. select from kmeans, median, maximum, mean. default:kmeans",default="kmeans")
+    optparser.add_option("--method",dest="hmethod",type="string",help="which method you want to use to cluster these files. select from kmeans, median, maximum, mean, none. ('none' means keep original bed order to draw heatmap.) default:kmeans",default="kmeans")
     optparser.add_option("-k","--kmeans",dest="kmeans",type="int",help="for KMEANS. number of the classifications, int, default:4",default=4)
     optparser.add_option("--k_wigindex", dest="k_wigindex",type="string",help="for KMEANS. select wig file to do clustering, eg:'1,3,4' default:all",default="all")
     optparser.add_option("--s_wigindex", dest="s_wigindex",type="int",help="for SORT WIG. select the key wig file to get the order. default:1",default=1)
@@ -197,6 +208,21 @@ def opt_validate (optparser):
             Info('ERROR @ Check -b (--bed). No such file exists:<%s>' %options.bed)
             sys.exit(1)
 
+    if options.wig_format == "auto":
+        ext = options.wig[0].rsplit('.',1)[-1]
+        if ext in ("wig", "wiggle"):
+            options.wig_format = "wig"
+        elif ext in ("bw", "bigwig"):
+            options.wig_format = "bigwig"
+        else:
+            Info("Detector get ext string: %s, wig format detect failed. Please manually set it." %ext)
+            sys.exit(1)
+    elif options.wig_format in ("wig", "bigwig"):
+        pass
+    else:
+        Info("Cannot get wig format, input error?")
+        sys.exit(1)
+            
     if options.saturation>=0.5 or options.saturation<=0:
         Info('the saturation option should be between 0 and 0.5')
         sys.exit(1)
@@ -216,7 +242,7 @@ def opt_validate (optparser):
                 sys.exit(1)
         options.k_wigindex = [int(t) for t in options.k_wigindex]
 
-    if options.hmethod not in ("kmeans", "median", "maximum", "mean"):
+    if options.hmethod not in ("kmeans", "median", "maximum", "mean", "none"):
         Info("ERROR @ method not support.")
         sys.exit(1)
         
@@ -273,10 +299,10 @@ def opt_validate (optparser):
     while len(options.subtitle)<iwig:
         Info("WARNING @ subtitles less than wigs.")
         options.subtitle.append('')
-    #if options.zmin and options.zmin<0:
-    #    options.zmin=0
-    #if options.zmax and options.zmax<0:
-    #    options.zmax=0
+    if options.zmin is None:
+        options.zmin='"None"'
+    if options.zmax is None:
+        options.zmax='"None"'
     
     #fix some options
     if options.hmethod != "kmeans":
@@ -307,22 +333,33 @@ def GetChromIntersection(wigfn_list): # get a list of chroms exist in every wig 
 
 def WigProfiler(opts, bed, wig, head_ref): # return a instance of WigProfilerwBed
     profwbed=WigProfilerwBed(upstm=opts.upstm, downstm=opts.downstm, step=opts.step, dir=opts.dir) # create a profiler object
-    #peakinfo = {}
-    #siteprofs = {}
-
     pwig=inout.Wig()
     pwig.read(wig)
     
     siteprofs = profwbed.profile(pwig, bed)
-    #peakinfo = peak
+    return siteprofs
 
-    #siteprofs_list = []
-    #peakinfo_list = []
-    #for chrom in sorted(chroms_bed):
-    #    siteprofs_list.extend(siteprofs[chrom])
-    #    peakinfo_list.extend(peakinfo[chrom])
-
-    #return peakinfo_list, siteprofs_list
+def bigwigProfiler(opts, bed, wig, head_ref):
+    bw = BigWigFile(open(wig, 'rb'))
+    siteprofs = []
+    for region in bed:
+        center = (int(region[1])+int(region[2]))/2
+        start,end = center-opts.upstm, center+opts.downstm # for '+' strand
+        if opts.dir and region[5] == '-':
+                start,end = center-opts.downstm, center+opts.upstm    
+        try:
+            summary = bw.summarize(region[0], start, end, (end - start) / opts.step)
+        except OverflowError:
+            continue
+        if not summary:
+            siteprofs.append([0]*((end - start) / opts.step))
+            continue
+        value = summary.sum_data / summary.valid_count
+        value = [str(t).replace('nan','0') for t in value]
+        #func.debug(locals())
+        if opts.dir and region[5] == '-':
+                value = value[::-1]
+        siteprofs.append(value)
     return siteprofs
 
 def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
@@ -350,7 +387,6 @@ def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
     xlength=len(x)
     if xlength == 0: return []
     
-
     # do binning, x must be sorted from the smallest to largest
     for i in xrange(0, length_bins-1):
         for j in xrange(len(x)):
@@ -400,51 +436,72 @@ def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
 # Main function
 # ------------------------------------
 def main():
+    Info('Heatmapr Version %s\n'%VERSION)
     opts=opt_validate(prepare_optparser())
 
     # read regions of interest (bed file)
     Info("# read the bed file(s) of regions of interest...")
     bed = jlib.TableFileInput(opts.bed, skip='#')
-    
-    #delete chroms if no info of that chrom in any of the wigs.
-    chrom_list = GetChromIntersection(opts.wig)
-    for i in range(len(bed)):
-        if bed[i][0] not in chrom_list:
-            del bed[i]
-    Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
-    
+    if len(bed[0]) < 6:
+        opts.dir = False
+        
     wigcount = len(opts.wig)
     head_ref = ['chrom', 'start','end','name','score','strand','thickStart','thickEnd'][:len(bed[0])] #get head as column of bed file.
 
     for iwig in range(wigcount):   
         Info("# profiling wig - %d"%(iwig+1,))
-        siteprofs = WigProfiler(opts, bed, opts.wig[iwig], head_ref)
+        if opts.wig_format == "wig":
+            #delete chroms if no info of that chrom in any of the wigs.
+            chrom_list = GetChromIntersection(opts.wig)
+            for i in range(len(bed)):
+                if bed[i][0] not in chrom_list:
+                    del bed[i]
+            Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
+            siteprofs = WigProfiler(opts, bed, opts.wig[iwig], head_ref)
+        else:
+            #get chrom list
+            p=BwIO(opts.wig[0])
+            chrset = set([t['key'] for t in p.chromosomeTree['nodes']])
+            if wigcount > 1:
+                for bw in opts.wig[1:]:
+                    p=BwIO(bw)
+                    chrset = chrset.intersection(set([t['key'] for t in p.chromosomeTree['nodes']]))
+            chrom_list = list(chrset)
+            Info('common chr in wigs: %s' %(','.join(chrom_list),))
+            bed = [t for t in bed if t[0] in chrom_list]
+            siteprofs = bigwigProfiler(opts, bed, opts.wig[iwig], head_ref)
+            
         sitef = open("%s_siteprof%d" %(opts.name,iwig+1), "w")
         sitef.writelines([",".join([str(m) for m in t])+"\n" for t in siteprofs])
         sitef.close()
 
+    peakf = open("%s_peak"%opts.name, "w") # peaks in use after filtering.
+    peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in bed])
+    peakf.close()
+    
+    k_usecol2cluster = []
+    step_num = len(siteprofs[0])
     if opts.hmethod == "kmeans":
-        peakf = open("%s_peak"%opts.name, "w")
-        peakf.writelines(["\t".join([str(m) for m in t])+"\n" for t in bed])
-        
-        step_num = len(siteprofs[0])
-        k_usecol2cluster = []
         for i in opts.k_wigindex:
             k_usecol2cluster += range((step_num*(i-1)+1), (step_num*i))
-    else:
+    elif opts.hmethod in ("median", "maximum", "mean"):
         keyfile = "%s_siteprof%d" %(opts.name, opts.s_wigindex)
-        pfilel = ["%s_siteprof%d" %(opts.name, t+1) for t in range(wigcount)]
+        pfilel = ["%s_siteprof%d" %(opts.name, t+1) for t in range(wigcount)]+["%s_peak"%opts.name]
         #print keyfile
         #print pfilel
         jlib.Orderfile(keyfile, pfilel, opts.hmethod, sep=',')
+    else:
+        pass
 
     # create rscript
     args = {
 'opts_name': opts.name, 
-'col_name': ','.join(['"%s"'%t for t in ['class-id','chrom']+head_ref]),
+'col_name': ','.join(['"%s"'%t for t in (['class-id']+head_ref)[:len(bed[0])+1]]),
 'opts_title': opts.title,
 'cwd': os.getcwd().replace(os.sep, "/"),
 'clustered_columns': ','.join([str(t) for t in k_usecol2cluster]),
+'siteprof': 'c("' + '","'.join(["%s_siteprof%d" %(opts.name,iwig+1) for iwig in range(wigcount)]) + '")',
+'step_num': step_num,
 
 'opts_colors': opts.colors,
 'wigcount': wigcount,
@@ -460,23 +517,34 @@ def main():
 'opts_fontsize': opts.fontsize,
 'opts_pic_width': opts.pic_width,
 'opts_pic_height': opts.pic_height,
-
-
+'opts_xlabel': 'c("' + '","'.join(opts.xlabel) + '")',
+'opts_ylabel': 'c("' + '","'.join(opts.ylabel) + '")',
+'opts_subtitle':  'c("' + '","'.join(opts.subtitle) + '")',
+'opts_axhline': opts.axhline,
+'opts_axvline': opts.axvline,
 }
-
+    #func.debug(locals())
     rscript = open("%s_kmeans.r" %opts.name, "w")
     rscript.write('''
 # Options settings.
 upstream=%(opts_upstm)d
 downstream=%(opts_downstm)d
 step=%(opts_step)d
-set_seed=%(opts_set_seed)s
-hmethod=%(opts_hmethod)s
+set_seed="%(opts_set_seed)s"
+hmethod="%(opts_hmethod)s"
 zmin=%(opts_zmin)s
 zmax=%(opts_zmax)s
 saturation = %(opts_saturation)f
 km=%(opts_kmeans)d # kmeans number
 fontsize=round(%(opts_fontsize)d*1.0*%(opts_pic_width)d/1600, 2)
+wigcount=%(wigcount)d
+siteprof=%(siteprof)s
+step_num=%(step_num)d
+xlabel=%(opts_xlabel)s
+ylabel=%(opts_ylabel)s
+subtitle=%(opts_subtitle)s
+axhline="%(opts_axhline)s"
+axvline="%(opts_axvline)s"
 
 if (set_seed=="True"){
     set.seed(244913100)
@@ -486,10 +554,14 @@ if (set_seed=="True"){
 # the function is create by python
 setwd("%(cwd)s")
 
-datafull <- c()
+#datafull <- read.table(siteprof[1],sep=",",header=F)
 for (i in seq(wigcount)){
-    data[i]<-read.table(siteprof[i],sep=",",header=F)
-    datafull <- cbind(datafull, data[i])
+    data<-read.table(siteprof[i],sep=",",header=F)
+    if (i==1) {
+    datafull <- data
+    } else {
+    datafull <- cbind(datafull, data)
+    }
 }
 ymax<-nrow(datafull)
 
@@ -514,31 +586,30 @@ if (hmethod=="kmeans"){
     #    pre <- pre+i
     #}
     
-    for (i in seq(%(wigcount)d)){
-        datafull[i] <- datafull[i][orderk,]
-    }
+    #for (i in seq(wigcount)){
+        datafull <- datafull[orderk,]
+    #}
 }
 
 # decide zmin, zmax
-datafull <- c(as.matrix(datafull))
-datafull <- sort(datafull)
-min <- datafull[1]
-max <- datafull[length(datafull)]
+datafull_flat <- c(as.matrix(datafull))
+datafull_flat <- sort(datafull_flat)
+min <- datafull_flat[1]
+max <- datafull_flat[length(datafull_flat)]
 
-if (zmin=="None" || zmax=="None"){
-    temp<-data[round(c(saturation,0.5,1-saturation)*length(data))]
+if (zmin=="None" || zmax=="None") {
+    temp<-datafull_flat[round(c(saturation,0.5,1-saturation)*length(datafull_flat))]
     p20<-temp[1]
     p50<-temp[2]
     p80<-temp[3]
     zmin=p20
     zmax=p80
-}
-else{
+} else {
     zmin=max(zmin, min)
     zmax=min(zmax, max)
 }
 
-# set color map\n')
+# set color map
 ColorRamp <- colorRampPalette(c(%(opts_colors)s), bias=1)(10000)   #color list
 ColorLevels <- seq(to=zmax,from=zmin, length=10000)   #number sequence
 
@@ -546,32 +617,31 @@ ColorLevels <- seq(to=zmax,from=zmin, length=10000)   #number sequence
 png("%(opts_name)s_r.heatmap.png",width=%(opts_pic_width)d,height=%(opts_pic_height)d)
 
 
-nheat=%(wigcount)d #number of heats
+nheat=wigcount #number of heats
 par(oma = c(0, 0, 3, 0))
 layout(matrix(seq(nheat+1), nrow=1, ncol=nheat+1), widths=c(rep(12/nheat,nheat),1), heights=rep(1,nheat+1))
 par(cex=fontsize)
 
-for (i in seq(wigcount)){
+for (i in seq(wigcount)) {
     # draw heatmap
-    data[i][data[i]<zmin] <- zmin
-    data[i][data[i]>zmax] <- zmax
-    ColorRamp_ex <- ColorRamp[round( (min(data[i])-zmin)*10000/(zmax-zmin) ) : round( (max(data[i])-zmin)*10000/(zmax-zmin) )]
+    data <- datafull[,seq((i-1)*step_num+1,i*step_num)]
+    data[data<zmin] <- zmin
+    data[data>zmax] <- zmax
+    ColorRamp_ex <- ColorRamp[round( (min(data)-zmin)*10000/(zmax-zmin) ) : round( (max(data)-zmin)*10000/(zmax-zmin) )]
     if (i==1){
         par(mar=c(5.1, 2.5, 4.1, 0.8))
-    }
-    else{
+    } else {
         par(mar=c(5.1, 2.5, 4.1, 0.8))
     }
-    image(1:ncol(data[i]), 1:nrow(data[i]), t(data[i]), axes=FALSE, col=ColorRamp_ex, xlab=xlabel[i], ylab=ylabel[i])
-    if (subtitle==True){
+    image(1:ncol(data), 1:nrow(data), t(data), axes=FALSE, col=ColorRamp_ex, xlab=xlabel[i], ylab=ylabel[i])
+    #if (subtitle==True){
         title(main=subtitle[i],cex=2)
-    }
-    sepxy=((downstream+upstream)/step)%/%5*step
+    #}
+    sepxy=((downstream+upstream)/step)%%/%%5*step
     sepy=floor(ymax/5/10^floor(log10(ymax/5)))*10^floor(log10(ymax/5)) #the three 5 this line is var before.
-    if ((upstm+downstm)/step>=5){
-        axis(1,at=(seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy)+round(upstream/step)*step)/step+0.5,seq(from=-(upstream%/%sepxy*sepxy),to=downstream,by=sepxy))
-    }
-    else{
+    if ((upstream+downstream)/step>=5){
+        axis(1,at=(seq(from=-(upstream%%/%%sepxy*sepxy),to=downstream,by=sepxy)+round(upstream/step)*step)/step+0.5,seq(from=-(upstream%%/%%sepxy*sepxy),to=downstream,by=sepxy))
+    } else {
         axis(1,at=seq(6)-0.5,seq(-round(upstream/step)*step,by=step,length=6))
     }
     
@@ -590,6 +660,7 @@ for (i in seq(wigcount)){
     if (axvline=="True"){
         lines(rep(round(upstream/step)+0.5,2),c(-1e10,1e10),lwd=5)
     }
+}
 
 #draw legend
 par(mar=c(5.1,3,4.1,2))
@@ -612,15 +683,9 @@ if (hmethod=="kmeans"){
     index<-ref[index]
     peak[,1]<-index
     write.table(peak,"%(opts_name)s_peak_classid",sep="\\t",col.names=c(%(col_name)s),row.names=F,quote=F)
-}
-else{
-
+} else {
 write("#only kmeans method will output classification file.", "%(opts_name)s_peak_classid")
-opts.name+"_peak_classid","w")
-        infof.write("#only kmeans method will output classification file.\n")
-        infof.close()
-
-
+}
 '''%args)
     rscript.close()
     Info("# R script output successfully.")
