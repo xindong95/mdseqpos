@@ -3,6 +3,13 @@
 # """
 # #good default collist <- c("#053061","#2166AC","#4393C3","#92C5DE","#D1E5F0","#F7F7F7","#FDDBC7","#F4A582","#D6604D","#B2182B","#67001F")
 
+# about output file:
+# <name_r.heatmap.png> png
+# <name_kmeans.r> r
+# <name_peak> (kmeans/none) output original peaks. (mean/median/...) original peaks then reorder with sitrprof as the method.
+# <nzme_peak_classid> generate by R. (kmeans) order by classid. (none/mean/median/...) nothing.
+# <name_siteprof\d> (kmeans/none) order as name_peaks (mean/median/...) order as name_peaks.
+
 # 1.4
 # change hsv input to rgb.
 # use R::colorRampPalette to generate the color legend instead of do it myself.
@@ -42,7 +49,7 @@
 
 #1.50
 # (1) merge wig input and bigwig input into one file -> heatmapr.
-# (2) can do unsort heatmapr.
+# (2) add --method=none, can do unsort heatmapr.
 
 # """
 
@@ -90,7 +97,10 @@ class WigProfilerwBed:
             chrom = line[0]
             begin = int(line[1])
             cease = int(line[2])
-            strand = line[5]
+            try:
+                strand = line[5]
+            except IndexError:
+                strand = '+'
             x=wig[chrom][0]
             y=wig[chrom][1]
             
@@ -246,13 +256,13 @@ def opt_validate (optparser):
         Info("ERROR @ method not support.")
         sys.exit(1)
         
-    # validate limit
+    # validate opts_name
     if not options.name:
         options.name = os.path.splitext(options.bed)[0]
         options.name = options.name.rstrip("_peaks")
         
-    if options.kmeans>=30:
-        Info("ERROR @ kmeans level to big, input a number < 30")
+    if options.kmeans>=10:
+        Info("ERROR @ kmeans level to big, input a number < 10")
         sys.exit(1)
 
     if options.step<10:
@@ -299,12 +309,12 @@ def opt_validate (optparser):
     while len(options.subtitle)<iwig:
         Info("WARNING @ subtitles less than wigs.")
         options.subtitle.append('')
+    
+    #fix some options
     if options.zmin is None:
         options.zmin='"None"'
     if options.zmax is None:
         options.zmax='"None"'
-    
-    #fix some options
     if options.hmethod != "kmeans":
         options.axhline = False
 
@@ -329,7 +339,7 @@ def GetChromIntersection(wigfn_list): # get a list of chroms exist in every wig 
         chrom_matrix.append(set(chrom_list))
     
     out = reduce(lambda x,y:x.intersection(y),chrom_matrix)
-    return list(out)
+    return sorted(list(out))
 
 def WigProfiler(opts, bed, wig, head_ref): # return a instance of WigProfilerwBed
     profwbed=WigProfilerwBed(upstm=opts.upstm, downstm=opts.downstm, step=opts.step, dir=opts.dir) # create a profiler object
@@ -356,9 +366,8 @@ def bigwigProfiler(opts, bed, wig, head_ref):
             continue
         value = summary.sum_data / summary.valid_count
         value = [str(t).replace('nan','0') for t in value]
-        #func.debug(locals())
         if opts.dir and region[5] == '-':
-                value = value[::-1]
+                value = value[::-1] #reverse if -
         siteprofs.append(value)
     return siteprofs
 
@@ -453,9 +462,10 @@ def main():
         if opts.wig_format == "wig":
             #delete chroms if no info of that chrom in any of the wigs.
             chrom_list = GetChromIntersection(opts.wig)
-            for i in range(len(bed)):
+            for i in range(len(bed)-1,-1,-1):
                 if bed[i][0] not in chrom_list:
                     del bed[i]
+            Info('common chr in bigwigs: %s' %(','.join(chrom_list),))
             Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
             siteprofs = WigProfiler(opts, bed, opts.wig[iwig], head_ref)
         else:
@@ -467,8 +477,9 @@ def main():
                     p=BwIO(bw)
                     chrset = chrset.intersection(set([t['key'] for t in p.chromosomeTree['nodes']]))
             chrom_list = list(chrset)
-            Info('common chr in wigs: %s' %(','.join(chrom_list),))
             bed = [t for t in bed if t[0] in chrom_list]
+            Info('common chr in bigwigs: %s' %(','.join(chrom_list),))
+            Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
             siteprofs = bigwigProfiler(opts, bed, opts.wig[iwig], head_ref)
             
         sitef = open("%s_siteprof%d" %(opts.name,iwig+1), "w")
@@ -695,10 +706,6 @@ write("#only kmeans method will output classification file.", "%(opts_name)s_pea
 if __name__ == '__main__':
     try:
         main()
-        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig,/Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/heatmap/test_ESCK4.bed -v -z --x_label="not a label:x" --y_label="I'm ylabel1","label:y2" --title=maintitle --pic_width=2000 --pic_height=1000 --col=67001F,053061 --upstream=200 --downstream=832 --name=/Users/jianma/temp/te --method=kmeans --k_wigindex=2
-        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_MACS_wiggle/treat/s_7_JMJD3_peak_treat_afterfiting_chr1.wig,/Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_5_1718_peak_MACS_wiggle/treat/s_5_1718_peak_treat_afterfiting_chr1.wig,/Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_MACS_wiggle/control/s_7_JMJD3_peak_control_afterfiting_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/shuzhen/MACS_result/s_7_JMJD3_peak_peaks.bed -v -z --x_label=JMJD3_treat,1718_treat,JMJD3_control --y_label=scale,scale,scale --title="heatmap for test" --pic_width=3200 --pic_height=1700 --name=/Users/jianma/temp/mean2 --s_wigindex=2 --method=maximum
-        #heatmapr -w /Users/jianma/Documents/bioinfor/projects/shuzhen/data1/MACS_result/s_7_JMJD3_peak_MACS_wiggle/treat/s_7_JMJD3_peak_treat_afterfiting_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/shuzhen/data1/MACS_result/s_7_JMJD3_peak_peaks.bed -v -z  --name=/Users/jianma/temp/kk3 --title=Heatmap --x_label=X-label --y_label=Y-label --upstream=500 --downstream=500 --pf-res=10 --fontsize=2 --col=053061,2166AC,4393C3,92C5DE,D1E5F0,F7F7F7,FDDBC7,F4A582,D6604D,B2182B,67001F --pic_width=1600 --pic_height=1200 -z -v --method=kmeans -k 5
-
     except KeyboardInterrupt:
         Info("User interrupts me! ;-) See you!")
         sys.exit(0)
