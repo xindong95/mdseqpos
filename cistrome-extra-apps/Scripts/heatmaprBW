@@ -455,6 +455,8 @@ def main():
 
 # program running
 if __name__ == '__main__':
+    print "This tool is merged with heatmapr, please use that one instead."
+    sys.exit(1)
     try:
         main()
         #heatmapr -w /Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig,/Users/jianma/Documents/bioinfor/projects/heatmap/ESC_K4_chr1.wig -b /Users/jianma/Documents/bioinfor/projects/heatmap/test_ESCK4.bed -v -z --x_label="not a label:x" --y_label="I'm ylabel1","label:y2" --title=maintitle --pic_width=2000 --pic_height=1000 --col=67001F,053061 --upstream=200 --downstream=832 --name=/Users/jianma/temp/te --method=kmeans --k_wigindex=2

@@ -69,7 +69,7 @@ except:
     sys.stderr.write("Need bx-python!")
     sys.exit()
 
-#import func
+import func
 Info = jlib.Info
 VERSION = "1.50"
 
@@ -123,6 +123,7 @@ class WigProfilerwBed:
                 this = binxy(bins, wigint, regionx, regiony, binfunc='middle', NaN=False)
             else:
                 this = [0] * n
+            func.debug(locals())
 
             # if -, reverse
             if strand == '-' and self.dir:
@@ -352,11 +353,12 @@ def WigProfiler(opts, bed, wig, head_ref): # return a instance of WigProfilerwBe
 def bigwigProfiler(opts, bed, wig, head_ref):
     bw = BigWigFile(open(wig, 'rb'))
     siteprofs = []
+    hf = opts.step/2
     for region in bed:
         center = (int(region[1])+int(region[2]))/2
-        start,end = center-opts.upstm, center+opts.downstm # for '+' strand
+        start,end = center-opts.upstm-hf, center+opts.downstm+hf # for '+' strand
         if opts.dir and region[5] == '-':
-                start,end = center-opts.downstm, center+opts.upstm    
+                start,end = center-opts.downstm-hf, center+opts.upstm+hf   
         try:
             summary = bw.summarize(region[0], start, end, (end - start) / opts.step)
         except OverflowError:
@@ -465,7 +467,7 @@ def main():
             for i in range(len(bed)-1,-1,-1):
                 if bed[i][0] not in chrom_list:
                     del bed[i]
-            Info('common chr in bigwigs: %s' %(','.join(chrom_list),))
+            Info('common chr in wigs: %s' %(','.join(chrom_list),))
             Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
             siteprofs = WigProfiler(opts, bed, opts.wig[iwig], head_ref)
         else:
