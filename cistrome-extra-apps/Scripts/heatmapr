@@ -329,18 +329,39 @@ def opt_validate (optparser):
 
     return options
 
-def GetChromIntersection(wigfn_list): # get a list of chroms exist in every wig files.
-    chrom_matrix = [] #list, each element is a set of chroms
-    for fn in wigfn_list:
-        chrom_list = []
-        inf = open(fn)
-        for line in inf:
-            if re.search(r'chrom=(\S+)\s',line): # get chrom
-                chrom_list.append(re.search(r'chrom=(\S+)\s',line).group(1))
-        chrom_matrix.append(set(chrom_list))
+def GetChromIntersection(wigfn_list, format='wig'): 
+    '''GetChromIntersection(wigfn_list, format='wig')
     
-    out = reduce(lambda x,y:x.intersection(y),chrom_matrix)
-    return sorted(list(out))
+    get a list of chroms exist in every wig/bigwig files.
+    '''
+    # for C elegans
+    standard_chroms={'I':'chrI','II':'chrII','III':'chrIII','IV':'chrIV','V':'chrV','M':'chrM','X':'chrX'}
+    wigcount = len(wigfn_list)
+    
+    if format == 'wig':
+        chrom_matrix = [] #list, each element is a set of chroms
+        for fn in wigfn_list:
+            chrom_list = []
+            inf = open(fn)
+            for line in inf:
+                if re.search(r'chrom=(\S+)\s',line): # get chrom
+                    chrom_list.append(re.search(r'chrom=(\S+)\s',line).group(1))
+            chrom_matrix.append(set(chrom_list))
+    
+        out = reduce(lambda x,y:x.intersection(y),chrom_matrix)
+        out = list(out)
+
+    elif format == 'bigwig':
+        p=BwIO(wigfn_list[0])
+        chrset = set([t['key'] for t in p.chromosomeTree['nodes']])
+        if wigcount > 1:
+            for bw in wigfn_list[1:]:
+                p=BwIO(bw)
+                chrset = chrset.intersection(set([t['key'] for t in p.chromosomeTree['nodes']]))
+        out = list(chrset)
+    
+    out = [standard_chroms.get(t, t) for t in out]
+    return sorted(out)
 
 def WigProfiler(opts, bed, wig, head_ref): # return a instance of WigProfilerwBed
     profwbed=WigProfilerwBed(upstm=opts.upstm, downstm=opts.downstm, step=opts.step, dir=opts.dir) # create a profiler object
@@ -372,6 +393,35 @@ def bigwigProfiler(opts, bed, wig, head_ref):
                 value = value[::-1] #reverse if -
         siteprofs.append(value)
     return siteprofs
+
+def BedReader(fileName, sep="\t", skip='\x00'):
+    """TableFileInput(fileName, sep="\t", skip="\x00")
+    skip the lines start with \x00.
+    """
+    # for C elegans
+    standard_chroms={'I':'chrI','II':'chrII','III':'chrIII','IV':'chrIV','V':'chrV','M':'chrM','X':'chrX'}
+    try:
+        inf = open(fileName)
+    except IOError:
+        print "no such file:<%s>" %fileName
+        return 0
+        
+    l = []
+    skipcount = 0
+    for line in inf:
+        line = line.rstrip()
+        if not line or line.startswith(skip) or line.startswith('track'):
+            skipcount += 1
+            continue
+        if sep == "space":
+            line = line.split()
+        else:
+            line = line.split(sep)
+        line[0] = standard_chroms.get(line[0], line[0])
+        l.append(line)
+    inf.close()
+    print 'skip <%d> lines' %skipcount
+    return l
 
 def binxy(bins, wigint, x, y, binfunc='mean', NaN=False):
     """Do binning on y in order of x.
@@ -452,38 +502,25 @@ def main():
 
     # read regions of interest (bed file)
     Info("# read the bed file(s) of regions of interest...")
-    bed = jlib.TableFileInput(opts.bed, skip='#')
+    bed = BedReader(opts.bed, skip='#')
     if len(bed[0]) < 6:
         opts.dir = False
         
     wigcount = len(opts.wig)
     head_ref = ['chrom', 'start','end','name','score','strand','thickStart','thickEnd'][:len(bed[0])] #get head as column of bed file.
 
+    chrom_list = GetChromIntersection(opts.wig, opts.wig_format)
+    Info('common chr in %s: %s' %(opts.wig_format, ','.join(chrom_list)))
+    #delete chroms if no info of that chrom in any of the wigs.
+    bed = [t for t in bed if t[0] in chrom_list]
+    Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
+    
     for iwig in range(wigcount):   
         Info("# profiling wig - %d"%(iwig+1,))
         if opts.wig_format == "wig":
-            #delete chroms if no info of that chrom in any of the wigs.
-            chrom_list = GetChromIntersection(opts.wig)
-            for i in range(len(bed)-1,-1,-1):
-                if bed[i][0] not in chrom_list:
-                    del bed[i]
-            Info('common chr in wigs: %s' %(','.join(chrom_list),))
-            Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
             siteprofs = WigProfiler(opts, bed, opts.wig[iwig], head_ref)
         else:
-            #get chrom list
-            p=BwIO(opts.wig[0])
-            chrset = set([t['key'] for t in p.chromosomeTree['nodes']])
-            if wigcount > 1:
-                for bw in opts.wig[1:]:
-                    p=BwIO(bw)
-                    chrset = chrset.intersection(set([t['key'] for t in p.chromosomeTree['nodes']]))
-            chrom_list = list(chrset)
-            bed = [t for t in bed if t[0] in chrom_list]
-            Info('common chr in bigwigs: %s' %(','.join(chrom_list),))
-            Info("After delete regions with no chrom in wig file, remains %d bed regions." %len(bed))
             siteprofs = bigwigProfiler(opts, bed, opts.wig[iwig], head_ref)
-            
         sitef = open("%s_siteprof%d" %(opts.name,iwig+1), "w")
         sitef.writelines([",".join([str(m) for m in t])+"\n" for t in siteprofs])
         sitef.close()
@@ -500,8 +537,6 @@ def main():
     elif opts.hmethod in ("median", "maximum", "mean"):
         keyfile = "%s_siteprof%d" %(opts.name, opts.s_wigindex)
         pfilel = ["%s_siteprof%d" %(opts.name, t+1) for t in range(wigcount)]+["%s_peak"%opts.name]
-        #print keyfile
-        #print pfilel
         jlib.Orderfile(keyfile, pfilel, opts.hmethod, sep=',')
     else:
         pass
