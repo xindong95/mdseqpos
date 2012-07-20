@@ -69,7 +69,7 @@ except:
     sys.stderr.write("Need bx-python!")
     sys.exit()
 
-import func
+#import func
 Info = jlib.Info
 VERSION = "1.50"
 
@@ -123,7 +123,7 @@ class WigProfilerwBed:
                 this = binxy(bins, wigint, regionx, regiony, binfunc='middle', NaN=False)
             else:
                 this = [0] * n
-            func.debug(locals())
+            #func.debug(locals())
 
             # if -, reverse
             if strand == '-' and self.dir:
