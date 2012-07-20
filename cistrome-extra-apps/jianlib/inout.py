@@ -12,6 +12,8 @@ the distribution).
 @version: $Revision$
 @author:  H. Gene Shin
 @contact: shin@jimmy.harvard.edu
+
+Last Modified: Jian @ Jul 20th, 2012.
 """
 
 # ------------------------------------
@@ -847,6 +849,8 @@ class Wig:
     
     This class reads and stores a wig file as in a dictionary. This class only can read a variableStep wig file.
     For other types of wig files, use Tao's Cistrome
+    
+    I only edit the read() func to support fixStep, hope no conflict with other functions. -- Jian @ Jul 20th, 2012.
     """
     
     def __init__(self):
@@ -868,6 +872,8 @@ class Wig:
         fwig=open(fnwig,'r')
         chrom=''
         wig={}
+        fixedStep = False
+        
         for line in fwig.xreadlines():
             if not line.strip():
                 continue
@@ -878,6 +884,12 @@ class Wig:
                 except AttributeError:
                     pass
                 continue
+            
+            if re.search(r'fixedStep', line): # check fixedStep or variableStep
+                fixedStep = True
+                step = int(re.search(r'step=(\S+)\s', line).group(1))
+                position = int(re.search(r'start=(\S+)\s', line).group(1))
+
             if re.search(r'chrom=([A-Za-z0-9]+)\s',line):
                 chrom=re.search(r'chrom=([A-Za-z0-9]+)\s',line).group(1)
                 try:
@@ -889,8 +901,13 @@ class Wig:
                 continue
             # get the nearest loction and compare it with the last element of locs. If not the same, add it
             l=line.strip().split()
-            wig[chrom][0].append(int(l[0]))
-            wig[chrom][1].append(float(l[1]))
+            if fixedStep:
+                row = [position, l[-1]]
+                position += step
+            else:
+                row = l
+            wig[chrom][0].append(int(row[0]))
+            wig[chrom][1].append(float(row[1]))
                 
         fwig.close()
         self.wig=wig
