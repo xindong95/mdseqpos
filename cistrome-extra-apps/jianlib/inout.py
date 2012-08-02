@@ -879,7 +879,7 @@ class Wig:
                 continue
             if re.search(r'track',line): 
                 try:
-                    description=re.search(r'description="([A-Za-z0-9]+)"\s',line).group(1)
+                    description=re.search(r'description="(\w+)"\s',line).group(1)
                     if not self.description: self.description=description
                 except AttributeError:
                     pass
@@ -890,8 +890,8 @@ class Wig:
                 step = int(re.search(r'step=(\S+)\s', line).group(1))
                 position = int(re.search(r'start=(\S+)\s', line).group(1))
 
-            if re.search(r'chrom=([A-Za-z0-9]+)\s',line):
-                chrom=re.search(r'chrom=([A-Za-z0-9]+)\s',line).group(1)
+            if re.search(r'chrom=(\S+)\s',line):
+                chrom=re.search(r'chrom=(\S+)\s',line).group(1)
                 try:
                     chrom=standard_chroms[chrom]
                 except KeyError:
