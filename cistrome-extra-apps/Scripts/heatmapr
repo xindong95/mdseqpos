@@ -410,7 +410,7 @@ def BedReader(fileName, sep="\t", skip='\x00'):
     skipcount = 0
     for line in inf:
         line = line.rstrip()
-        if not line or line.startswith(skip) or line.startswith('track'):
+        if not line or line.startswith(skip) or line.startswith('track') or line.startswith('browser'):
             skipcount += 1
             continue
         if sep == "space":
