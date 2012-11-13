@@ -177,7 +177,10 @@ def extract_phastcons ( bedfile, phas_chrnames, width, pf_res ):
             
     sumscores = map(list, zip(*sumscores))
     sumscores = [[t2 for t2 in t if not math.isnan(t2)] for t in sumscores]
-    conscores = [sum(t)/len(t) for t in sumscores]
+    try:
+        conscores = [sum(t)/len(t) for t in sumscores]
+    except ZeroDivisionError:
+        conscores = [0] * width/pf_res
 
     return  conscores
         
