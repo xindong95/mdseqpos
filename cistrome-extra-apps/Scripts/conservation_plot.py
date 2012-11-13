@@ -180,7 +180,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width, pf_res ):
     try:
         conscores = [sum(t)/len(t) for t in sumscores]
     except ZeroDivisionError:
-        conscores = [0] * width/pf_res
+        conscores = [0] * (width/pf_res)
 
     return  conscores
         
