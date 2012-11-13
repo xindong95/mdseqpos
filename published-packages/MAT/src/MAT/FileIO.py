@@ -324,7 +324,7 @@ class Mybpmap(object):
             else:
                 index = arange(self.seq.GetNumberHits())
             for ihit in index:
-                self.seq.GetHitItem(ihit, self.hit, 1)
+                self.seq.GetHitItem(int(ihit), self.hit, 1)
                 for name in pars:
                     if name == 'Chr':
                         self.Chr.append(ChrInd)
@@ -515,10 +515,10 @@ class Mycels(object):
         '''
         intensity = []
         for cel in self.cels:
-            if outlier and cel.IsOutlier(x, y):
+            if outlier and cel.IsOutlier(int(x), int(y)):
                 intensity.append(1)
             else:
-                intensity.append(cel.GetIntensity(x, y))
+                intensity.append(cel.GetIntensity(int(x), int(y)))
             if intensity[-1] <= 0:                    # cel file check
                 raise Exception, ('Abnormal value %s at X %s Y %s, please check your cel file %s' % (
                     intensity[-1], x, y, cel.GetFileName()))
