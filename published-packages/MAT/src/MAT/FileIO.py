@@ -2,7 +2,7 @@
 # weili@jimmy.harvard.edu
 
 
-import sys, time, os.path, AffyFileParser, re, ConfigParser, zipfile, os, md5
+import sys, time, os.path, AffyFileParser, re, ConfigParser, zipfile, os, hashlib
 import cPickle as pickle
 from numpy import *
 from glob import glob
@@ -258,7 +258,7 @@ class Mybpmap(object):
         self.ExpIndex = []                                      # X[UniqIndex][ExpIndex] =  X
         self.ReadIndex = []                                     # index for reading probes
         self.base = {'A':0,'C':1, 'G':2, 'T':3, 'a':0,'c':1, 'g':2, 't':3}
-        self.checksum = md5.new(open(bpmapname).read()).hexdigest()     # md5 checksum for the bpmap file
+        self.checksum = hashlib.md5(open(bpmapname).read()).hexdigest()     # md5 checksum for the bpmap file
         # Affy  class
         self.seq = AffyFileParser.CGDACSequenceItem()
         self.hit = AffyFileParser.GDACSequenceHitItemType()
