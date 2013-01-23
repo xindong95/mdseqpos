@@ -1,22 +1,24 @@
 mdseqpos python package
 
-Authors: Ying Lei, Len Taing, et al
+Authors: Len Taing, Ying Lei, Cliff Myers, Tao Liu, Ma Jian, et al
 Contact: lentaing@jimmy.harvard.edu
 URL:'http://cistrome.dfci.harvard.edu/ap'
 
 INSTALLATION INSTRUCTIONS:
 1. install package dependencies:
-   a. django v. 1.3 or greater
+   a. django v. 1.1.1 or greater
    b. ghostscript
    c. numpy v. 1.3.0 or greater
 2. copy lib/settings.py.example to lib/settings.py
 3. specify where your UCSC assemblies are by modifying ASSEMBLY_DIR and 
    BUILD_DICT in lib/settings.py
-4. as sudo, type: python setup.py install
+4. run version_updater: e.g. $ ./version_updater.py
+5. as sudo, type: python setup.py install
 
-(if you want install it on brca for your own)
-step 1-3 is the same.
-4. change NUMPY_PATH in setup.py to:
+// below is my note for internal users.
+// if you want install it on brca for your own.
+step 1-4 is the same.
+5. change NUMPY_PATH in setup.py to:
    os.path.join(sys.prefix,"lib","python"+sys.version[:3], 'numpy')
-5. python setup.py install --prefix=<your path>
-6. modify PYTHONPATH if necessary
+6. python setup.py install --prefix=<your path>
+7. modify PYTHONPATH if necessary

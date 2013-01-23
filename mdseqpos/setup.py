@@ -4,6 +4,7 @@ import os
 import sys
 import stat
 from distutils.core import setup, Extension
+from Cython.Distutils import build_ext
 
 #DEFAULT NUMPY_PATH e.g. /usr/local/lib/python2.6/site-packages/numpy
 NUMPY_PATH = os.path.join(sys.prefix,"lib","python"+sys.version[:3],
@@ -42,22 +43,26 @@ def main():
     check_pkg_dependencies()
     check_settings_file()
     setup(name="mdseqpos",
-          version="0.592",
+          version="1.01",
           description="Motif finding tools",
-          author='Ying Lei, Len Taing, et al',
+          author='Len Taing, Ying Lei, Cliff Myers, Tao Liu, Ma Jian, et al',
           author_email='lentaing@jimmy.harvard.edu',
           url='http://liulab.dfci.harvard.edu/ap',
           package_dir={'mdseqpos' : 'lib'},
           packages=['mdseqpos'],
-          package_data={'mdseqpos': ['django/*.html', 'django/static/*',
+          package_data={'mdseqpos': ['django/*.html', 
+                                     'django/static/*.*',
+                                     'django/static/dna/*.*',
                                      'weblogo/*.*', 'weblogo/LICENSE', 
                                      'weblogo/seqlogo', 'weblogo/README', 
                                      'weblogo/cache/*', 'weblogo/img/*', 
                                      'weblogo/release/*', 
-                                     'img/*', 'tools/*',
-                                     'database/*']},
+                                     'tools/*',
+                                     'database/*', 'pkg.cfg']},
           scripts=['bin/MDSeqPos.py', 'bin/MotifScan.py'],
+          cmdclass = {'build_ext':build_ext},
           ext_modules = [
+              Extension('mdseqpos.count', ['lib/count.pyx']),
               Extension('mdseqpos._seq',
                         sources = ['lib/seqpos/seq.c',
                                    'lib/seqpos/genomescan_Markov0_3.c',
@@ -85,7 +90,7 @@ def main():
         'Programming Language :: Python',
         'Topic :: Database',
         ],
-          requires=['numpy (>=1.3.0)', 'lxml (>=2.2.2)', 'Django (>=1.1.1)'],
+          requires=['numpy (>=1.3.0)', 'Django (>=1.1.1)'],
       )
 
     #POST DISTUTILS touchups:

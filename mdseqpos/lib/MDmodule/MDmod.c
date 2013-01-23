@@ -1,5 +1,4 @@
 /******************************
- *
  * MDmodule: find motifs from one set of expression data
  * Components:
  * Do Monte Carlo simulation to get motif score distribution

@@ -32,7 +32,7 @@ def BLiC_score(M1,M2):
     n2 = M2.shape[0]
     n = min(n1,n2)
  
-    if n1 >= n2:
+    if n1 > n2:
         A,B = M1,M2 # make sure A is longer, or the same length.
         i_max = 1
     else:
@@ -42,6 +42,12 @@ def BLiC_score(M1,M2):
  
     max_score = -999
     Brev = B[::-1,::-1]
+    #for i in range( abs(n1-n2) + 1 ):
+    #    # TODO reverse complement
+    #    score   = BLiC_score_aligned( A[i:i+n, :], B )
+    #    #score_r = BLiC_score_aligned( A[i+n:i:-1, ::-1], B )
+    #    score_r = BLiC_score_aligned( A[i:i+n, :][::-1,::-1], B )
+    #    print score, score_r
     
     #align B to A.
     #i<0:      B:xxxxx
@@ -61,9 +67,9 @@ def BLiC_score(M1,M2):
             Brev_sub = Brev
             Asub = A[i:i+n2, :]
         elif n1-i < n2:
-            #Asub = A[i:n1, :]      #B:    xCATCGCxxx
-            Asub = A[i:, :]      #B:    xCATCGCxxx
-            Bsub = B[:n1-i, :]     #A: xxxxxxTCGC 
+            #Asub = A[i:n1, :]    #B:    xCATCGCxxx
+            Asub = A[i:, :]       #B:    xCATCGCxxx
+            Bsub = B[:n1-i, :]    #A: xxxxxxTCGC 
             Brev_sub = Brev[:n1-i, :]
         
         score   = BLiC_score_aligned( Asub, Bsub )
@@ -72,7 +78,7 @@ def BLiC_score(M1,M2):
             flag, score = ANTISENSE, score_r
         else:
             flag = SENSE
-    
+        
         if score > max_score:
             max_score = score
             flag_r = flag

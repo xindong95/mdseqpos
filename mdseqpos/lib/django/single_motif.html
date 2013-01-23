@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>motif focus frame</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+      <td>
+      <a href="../seqLogo/{{motif.id}}.png"><img width="240" height="150" src="../seqLogo/{{motif.id}}.png"></img></a><br />
+      <a href="../seqLogo/{{motif.id}}_rev.png"><img width="240" height="150" src="../seqLogo/{{motif.id}}_rev.png"></img></a><br />
+      </td>
+      <td>
+        id: {{motif.id}}<br />
+        factors: {{motif.factor}}<br />
+        DBD: {{motif.dbd}}<br />
+        hits: {{motif.hits}}<br />
+        cutoff: {{motif.cutoff}}<br />
+        zscore: {{motif.zscore}}<br />
+        pval: {{motif.pval}}<br />
+        <a href="../pssm/{{motif.id}}.html" target="_blank"><button type="button">show pssm of this motif</button></a>
+      </td>
+      </tr>
+    </table>
+  </body>
+</html>

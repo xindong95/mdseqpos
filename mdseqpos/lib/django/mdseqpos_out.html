@@ -3,63 +3,43 @@
 <html>
 <head>
    <title>Cistrome Motifs</title>
+   <link href="mdseqpos_out.css" type="text/css" rel="stylesheet"/>
+   <!--<script type="text/javascript" src="prototype.js"></script>-->
+   <script type="text/javascript" src="Utils.js"></script>
+   <script type="text/javascript" src="seedrandom.js"></script>
    <script type="text/javascript" src="mdseqpos_out.js"></script>
+   <script type="text/javascript" src="dna/goLogo.js"></script>
+   <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+   <script type="text/javascript" src="highcharts.js"></script>
    <script>
-//Given a json representation of the motif tree, it retuns a 
-//tree of (javascript) Motif objects
-
-/* THIS FN is OBSOLETE B/C WE HAVE REMOVED THE TREE-NAV WINDOW;
-   NO NEED FOR A MOTIFTREE DATA REPRESENTATION ANYMORE.  
-function parseMTree(node, parent) {
-    if (node == null) {
-        return null;
-     }
-     //TEMPORARILY SET consensus to id
-     node.node.consensus = node.node.id;
-     var tmp = new Motif(node.node);
-     var children = [];
-     for (var i = 0; i < node.children.length; i++) {
-         var child = parseMTree(node.children[i], tmp);
-	 children.push(child);
-     }
-     var treeNode = {'node': tmp, 'children':children, 'parent': parent};
-     tmp.setTreeNode(treeNode);
-     return treeNode;
-}
-*/
-
-/**
- * Function: flattenMTree
- * Given a JSON tree representation of the motif tree, this function flattens
- * the tree and creates a list of motifs
- **/
-function flattenMTree(node, list) {
-    if (node != null && node.node != null) {
-       //This is a DF traversal
-       list.push(new Motif(node.node));
-       for (var i = 0; i < node.children.length; i++) {
-          list = flattenMTree(node.children[i], list);
-       }
-    }
-    return list;
-}
 
 {% autoescape off %}
+Math.seedrandom('{{now}}');
+
 //this needs to be converted--i.e. the nodes need to be made into Motif objs.
-var mtree = {{ tree_to_json }}
+var motifList_json = {{ motifList }}
+var motifDists = {{ motifDists }}
 {% endautoescape %} 
 
-//var motifTree = parseMTree(mtree, null); OBSOLETE
-var motifList = flattenMTree(mtree, []);
+//Convert the json to Motif Objects
+var motifList = []
+for (var i = 0; i < motifList_json.length; i++) {
+   motifList.push(new Motif(motifList_json[i]));
+}
+
 motifModel = new MotifModel(motifList);
    </script>
 </head>
-<frameset rows="50%, 50%">
-  <frame src="focus_frame.html" name="focus_frame">
-  <frame src="table_frame.html" name="table_frame">
-  <!--<frame src="tree_frame.html" name="tree_frame">-->
-  <noframes>
-    <h1>Please use a frames compatible browser when viewing this output</h1>
-  </noframes>
-</frameset>
+  <body onload="initPage();">
+    <span>filter by zscore: more sig. (zscore: <span id="zscoreSldrVal"> </span>, motifs: <span id="numMotifs"></span>)&nbsp;&nbsp;&nbsp;<span id="zMin"></span><input type="range" id="zscoreSlider"/><span id="zMax"></span>&nbsp;&nbsp;&nbsp;less sig.</span>
+    <span>k-means (groups: <span id="grpSldrVal"></span>) <span id="grpMin"></span><input type="range" id="groupsSlider"/><span id="grpMax"></span></span>
+    <br/>
+    <input type="button" value="view tables as text" id="txt_btn"/>
+    <input type="submit" value="click to reset table" id="reset_btn"/>
+    <!--                                                                       
+    <span>filter by species: <select id="species_menu" disabled></select>
+    </span>
+    -->
+    <div id="motif_table"></div>
+  </body>
 </html>

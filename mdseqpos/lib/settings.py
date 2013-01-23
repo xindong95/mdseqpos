@@ -52,13 +52,8 @@ TEMPLATE_DIRS = (DEPLOY_DIR+'/django')
 # ASSEMBLY_DIR is where your UCSC genome assemblies are
 # BUILD_DICT is a mapping between genome assembly names/short-hands and
 # their associated data--note: they must be sub-dirs of ASSEMBLY_DIR
-ASSEMBLY_DIR = '/data/motif/assembly/'
-BUILD_DICT = { "hg17": "humanhg17_May2004/",
-               "hg18": "humanhg18/",
-               "hg19": "humanhg19/",
-               "mm7": "UCSC_MM7/",
-               "mm8": "mousemm8_Mar2006/",
-               "mm9":"UCSC_MM9/",
-               "ce6":"UCSC_CE6/",
-               "ce4":"UCSC_CE4/",
-               "dm3":"UCSC_DM3/"}
+ASSEMBLY_DIR = '/Users/jianma/Documents/raw_data/Cistrome/assembly/'
+BUILD_DICT = { "hg18": "hg18/",
+               "hg19": "hg19/",
+             }
+
