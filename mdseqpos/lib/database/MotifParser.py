@@ -1,9 +1,12 @@
 #! /usr/bin/env python
+import os
+import sys
+import math
 from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
-import os, sys
+
 import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
-#import mdseqpos.motif as motif
+import mdseqpos.motif as motif
 
 SEP = "|"
 def Info(string):
@@ -43,6 +46,51 @@ def FixPssm(p):
                         row[t] = 0.01
                 imax = row.index(max(row))
                 row[imax] -= sum(row)-1
+
+def calcMatrixDistance(m1, m2):
+    """calcMatrixDistance(m1, m2)
+    *** WARNING: this score might not meaningful.
+    claculate the distance of the two matrix.
+    each number in the matrixs should be float.
+    """
+    score = 0
+    if len(m1) != len(m2):
+        print 'input matrix in different dim #1.'
+        return None
+    for ir in range(len(m1)):
+        if len(m1[ir]) != len(m2[ir]):
+            print 'input matrix in different dim #2.'
+            return None
+        for ic in range(len(m1[ir])):
+            score += math.sqrt((m1[ir][ic]-m2[ir][ic])**2)
+    return score
+
+def flatTreeDictToList(root):
+	"""flatTreeDictToList(root)
+	This function is used to screen motif informations from old MDseqpos html results.
+	Input is a dict of mtree in MDseqpos.html, output is a flat list.
+	"""
+	
+	result = []
+	if 'node' not in root.keys():
+		return []
+	if not root['node']:
+		return result
+	else:
+		result.append(root['node'])
+		for each in root['children']:
+			result.extend(flatTreeDictToList(each))
+		return result
+
+def reversePssm(m1):
+    """reversePssm(m1)
+    Create a reversed pssm.
+    """
+    m2 = []
+    for row in m1:
+        row = [1-t for t in row]
+        m2.insert(0, row)
+    return m2
 
 class MotifParser:
     """
@@ -98,7 +146,8 @@ class MotifParser:
         self.attr_list = [self.keyName,'edition']
         self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', \
         'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'comment1', \
-        'comment2', 'comment3', 'comment4', 'comment5']
+        'comment2', 'comment3', 'comment4', 'comment5', 'datasetid', 'zscore', 'seqfactors', \
+        'seqdbds', 'nmotifs']
         self.special_list = ['pssm'] # if you add a element here, need to edit code below -,-
         self.all_list = self.attr_list + self.tag_list + self.special_list
         
@@ -123,18 +172,18 @@ class MotifParser:
             taglist.append(tag)
         self.all_list = self.attr_list + self.tag_list + self.special_list
         
-    def Create(self, id, **argv):
+    def Create(self, mid, **argv):
         """Create(self, id, **argv)
         Create a single motif.
         """
         #self.Refresh()
-        self.motifs[id] = {}
-        self.motifs[id]['id'] = id
+        self.motifs[mid] = {} 
         for i in self.all_list:
             if i in argv.keys():
-                self.motifs[id][i] = argv[i][:]
+                self.motifs[mid][i] = argv[i][:]
             else:
-                self.motifs[id][i] = []
+                self.motifs[mid][i] = []
+        self.motifs[mid][self.keyName] = [mid]
         
     def Parser(self, xmlfile):
         """MP.Parser(xmlfile)
@@ -238,7 +287,67 @@ class MotifParser:
                     else:
                         self.motifs[key][itag] = matrix
         print "Success parser from table."
-                        
+
+    def ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 2.85):
+        """ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 2.85)
+        The function only retrieve observed motifs.
+        The startid should be in format: 2 alphabet + 5 number.
+        """
+        self.motifs = {}
+        startid_pre = startid[:2]
+        startid_suf = int(startid[2:]) 
+
+        if os.path.isfile(filepath):
+            inf = open(filepath)
+        else:
+            print 'Failed to open file: %s' %filepath
+            return None
+        for i in inf:
+            if i.startswith('var mtree'):
+                data = i.rstrip().replace('var mtree = ','')
+        inf.close()
+        
+        exec('mdict=%s' %data)
+        mlist = flatTreeDictToList(mdict)
+        for m in mlist:
+            if m['zscore'] == 'None':
+                m['zscore'] = 0
+        mlist.sort(key=lambda x:x['zscore'])
+        mlist = [t for t in mlist if t['zscore'] < cutoff and 'observed' in t['id']] #cut the sig motifs and observed only.
+        for m in mlist:
+            mid = startid_pre + ('00000%d' %startid_suf)[-5:]
+            self.Create(mid, symbol = m['factors'], zscore = [m['zscore']], pssm = [m['pssm']])
+            startid_suf += 1
+
+        if collapse:
+            motiflist = self.motifs.values()
+            motiflist = sorted(motiflist, key=lambda x: x['zscore'])
+            new_motiflist = []
+            while motiflist:
+                new_motiflist.append(motiflist.pop(0))
+                i = 0
+                while i < len(motiflist):
+
+                    similarity = self._Similarity(motiflist[i]['id'][0], new_motiflist[-1]['id'][0])
+                    if similarity[0] >= collapse_cutoff:
+                        del(motiflist[i])
+                    else:
+                        i += 1
+            self.motifs = {}
+            for m in new_motiflist:
+                self.motifs[m['id'][0]] = m
+        
+        for k in self.motifs.keys():
+            self.motifs[k]['zscore'] = ['%.4f' %self.motifs[k]['zscore'][0]]
+
+    def ViewSeqLogo(self, mid):
+        """Only for Mac OS
+        Open the png file for view.
+        """
+        pngfile = 'seqLogo/%s.png' %mid
+        if os.path.isfile(pngfile):
+            os.system('open %s' %pngfile)
+    
     def GetAttr(self, attr, deldup = False):
         """MP.GetAttr(attr, deldup = False)
         Get all data of the attribute / tag. Return a string.
@@ -272,8 +381,8 @@ class MotifParser:
             if i not in self.all_list:
                 Info("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
                 return None
-        sub_motifs = self #MotifParser()
-        #sub_motifs.motifs = self.motifs
+        sub_motifs = MotifParser() #self
+        sub_motifs.motifs = self.motifs
 
         for attr in attrs.items():
             temp_dict = {}
@@ -355,6 +464,31 @@ class MotifParser:
                 del(res_motifs.motifs[i])
         return res_motifs
 
+    def SeqLogo2File(self, folder, rfile = 'draw_seqLogo.r'):
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+        rscript = open(os.path.join(folder, rfile),"w")
+        rscript.write('setwd("%s")\n' %folder)
+        rscript.write('library("seqLogo")\n')
+        for each in self.motifs.keys():
+            pssm = self.motifs[each]['pssm']
+            if not pssm:
+                continue
+            if len(pssm)>1:
+                print 'ERROR: it has more than 1 pssm'
+            else:
+                pssm = pssm[0]
+            t1 = ['c(%s)' %(','.join([str(m) for m in t]),) for t in pssm]
+            t2 = 'data<-cbind(%s)\n' %(','.join(t1),)
+            rscript.write('png("%s.png", width=660, height=300)\n' %each)
+            rscript.write(t2)
+            rscript.write('seqLogo(as.matrix(data))\n')
+            rscript.write('dev.off()\n\n')
+
+        rscript.close()
+        cmd = 'Rscript %s' %os.path.join(folder, rfile)
+        os.system(cmd)
+        
     def ToXml(self, xmlfile, xsl=False, sortkey=''):
         """MP.ToXML(xmlfile, xsl=False, sortkey='')
         Output the MP Object to xmlfile.
@@ -366,10 +500,13 @@ class MotifParser:
         
         t_motifs = self.motifs.values()
         if sortkey:
-            t_motifs.sort(key=sortkey)
+            t_motifs.sort(key=lambda x: x[sortkey])
         else:
             #t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
-            t_motifs.sort(key=lambda x:x['symbol'])
+            try:
+                t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0])
+            except:
+                t_motifs.sort(key=lambda x:x['symbol'])
             #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:]) #sort as symbol, then id, shirley asked
         #t_motifs.sort(key=lambda x:'|'.join(x['dbd'])+' '+x['symbol'][0].upper()) #sort as dbd, then symbol
         for mo in t_motifs:
@@ -445,6 +582,10 @@ class MotifParser:
 			<TD bgcolor="#FFFF99"><B>DESCRIPTION</B></TD>
 			<TD bgcolor="#FFFF99"><B>DBD</B></TD>
 			<TD bgcolor="#FFFF99"><B>PMID</B></TD>
+			<TD bgcolor="#FFFF99"><B>DC DATASETID</B></TD>
+			<TD bgcolor="#FFFF99"><B>NMOTIFS</B></TD>
+			<TD bgcolor="#FFFF99"><B>SEQPOSFACTORS</B></TD>
+			<TD bgcolor="#FFFF99"><B>SEQPOSDBD</B></TD>
 			<TD bgcolor="#FFFF99"><B>SEQLOGO</B></TD>
 		</TR>
 	</THEAD>
@@ -468,6 +609,10 @@ class MotifParser:
 				<a target="_blank"><xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/pubmed/?term=<xsl:value-of select="normalize-space(.)" />
 				</xsl:attribute><xsl:value-of select="." /></a>
 			  </xsl:for-each></TD>
+			<TD><xsl:if test="not(datasetid)">-</xsl:if>	<xsl:value-of select="datasetid" /></TD>
+			<TD><xsl:if test="not(nmotifs)">-</xsl:if>	<xsl:value-of select="nmotifs" /></TD>
+			<TD><xsl:if test="not(msfactors)">-</xsl:if>	<xsl:value-of select="msfactors" /></TD>
+			<TD><xsl:if test="not(msdbds)">-</xsl:if>	<xsl:value-of select="msdbds" /></TD>
 			<TD><xsl:if test="not(pssm)">-</xsl:if>		<a href="seqLogo/{@id}.png" target="_blank"><img width="180" height="90" src="seqLogo/{@id}.png"></img></a></TD>
 		</TR>
 		</xsl:for-each>
@@ -676,7 +821,7 @@ class MotifParser:
         return motiflist
 
     def _ConvertToOldMotif(self, motifid):
-        import mdseqpos.motif as motif
+        #import mdseqpos.motif as motif
         p = motif.Motif()
         p = p.from_dict(self.motifs[motifid])
         return p
