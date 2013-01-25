@@ -28,7 +28,6 @@ import mdseqpos.bayesian_motif_comp as bmc
 setup_environ(settings)
 #os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-#import func
 
 USAGE = """USAGE: MDSeqPos.py BEDFILE GENOME
 Arguments:
@@ -200,6 +199,9 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 2.85):
                 row[t] = "%.3f" %row[t]
         arg['pssm_rev'] = reverse_pssm(arg['pssm'])
         args.append(arg)
+    
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
     
     #create seqLogo by run Rscript.
     seqLogoFolder = os.path.join(output_dir, 'seqLogo')
