@@ -8627,6 +8627,516 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01796">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      508
+    </numseqs>
+    <description>
+      B double prime 1, subunit of RNA polymerase III transcription initiation factor IIIB
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      55814
+    </entrez>
+    <symbol>
+      BDP1
+    </symbol>
+    <synonym>
+      DKFZp686C01233
+    </synonym>
+    <synonym>
+      DKFZp686K0831
+    </synonym>
+    <synonym>
+      HSA238520
+    </synonym>
+    <synonym>
+      KIAA1241
+    </synonym>
+    <synonym>
+      KIAA1689
+    </synonym>
+    <synonym>
+      TAF3B1
+    </synonym>
+    <synonym>
+      TFC5
+    </synonym>
+    <synonym>
+      TFIIIB''
+    </synonym>
+    <synonym>
+      TFIIIB150
+    </synonym>
+    <synonym>
+      TFIIIB90
+    </synonym>
+    <synonym>
+      TFNR
+    </synonym>
+    <synonym>
+      BDP1
+    </synonym>
+    <refseq>
+      NM_018429
+    </refseq>
+    <comment1>
+      BDP1
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.152
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.717
+        </G>
+        <T>
+          0.121
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.043
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.904
+        </G>
+        <T>
+          0.043
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.470
+        </A>
+        <C>
+          0.047
+        </C>
+        <G>
+          0.152
+        </G>
+        <T>
+          0.331
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.313
+        </A>
+        <C>
+          0.321
+        </C>
+        <G>
+          0.041
+        </G>
+        <T>
+          0.325
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.022
+        </G>
+        <T>
+          0.958
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.022
+        </A>
+        <C>
+          0.490
+        </C>
+        <G>
+          0.096
+        </G>
+        <T>
+          0.392
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.122
+        </A>
+        <C>
+          0.030
+        </C>
+        <G>
+          0.813
+        </G>
+        <T>
+          0.035
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.896
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.012
+        </G>
+        <T>
+          0.082
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.094
+        </A>
+        <C>
+          0.797
+        </C>
+        <G>
+          0.018
+        </G>
+        <T>
+          0.091
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.085
+        </A>
+        <C>
+          0.555
+        </C>
+        <G>
+          0.030
+        </G>
+        <T>
+          0.330
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.215
+        </A>
+        <C>
+          0.565
+        </C>
+        <G>
+          0.083
+        </G>
+        <T>
+          0.137
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M00456">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      24
+    </numseqs>
+    <pmid>
+      10575013
+    </pmid>
+    <description>
+      bromodomain PHD finger transcription factor
+    </description>
+    <description>
+      bromodomain PHD finger transcription factor
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      2186
+    </entrez>
+    <entrez>
+      207165
+    </entrez>
+    <symbol>
+      BPTF
+    </symbol>
+    <symbol>
+      Bptf
+    </symbol>
+    <synonym>
+      FAC1
+    </synonym>
+    <synonym>
+      FALZ
+    </synonym>
+    <synonym>
+      NURF301
+    </synonym>
+    <synonym>
+      BPTF
+    </synonym>
+    <synonym>
+      9430093H17Rik
+    </synonym>
+    <synonym>
+      Falz
+    </synonym>
+    <synonym>
+      MGC54978
+    </synonym>
+    <synonym>
+      Bptf
+    </synonym>
+    <refseq>
+      NM_004459
+    </refseq>
+    <refseq>
+      NM_182641
+    </refseq>
+    <refseq>
+      NM_176850
+    </refseq>
+    <comment1>
+      FAC1
+    </comment1>
+    <comment1>
+      BPTF
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.417
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.083
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.167
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.292
+        </A>
+        <C>
+          0.375
+        </C>
+        <G>
+          0.208
+        </G>
+        <T>
+          0.125
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.625
+        </C>
+        <G>
+          0.083
+        </G>
+        <T>
+          0.042
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.792
+        </A>
+        <C>
+          0.042
+        </C>
+        <G>
+          0.083
+        </G>
+        <T>
+          0.083
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.500
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.157
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.906
+        </A>
+        <C>
+          0.042
+        </C>
+        <G>
+          0.042
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.917
+        </A>
+        <C>
+          0.042
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.031
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.667
+        </C>
+        <G>
+          0.125
+        </G>
+        <T>
+          0.041
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.750
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.042
+        </G>
+        <T>
+          0.041
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.542
+        </C>
+        <G>
+          0.042
+        </G>
+        <T>
+          0.166
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.417
+        </A>
+        <C>
+          0.125
+        </C>
+        <G>
+          0.375
+        </G>
+        <T>
+          0.083
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.250
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.333
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.542
+        </A>
+        <C>
+          0.083
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.208
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00299">
     <source>
       Cistrome
@@ -8926,6 +9436,255 @@
         </G>
         <T>
           0.304
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01747">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      241
+    </numseqs>
+    <description>
+      BRF1 homolog, subunit of RNA polymerase III transcription initiation factor IIIB (S. cerevisiae)
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      2972
+    </entrez>
+    <symbol>
+      BRF1
+    </symbol>
+    <synonym>
+      BRF
+    </synonym>
+    <synonym>
+      FLJ42674
+    </synonym>
+    <synonym>
+      FLJ43034
+    </synonym>
+    <synonym>
+      GTF3B
+    </synonym>
+    <synonym>
+      MGC105048
+    </synonym>
+    <synonym>
+      TAF3B2
+    </synonym>
+    <synonym>
+      TAF3C
+    </synonym>
+    <synonym>
+      TAFIII90
+    </synonym>
+    <synonym>
+      TF3B90
+    </synonym>
+    <synonym>
+      TFIIIB90
+    </synonym>
+    <synonym>
+      hBRF
+    </synonym>
+    <synonym>
+      BRF1
+    </synonym>
+    <refseq>
+      NM_001519
+    </refseq>
+    <refseq>
+      NM_145685
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.124
+        </A>
+        <C>
+          0.079
+        </C>
+        <G>
+          0.635
+        </G>
+        <T>
+          0.162
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.154
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.805
+        </G>
+        <T>
+          0.031
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.012
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.967
+        </G>
+        <T>
+          0.011
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.062
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.012
+        </G>
+        <T>
+          0.916
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.021
+        </A>
+        <C>
+          0.917
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.052
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.311
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.651
+        </G>
+        <T>
+          0.028
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.415
+        </A>
+        <C>
+          0.095
+        </C>
+        <G>
+          0.220
+        </G>
+        <T>
+          0.270
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.124
+        </A>
+        <C>
+          0.245
+        </C>
+        <G>
+          0.029
+        </G>
+        <T>
+          0.602
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.946
+        </C>
+        <G>
+          0.012
+        </G>
+        <T>
+          0.032
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.050
+        </A>
+        <C>
+          0.784
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.156
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.112
+        </A>
+        <C>
+          0.627
+        </C>
+        <G>
+          0.154
+        </G>
+        <T>
+          0.107
         </T>
       </pos>
     </pssm>
@@ -11882,6 +12641,470 @@
         </G>
         <T>
           0.418
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01253">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      50
+    </numseqs>
+    <pmid>
+      19339689
+    </pmid>
+    <description>
+      CCR4-NOT transcription complex, subunit 3
+    </description>
+    <description>
+      CCR4-NOT transcription complex, subunit 3
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4849
+    </entrez>
+    <entrez>
+      232791
+    </entrez>
+    <symbol>
+      CNOT3
+    </symbol>
+    <symbol>
+      Cnot3
+    </symbol>
+    <synonym>
+      KIAA0691
+    </synonym>
+    <synonym>
+      LENG2
+    </synonym>
+    <synonym>
+      NOT3
+    </synonym>
+    <synonym>
+      NOT3H
+    </synonym>
+    <synonym>
+      CNOT3
+    </synonym>
+    <synonym>
+      A930039N10Rik
+    </synonym>
+    <synonym>
+      MGC40675
+    </synonym>
+    <synonym>
+      Cnot3
+    </synonym>
+    <refseq>
+      NM_014516
+    </refseq>
+    <refseq>
+      NM_146176
+    </refseq>
+    <comment1>
+      CNOT3
+    </comment1>
+    <comment1>
+      Cnot3
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.140
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.650
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.220
+        </C>
+        <G>
+          0.760
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.960
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.960
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.940
+        </C>
+        <G>
+          0.040
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.780
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.640
+        </C>
+        <G>
+          0.340
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.120
+        </A>
+        <C>
+          0.500
+        </C>
+        <G>
+          0.280
+        </G>
+        <T>
+          0.100
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.380
+        </C>
+        <G>
+          0.600
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01478">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      1
+    </numseqs>
+    <pmid>
+      18585359
+    </pmid>
+    <description>
+      cytoplasmic polyadenylated homeobox
+    </description>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      105594
+    </entrez>
+    <symbol>
+      Cphx
+    </symbol>
+    <synonym>
+      AU019881
+    </synonym>
+    <synonym>
+      AU023336
+    </synonym>
+    <synonym>
+      C330003B14Rik
+    </synonym>
+    <synonym>
+      C80129
+    </synonym>
+    <synonym>
+      Eso-1
+    </synonym>
+    <synonym>
+      Cphx
+    </synonym>
+    <refseq>
+      NM_175342
+    </refseq>
+    <comment1>
+      Cphx
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.340
+        </A>
+        <C>
+          0.180
+        </C>
+        <G>
+          0.260
+        </G>
+        <T>
+          0.220
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.030
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.950
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.040
+        </A>
+        <C>
+          0.020
+        </C>
+        <G>
+          0.930
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.040
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.060
+        </G>
+        <T>
+          0.890
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.100
+        </A>
+        <C>
+          0.370
+        </C>
+        <G>
+          0.290
+        </G>
+        <T>
+          0.240
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.220
+        </A>
+        <C>
+          0.280
+        </C>
+        <G>
+          0.350
+        </G>
+        <T>
+          0.150
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.540
+        </A>
+        <C>
+          0.340
+        </C>
+        <G>
+          0.080
+        </G>
+        <T>
+          0.040
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.950
+        </A>
+        <C>
+          0.030
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.950
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.030
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.610
+        </A>
+        <C>
+          0.140
+        </C>
+        <G>
+          0.150
+        </G>
+        <T>
+          0.100
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.360
+        </A>
+        <C>
+          0.210
+        </C>
+        <G>
+          0.100
+        </G>
+        <T>
+          0.330
         </T>
       </pos>
     </pssm>
@@ -17796,6 +19019,293 @@
         </G>
         <T>
           0.267
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01390">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      1
+    </numseqs>
+    <pmid>
+      18585359
+    </pmid>
+    <description>
+      double homeobox B-like
+    </description>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      278672
+    </entrez>
+    <symbol>
+      Duxbl
+    </symbol>
+    <synonym>
+      1110051B16Rik
+    </synonym>
+    <synonym>
+      Duxl
+    </synonym>
+    <synonym>
+      MGC67567
+    </synonym>
+    <synonym>
+      Duxbl
+    </synonym>
+    <refseq>
+      NM_183389
+    </refseq>
+    <comment1>
+      Duxl
+    </comment1>
+    <comment1>
+      Duxbl
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.060
+        </A>
+        <C>
+          0.550
+        </C>
+        <G>
+          0.100
+        </G>
+        <T>
+          0.290
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.350
+        </A>
+        <C>
+          0.050
+        </C>
+        <G>
+          0.470
+        </G>
+        <T>
+          0.130
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.770
+        </A>
+        <C>
+          0.020
+        </C>
+        <G>
+          0.160
+        </G>
+        <T>
+          0.050
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.060
+        </A>
+        <C>
+          0.670
+        </C>
+        <G>
+          0.110
+        </G>
+        <T>
+          0.160
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.667
+        </C>
+        <G>
+          0.091
+        </G>
+        <T>
+          0.222
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.747
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.233
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.960
+        </A>
+        <C>
+          0.020
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.830
+        </A>
+        <C>
+          0.030
+        </C>
+        <G>
+          0.090
+        </G>
+        <T>
+          0.050
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.050
+        </A>
+        <C>
+          0.530
+        </C>
+        <G>
+          0.180
+        </G>
+        <T>
+          0.240
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.248
+        </A>
+        <C>
+          0.248
+        </C>
+        <G>
+          0.277
+        </G>
+        <T>
+          0.227
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.310
+        </A>
+        <C>
+          0.190
+        </C>
+        <G>
+          0.340
+        </G>
+        <T>
+          0.160
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.280
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.150
+        </G>
+        <T>
+          0.370
+        </T>
+      </pos>
+      <pos num="17">
+        <A>
+          0.200
+        </A>
+        <C>
+          0.290
+        </C>
+        <G>
+          0.340
+        </G>
+        <T>
+          0.170
         </T>
       </pos>
     </pssm>
@@ -28496,6 +30006,233 @@
         </G>
         <T>
           0.970
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01209">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      6
+    </numseqs>
+    <description>
+      fibroblast growth factor 9 (glia-activating factor)
+    </description>
+    <description>
+      fibroblast growth factor 9
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      2254
+    </entrez>
+    <entrez>
+      14180
+    </entrez>
+    <symbol>
+      FGF9
+    </symbol>
+    <symbol>
+      Fgf9
+    </symbol>
+    <synonym>
+      GAF
+    </synonym>
+    <synonym>
+      HBFG-9
+    </synonym>
+    <synonym>
+      MGC119914
+    </synonym>
+    <synonym>
+      MGC119915
+    </synonym>
+    <synonym>
+      SYNS3
+    </synonym>
+    <synonym>
+      FGF9
+    </synonym>
+    <synonym>
+      Eks
+    </synonym>
+    <synonym>
+      Fgf9
+    </synonym>
+    <refseq>
+      NM_002010
+    </refseq>
+    <refseq>
+      NM_013518
+    </refseq>
+    <comment1>
+      GAF
+    </comment1>
+    <comment1>
+      FGF9
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.813
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.490
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.333
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.833
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.147
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.813
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.833
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.147
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.667
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.313
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.167
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.647
         </T>
       </pos>
     </pssm>
@@ -40262,6 +41999,256 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M00707">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      5
+    </numseqs>
+    <description>
+      general transcription factor IIA, 1, 19/37kDa
+    </description>
+    <description>
+      general transcription factor IIA, 2, 12kDa
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      2957
+    </entrez>
+    <entrez>
+      2958
+    </entrez>
+    <symbol>
+      GTF2A1
+    </symbol>
+    <symbol>
+      GTF2A2
+    </symbol>
+    <synonym>
+      MGC129969
+    </synonym>
+    <synonym>
+      MGC129970
+    </synonym>
+    <synonym>
+      TF2A1
+    </synonym>
+    <synonym>
+      TFIIA
+    </synonym>
+    <synonym>
+      GTF2A1
+    </synonym>
+    <synonym>
+      HsT18745
+    </synonym>
+    <synonym>
+      TF2A2
+    </synonym>
+    <synonym>
+      TFIIA
+    </synonym>
+    <synonym>
+      GTF2A2
+    </synonym>
+    <refseq>
+      NM_015859
+    </refseq>
+    <refseq>
+      NM_201595
+    </refseq>
+    <refseq>
+      NM_004492
+    </refseq>
+    <comment1>
+      TFIIA
+    </comment1>
+    <comment1>
+      GTF2A1
+    </comment1>
+    <comment1>
+      GTF2A2
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.780
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.580
+        </A>
+        <C>
+          0.400
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.400
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.400
+        </G>
+        <T>
+          0.190
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.400
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.390
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.580
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.400
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.780
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.780
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.580
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.400
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.200
+        </A>
+        <C>
+          0.390
+        </C>
+        <G>
+          0.400
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.580
+        </C>
+        <G>
+          0.400
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="M00706">
     <source>
       Transfac
@@ -42697,6 +44684,201 @@
         </G>
         <T>
           0.666
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01107">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <pmid>
+      12198246
+    </pmid>
+    <description>
+      helicase-like transcription factor
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      6596
+    </entrez>
+    <symbol>
+      HLTF
+    </symbol>
+    <synonym>
+      HIP116
+    </synonym>
+    <synonym>
+      HIP116A
+    </synonym>
+    <synonym>
+      HLTF1
+    </synonym>
+    <synonym>
+      RNF80
+    </synonym>
+    <synonym>
+      SMARCA3
+    </synonym>
+    <synonym>
+      SNF2L3
+    </synonym>
+    <synonym>
+      ZBU1
+    </synonym>
+    <synonym>
+      HLTF
+    </synonym>
+    <refseq>
+      NM_003071
+    </refseq>
+    <refseq>
+      NM_139048
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.314
+        </A>
+        <C>
+          0.196
+        </C>
+        <G>
+          0.235
+        </G>
+        <T>
+          0.255
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.377
+        </A>
+        <C>
+          0.226
+        </C>
+        <G>
+          0.094
+        </G>
+        <T>
+          0.303
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.441
+        </A>
+        <C>
+          0.539
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.424
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.556
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.407
+        </A>
+        <C>
+          0.085
+        </C>
+        <G>
+          0.203
+        </G>
+        <T>
+          0.305
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.373
+        </G>
+        <T>
+          0.607
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.294
+        </A>
+        <C>
+          0.275
+        </C>
+        <G>
+          0.275
+        </G>
+        <T>
+          0.156
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.245
+        </A>
+        <C>
+          0.245
+        </C>
+        <G>
+          0.204
+        </G>
+        <T>
+          0.306
         </T>
       </pos>
     </pssm>
@@ -45290,6 +47472,149 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M00646">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <dbd>
+      Homeodomain Family
+    </dbd>
+    <description>
+      HNF1 homeobox B
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      6928
+    </entrez>
+    <symbol>
+      HNF1B
+    </symbol>
+    <refseq>
+      NM_000458
+    </refseq>
+    <refseq>
+      NM_001165923
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.813
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.490
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.813
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.600
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.380
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.400
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.580
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="M01425">
     <source>
       Transfac
@@ -45555,149 +47880,6 @@
         </G>
         <T>
           0.534
-        </T>
-      </pos>
-    </pssm>
-  </motif>
-  <motif id="M00646">
-    <source>
-      Transfac
-    </source>
-    <status>
-      4
-    </status>
-    <dbd>
-      Homeodomain Family
-    </dbd>
-    <description>
-      HNF1 homeobox B
-    </description>
-    <species>
-      Homo sapiens
-    </species>
-    <entrez>
-      6928
-    </entrez>
-    <symbol>
-      HNF1B
-    </symbol>
-    <refseq>
-      NM_000458
-    </refseq>
-    <refseq>
-      NM_001165923
-    </refseq>
-    <pssm>
-      <pos num="1">
-        <A>
-          0.010
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.970
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="2">
-        <A>
-          0.010
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.970
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="3">
-        <A>
-          0.167
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.813
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="4">
-        <A>
-          0.167
-        </A>
-        <C>
-          0.333
-        </C>
-        <G>
-          0.490
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="5">
-        <A>
-          0.167
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.010
-        </G>
-        <T>
-          0.813
-        </T>
-      </pos>
-      <pos num="6">
-        <A>
-          0.010
-        </A>
-        <C>
-          0.970
-        </C>
-        <G>
-          0.010
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="7">
-        <A>
-          0.600
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.010
-        </G>
-        <T>
-          0.380
-        </T>
-      </pos>
-      <pos num="8">
-        <A>
-          0.400
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.580
-        </G>
-        <T>
-          0.010
         </T>
       </pos>
     </pssm>
@@ -55998,6 +58180,146 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="MA0319">
+    <source>
+      JASPAR
+    </source>
+    <status>
+      6
+    </status>
+    <dbd>
+      Transcription Factor Family
+    </dbd>
+    <description>
+      heat shock transcription factor 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      3297
+    </entrez>
+    <symbol>
+      HSF1
+    </symbol>
+    <refseq>
+      NM_005526
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.683
+        </A>
+        <C>
+          0.129
+        </C>
+        <G>
+          0.129
+        </G>
+        <T>
+          0.059
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.020
+        </C>
+        <G>
+          0.020
+        </G>
+        <T>
+          0.940
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.190
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.790
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.060
+        </A>
+        <C>
+          0.560
+        </C>
+        <G>
+          0.190
+        </G>
+        <T>
+          0.190
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.485
+        </A>
+        <C>
+          0.111
+        </C>
+        <G>
+          0.232
+        </G>
+        <T>
+          0.172
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00289">
     <source>
       Cistrome
@@ -56222,146 +58544,6 @@
         </G>
         <T>
           0.071
-        </T>
-      </pos>
-    </pssm>
-  </motif>
-  <motif id="MA0319">
-    <source>
-      JASPAR
-    </source>
-    <status>
-      6
-    </status>
-    <dbd>
-      Transcription Factor Family
-    </dbd>
-    <description>
-      heat shock transcription factor 1
-    </description>
-    <species>
-      Homo sapiens
-    </species>
-    <entrez>
-      3297
-    </entrez>
-    <symbol>
-      HSF1
-    </symbol>
-    <refseq>
-      NM_005526
-    </refseq>
-    <pssm>
-      <pos num="1">
-        <A>
-          0.683
-        </A>
-        <C>
-          0.129
-        </C>
-        <G>
-          0.129
-        </G>
-        <T>
-          0.059
-        </T>
-      </pos>
-      <pos num="2">
-        <A>
-          0.020
-        </A>
-        <C>
-          0.020
-        </C>
-        <G>
-          0.020
-        </G>
-        <T>
-          0.940
-        </T>
-      </pos>
-      <pos num="3">
-        <A>
-          0.190
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.790
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="4">
-        <A>
-          0.010
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.970
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="5">
-        <A>
-          0.970
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.010
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="6">
-        <A>
-          0.970
-        </A>
-        <C>
-          0.010
-        </C>
-        <G>
-          0.010
-        </G>
-        <T>
-          0.010
-        </T>
-      </pos>
-      <pos num="7">
-        <A>
-          0.060
-        </A>
-        <C>
-          0.560
-        </C>
-        <G>
-          0.190
-        </G>
-        <T>
-          0.190
-        </T>
-      </pos>
-      <pos num="8">
-        <A>
-          0.485
-        </A>
-        <C>
-          0.111
-        </C>
-        <G>
-          0.232
-        </G>
-        <T>
-          0.172
         </T>
       </pos>
     </pssm>
@@ -57734,6 +59916,151 @@
         </G>
         <T>
           0.436
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01743">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      58
+    </numseqs>
+    <pmid>
+      19187765
+    </pmid>
+    <description>
+      inhibitor of growth family, member 4
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      51147
+    </entrez>
+    <symbol>
+      ING4
+    </symbol>
+    <synonym>
+      MGC12557
+    </synonym>
+    <synonym>
+      my036
+    </synonym>
+    <synonym>
+      p29ING4
+    </synonym>
+    <synonym>
+      ING4
+    </synonym>
+    <refseq>
+      NM_001127582
+    </refseq>
+    <refseq>
+      NM_001127583
+    </refseq>
+    <refseq>
+      NM_001127584
+    </refseq>
+    <refseq>
+      NM_001127585
+    </refseq>
+    <refseq>
+      NM_001127586
+    </refseq>
+    <refseq>
+      NM_016162
+    </refseq>
+    <comment1>
+      ING4
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.017
+        </A>
+        <C>
+          0.887
+        </C>
+        <G>
+          0.086
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.034
+        </A>
+        <C>
+          0.939
+        </C>
+        <G>
+          0.017
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.897
+        </A>
+        <C>
+          0.034
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.059
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.034
+        </A>
+        <C>
+          0.887
+        </C>
+        <G>
+          0.069
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.963
+        </C>
+        <G>
+          0.017
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.914
+        </A>
+        <C>
+          0.017
+        </C>
+        <G>
+          0.052
+        </G>
+        <T>
+          0.017
         </T>
       </pos>
     </pssm>
@@ -67796,6 +70123,494 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M00277">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      31
+    </numseqs>
+    <pmid>
+      9214632
+    </pmid>
+    <description>
+      LIM domain only 2 (rhombotin-like 1)
+    </description>
+    <description>
+      LIM domain only 2
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4005
+    </entrez>
+    <entrez>
+      16909
+    </entrez>
+    <symbol>
+      LMO2
+    </symbol>
+    <symbol>
+      Lmo2
+    </symbol>
+    <synonym>
+      RBTN2
+    </synonym>
+    <synonym>
+      RBTNL1
+    </synonym>
+    <synonym>
+      RHOM2
+    </synonym>
+    <synonym>
+      TTG2
+    </synonym>
+    <synonym>
+      LMO2
+    </synonym>
+    <synonym>
+      Rbtn-2
+    </synonym>
+    <synonym>
+      Rbtn2
+    </synonym>
+    <synonym>
+      Rhom-2
+    </synonym>
+    <synonym>
+      Ttg2
+    </synonym>
+    <synonym>
+      Lmo2
+    </synonym>
+    <refseq>
+      NM_001142315
+    </refseq>
+    <refseq>
+      NM_001142316
+    </refseq>
+    <refseq>
+      NM_005574
+    </refseq>
+    <refseq>
+      XM_001479884
+    </refseq>
+    <refseq>
+      NM_001142335
+    </refseq>
+    <refseq>
+      NM_001142336
+    </refseq>
+    <refseq>
+      NM_001142337
+    </refseq>
+    <refseq>
+      NM_008505
+    </refseq>
+    <comment1>
+      Lmo2 complex
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.100
+        </A>
+        <C>
+          0.533
+        </C>
+        <G>
+          0.267
+        </G>
+        <T>
+          0.100
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.129
+        </A>
+        <C>
+          0.323
+        </C>
+        <G>
+          0.355
+        </G>
+        <T>
+          0.193
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.194
+        </A>
+        <C>
+          0.387
+        </C>
+        <G>
+          0.323
+        </G>
+        <T>
+          0.096
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.065
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.774
+        </G>
+        <T>
+          0.151
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.065
+        </A>
+        <C>
+          0.258
+        </C>
+        <G>
+          0.667
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.452
+        </C>
+        <G>
+          0.258
+        </G>
+        <T>
+          0.280
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.345
+        </A>
+        <C>
+          0.172
+        </C>
+        <G>
+          0.138
+        </G>
+        <T>
+          0.345
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.097
+        </A>
+        <C>
+          0.258
+        </C>
+        <G>
+          0.452
+        </G>
+        <T>
+          0.193
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M00278">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      31
+    </numseqs>
+    <pmid>
+      9214632
+    </pmid>
+    <description>
+      LIM domain only 2 (rhombotin-like 1)
+    </description>
+    <description>
+      LIM domain only 2
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4005
+    </entrez>
+    <entrez>
+      16909
+    </entrez>
+    <symbol>
+      LMO2
+    </symbol>
+    <symbol>
+      Lmo2
+    </symbol>
+    <synonym>
+      RBTN2
+    </synonym>
+    <synonym>
+      RBTNL1
+    </synonym>
+    <synonym>
+      RHOM2
+    </synonym>
+    <synonym>
+      TTG2
+    </synonym>
+    <synonym>
+      LMO2
+    </synonym>
+    <synonym>
+      Rbtn-2
+    </synonym>
+    <synonym>
+      Rbtn2
+    </synonym>
+    <synonym>
+      Rhom-2
+    </synonym>
+    <synonym>
+      Ttg2
+    </synonym>
+    <synonym>
+      Lmo2
+    </synonym>
+    <refseq>
+      NM_001142315
+    </refseq>
+    <refseq>
+      NM_001142316
+    </refseq>
+    <refseq>
+      NM_005574
+    </refseq>
+    <refseq>
+      XM_001479884
+    </refseq>
+    <refseq>
+      NM_001142335
+    </refseq>
+    <refseq>
+      NM_001142336
+    </refseq>
+    <refseq>
+      NM_001142337
+    </refseq>
+    <refseq>
+      NM_008505
+    </refseq>
+    <comment1>
+      Lmo2 complex
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.467
+        </C>
+        <G>
+          0.200
+        </G>
+        <T>
+          0.166
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.452
+        </A>
+        <C>
+          0.355
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.183
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.323
+        </A>
+        <C>
+          0.226
+        </C>
+        <G>
+          0.355
+        </G>
+        <T>
+          0.096
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.032
+        </A>
+        <C>
+          0.355
+        </C>
+        <G>
+          0.484
+        </G>
+        <T>
+          0.129
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.097
+        </A>
+        <C>
+          0.258
+        </C>
+        <G>
+          0.613
+        </G>
+        <T>
+          0.032
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00162">
     <source>
       Cistrome
@@ -70504,6 +73319,252 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01299">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      57
+    </numseqs>
+    <pmid>
+      16137622
+    </pmid>
+    <description>
+      methyl CpG binding protein 2 (Rett syndrome)
+    </description>
+    <description>
+      methyl CpG binding protein 2
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4204
+    </entrez>
+    <entrez>
+      17257
+    </entrez>
+    <symbol>
+      MECP2
+    </symbol>
+    <symbol>
+      Mecp2
+    </symbol>
+    <synonym>
+      AUTSX3
+    </synonym>
+    <synonym>
+      DKFZp686A24160
+    </synonym>
+    <synonym>
+      MRX16
+    </synonym>
+    <synonym>
+      MRX79
+    </synonym>
+    <synonym>
+      MRXS13
+    </synonym>
+    <synonym>
+      MRXSL
+    </synonym>
+    <synonym>
+      PPMX
+    </synonym>
+    <synonym>
+      RS
+    </synonym>
+    <synonym>
+      RTS
+    </synonym>
+    <synonym>
+      RTT
+    </synonym>
+    <synonym>
+      MECP2
+    </synonym>
+    <synonym>
+      1500041B07Rik
+    </synonym>
+    <synonym>
+      BB130002
+    </synonym>
+    <synonym>
+      D630021H01Rik
+    </synonym>
+    <synonym>
+      Mbd5
+    </synonym>
+    <synonym>
+      WBP10
+    </synonym>
+    <synonym>
+      Mecp2
+    </synonym>
+    <refseq>
+      NM_001110792
+    </refseq>
+    <refseq>
+      NM_004992
+    </refseq>
+    <refseq>
+      NM_001081979
+    </refseq>
+    <refseq>
+      NM_010788
+    </refseq>
+    <comment1>
+      MECP2
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.491
+        </A>
+        <C>
+          0.246
+        </C>
+        <G>
+          0.228
+        </G>
+        <T>
+          0.035
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.193
+        </C>
+        <G>
+          0.193
+        </G>
+        <T>
+          0.281
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.298
+        </A>
+        <C>
+          0.018
+        </C>
+        <G>
+          0.070
+        </G>
+        <T>
+          0.614
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.316
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.664
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.491
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.489
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.614
+        </A>
+        <C>
+          0.070
+        </C>
+        <G>
+          0.140
+        </G>
+        <T>
+          0.176
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00232">
     <source>
       Cistrome
@@ -71109,6 +74170,294 @@
         </G>
         <T>
           0.310
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="UP00186">
+    <source>
+      UniPROBE
+    </source>
+    <status>
+      9
+    </status>
+    <pmid>
+      18585359
+    </pmid>
+    <dbd>
+      Homeodomain Family
+    </dbd>
+    <description>
+      Meis homeobox 1
+    </description>
+    <description>
+      Meis homeobox 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4211
+    </entrez>
+    <entrez>
+      17268
+    </entrez>
+    <symbol>
+      MEIS1
+    </symbol>
+    <symbol>
+      Meis1
+    </symbol>
+    <synonym>
+      MGC43380
+    </synonym>
+    <synonym>
+      MEIS1
+    </synonym>
+    <synonym>
+      C530044H18Rik
+    </synonym>
+    <synonym>
+      Evi8
+    </synonym>
+    <synonym>
+      Meis1
+    </synonym>
+    <refseq>
+      NM_002398
+    </refseq>
+    <refseq>
+      NM_001193271
+    </refseq>
+    <refseq>
+      NM_010789
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.432
+        </A>
+        <C>
+          0.115
+        </C>
+        <G>
+          0.131
+        </G>
+        <T>
+          0.322
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.508
+        </A>
+        <C>
+          0.061
+        </C>
+        <G>
+          0.214
+        </G>
+        <T>
+          0.217
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.226
+        </A>
+        <C>
+          0.276
+        </C>
+        <G>
+          0.281
+        </G>
+        <T>
+          0.217
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.092
+        </A>
+        <C>
+          0.287
+        </C>
+        <G>
+          0.361
+        </G>
+        <T>
+          0.260
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.947
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.029
+        </G>
+        <T>
+          0.014
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.028
+        </A>
+        <C>
+          0.440
+        </C>
+        <G>
+          0.505
+        </G>
+        <T>
+          0.027
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.024
+        </A>
+        <C>
+          0.956
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.018
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.962
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.025
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.955
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.696
+        </A>
+        <C>
+          0.022
+        </C>
+        <G>
+          0.014
+        </G>
+        <T>
+          0.268
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.358
+        </A>
+        <C>
+          0.091
+        </C>
+        <G>
+          0.094
+        </G>
+        <T>
+          0.457
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.453
+        </A>
+        <C>
+          0.204
+        </C>
+        <G>
+          0.181
+        </G>
+        <T>
+          0.162
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.201
+        </A>
+        <C>
+          0.393
+        </C>
+        <G>
+          0.171
+        </G>
+        <T>
+          0.235
         </T>
       </pos>
     </pssm>
@@ -72917,6 +76266,245 @@
         </G>
         <T>
           0.382
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01245">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      43
+    </numseqs>
+    <pmid>
+      17884915
+    </pmid>
+    <description>
+      mitochondrial transcription termination factor
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      7978
+    </entrez>
+    <symbol>
+      MTERF
+    </symbol>
+    <synonym>
+      MGC131634
+    </synonym>
+    <synonym>
+      MTERF
+    </synonym>
+    <refseq>
+      NM_006980
+    </refseq>
+    <comment1>
+      mTERF
+    </comment1>
+    <comment1>
+      MTERF
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.186
+        </G>
+        <T>
+          0.794
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.070
+        </A>
+        <C>
+          0.163
+        </C>
+        <G>
+          0.047
+        </G>
+        <T>
+          0.720
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.698
+        </A>
+        <C>
+          0.093
+        </C>
+        <G>
+          0.093
+        </G>
+        <T>
+          0.116
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.395
+        </A>
+        <C>
+          0.140
+        </C>
+        <G>
+          0.372
+        </G>
+        <T>
+          0.093
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.535
+        </A>
+        <C>
+          0.023
+        </C>
+        <G>
+          0.140
+        </G>
+        <T>
+          0.302
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.488
+        </A>
+        <C>
+          0.070
+        </C>
+        <G>
+          0.372
+        </G>
+        <T>
+          0.070
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.023
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.721
+        </G>
+        <T>
+          0.246
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.349
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.631
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.047
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.933
         </T>
       </pos>
     </pssm>
@@ -76492,6 +80080,332 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M00806">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      79
+    </numseqs>
+    <description>
+      neurofibromin 1
+    </description>
+    <description>
+      neurofibromatosis 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4763
+    </entrez>
+    <entrez>
+      18015
+    </entrez>
+    <symbol>
+      NF1
+    </symbol>
+    <symbol>
+      Nf1
+    </symbol>
+    <synonym>
+      DKFZp686J1293
+    </synonym>
+    <synonym>
+      FLJ21220
+    </synonym>
+    <synonym>
+      NFNS
+    </synonym>
+    <synonym>
+      VRNF
+    </synonym>
+    <synonym>
+      WSS
+    </synonym>
+    <synonym>
+      NF1
+    </synonym>
+    <synonym>
+      AW494271
+    </synonym>
+    <synonym>
+      E030030H24Rik
+    </synonym>
+    <synonym>
+      Nf-1
+    </synonym>
+    <synonym>
+      Nf1
+    </synonym>
+    <refseq>
+      NM_000267
+    </refseq>
+    <refseq>
+      NM_001042492
+    </refseq>
+    <refseq>
+      NM_001128147
+    </refseq>
+    <refseq>
+      NM_010897
+    </refseq>
+    <comment1>
+      NF-1
+    </comment1>
+    <comment1>
+      NF1
+    </comment1>
+    <comment2>
+      3
+    </comment2>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.266
+        </A>
+        <C>
+          0.241
+        </C>
+        <G>
+          0.114
+        </G>
+        <T>
+          0.379
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.177
+        </A>
+        <C>
+          0.152
+        </C>
+        <G>
+          0.152
+        </G>
+        <T>
+          0.519
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.215
+        </A>
+        <C>
+          0.139
+        </C>
+        <G>
+          0.532
+        </G>
+        <T>
+          0.114
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.215
+        </A>
+        <C>
+          0.076
+        </C>
+        <G>
+          0.595
+        </G>
+        <T>
+          0.114
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.316
+        </A>
+        <C>
+          0.304
+        </C>
+        <G>
+          0.190
+        </G>
+        <T>
+          0.190
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.203
+        </A>
+        <C>
+          0.266
+        </C>
+        <G>
+          0.177
+        </G>
+        <T>
+          0.354
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.291
+        </A>
+        <C>
+          0.253
+        </C>
+        <G>
+          0.203
+        </G>
+        <T>
+          0.253
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.266
+        </A>
+        <C>
+          0.316
+        </C>
+        <G>
+          0.253
+        </G>
+        <T>
+          0.165
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.190
+        </A>
+        <C>
+          0.253
+        </C>
+        <G>
+          0.253
+        </G>
+        <T>
+          0.304
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.291
+        </A>
+        <C>
+          0.127
+        </C>
+        <G>
+          0.165
+        </G>
+        <T>
+          0.417
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.013
+        </A>
+        <C>
+          0.051
+        </C>
+        <G>
+          0.873
+        </G>
+        <T>
+          0.063
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.013
+        </A>
+        <C>
+          0.937
+        </C>
+        <G>
+          0.025
+        </G>
+        <T>
+          0.025
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.051
+        </A>
+        <C>
+          0.926
+        </C>
+        <G>
+          0.013
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.924
+        </A>
+        <C>
+          0.025
+        </C>
+        <G>
+          0.013
+        </G>
+        <T>
+          0.038
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.823
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.101
+        </G>
+        <T>
+          0.066
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.241
+        </A>
+        <C>
+          0.177
+        </C>
+        <G>
+          0.342
+        </G>
+        <T>
+          0.240
+        </T>
+      </pos>
+      <pos num="17">
+        <A>
+          0.392
+        </A>
+        <C>
+          0.228
+        </C>
+        <G>
+          0.228
+        </G>
+        <T>
+          0.152
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00211">
     <source>
       Cistrome
@@ -78682,6 +82596,677 @@
         </G>
         <T>
           0.055
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M00687">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      7
+    </numseqs>
+    <description>
+      nuclear transcription factor Y, alpha
+    </description>
+    <description>
+      nuclear transcription factor-Y alpha
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4800
+    </entrez>
+    <entrez>
+      18044
+    </entrez>
+    <symbol>
+      NFYA
+    </symbol>
+    <symbol>
+      Nfya
+    </symbol>
+    <synonym>
+      CBF-A
+    </synonym>
+    <synonym>
+      CBF-B
+    </synonym>
+    <synonym>
+      FLJ11236
+    </synonym>
+    <synonym>
+      HAP2
+    </synonym>
+    <synonym>
+      NF-YA
+    </synonym>
+    <synonym>
+      NFYA
+    </synonym>
+    <synonym>
+      AA407810
+    </synonym>
+    <synonym>
+      Cbf-b
+    </synonym>
+    <synonym>
+      SEZ-10
+    </synonym>
+    <synonym>
+      SEZ10
+    </synonym>
+    <synonym>
+      Nfya
+    </synonym>
+    <refseq>
+      NM_002505
+    </refseq>
+    <refseq>
+      NM_021705
+    </refseq>
+    <refseq>
+      NM_001110832
+    </refseq>
+    <refseq>
+      NM_010913
+    </refseq>
+    <comment1>
+      alpha-CP1
+    </comment1>
+    <comment1>
+      Pcbp1
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.143
+        </A>
+        <C>
+          0.714
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.133
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.837
+        </A>
+        <C>
+          0.143
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.143
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.714
+        </G>
+        <T>
+          0.133
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.143
+        </C>
+        <G>
+          0.837
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M00287">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      162
+    </numseqs>
+    <pmid>
+      9469818
+    </pmid>
+    <description>
+      nuclear transcription factor Y, alpha
+    </description>
+    <description>
+      nuclear transcription factor Y, beta
+    </description>
+    <description>
+      nuclear transcription factor Y, gamma
+    </description>
+    <description>
+      nuclear transcription factor-Y alpha
+    </description>
+    <description>
+      nuclear transcription factor-Y beta
+    </description>
+    <description>
+      nuclear transcription factor-Y gamma
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      4800
+    </entrez>
+    <entrez>
+      4801
+    </entrez>
+    <entrez>
+      4802
+    </entrez>
+    <entrez>
+      18044
+    </entrez>
+    <entrez>
+      18045
+    </entrez>
+    <entrez>
+      18046
+    </entrez>
+    <symbol>
+      NFYA
+    </symbol>
+    <symbol>
+      NFYB
+    </symbol>
+    <symbol>
+      NFYC
+    </symbol>
+    <symbol>
+      Nfya
+    </symbol>
+    <symbol>
+      Nfyb
+    </symbol>
+    <symbol>
+      Nfyc
+    </symbol>
+    <synonym>
+      CBF-A
+    </synonym>
+    <synonym>
+      CBF-B
+    </synonym>
+    <synonym>
+      FLJ11236
+    </synonym>
+    <synonym>
+      HAP2
+    </synonym>
+    <synonym>
+      NF-YA
+    </synonym>
+    <synonym>
+      NFYA
+    </synonym>
+    <synonym>
+      CBF-A
+    </synonym>
+    <synonym>
+      CBF-B
+    </synonym>
+    <synonym>
+      HAP3
+    </synonym>
+    <synonym>
+      NF-YB
+    </synonym>
+    <synonym>
+      NFYB
+    </synonym>
+    <synonym>
+      CBF-C
+    </synonym>
+    <synonym>
+      CBFC
+    </synonym>
+    <synonym>
+      DKFZp667G242
+    </synonym>
+    <synonym>
+      FLJ45775
+    </synonym>
+    <synonym>
+      H1TF2A
+    </synonym>
+    <synonym>
+      HAP5
+    </synonym>
+    <synonym>
+      HSM
+    </synonym>
+    <synonym>
+      NF-YC
+    </synonym>
+    <synonym>
+      NFYC
+    </synonym>
+    <synonym>
+      AA407810
+    </synonym>
+    <synonym>
+      Cbf-b
+    </synonym>
+    <synonym>
+      SEZ-10
+    </synonym>
+    <synonym>
+      SEZ10
+    </synonym>
+    <synonym>
+      Nfya
+    </synonym>
+    <synonym>
+      AA985999
+    </synonym>
+    <synonym>
+      Cbf-A
+    </synonym>
+    <synonym>
+      Nfyb
+    </synonym>
+    <synonym>
+      Nfyc
+    </synonym>
+    <refseq>
+      NM_002505
+    </refseq>
+    <refseq>
+      NM_021705
+    </refseq>
+    <refseq>
+      NM_006166
+    </refseq>
+    <refseq>
+      NM_001142587
+    </refseq>
+    <refseq>
+      NM_001142588
+    </refseq>
+    <refseq>
+      NM_001142589
+    </refseq>
+    <refseq>
+      NM_001142590
+    </refseq>
+    <refseq>
+      NM_014223
+    </refseq>
+    <refseq>
+      NM_001110832
+    </refseq>
+    <refseq>
+      NM_010913
+    </refseq>
+    <refseq>
+      NM_010914
+    </refseq>
+    <refseq>
+      NM_001048168
+    </refseq>
+    <refseq>
+      NM_008692
+    </refseq>
+    <comment1>
+      NF-Y
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.321
+        </A>
+        <C>
+          0.290
+        </C>
+        <G>
+          0.253
+        </G>
+        <T>
+          0.136
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.135
+        </A>
+        <C>
+          0.313
+        </C>
+        <G>
+          0.233
+        </G>
+        <T>
+          0.319
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.098
+        </A>
+        <C>
+          0.409
+        </C>
+        <G>
+          0.244
+        </G>
+        <T>
+          0.249
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.488
+        </A>
+        <C>
+          0.116
+        </C>
+        <G>
+          0.366
+        </G>
+        <T>
+          0.030
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.415
+        </A>
+        <C>
+          0.043
+        </C>
+        <G>
+          0.476
+        </G>
+        <T>
+          0.066
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.012
+        </A>
+        <C>
+          0.968
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.122
+        </A>
+        <C>
+          0.537
+        </C>
+        <G>
+          0.305
+        </G>
+        <T>
+          0.036
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.585
+        </A>
+        <C>
+          0.061
+        </C>
+        <G>
+          0.335
+        </G>
+        <T>
+          0.019
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.128
+        </A>
+        <C>
+          0.171
+        </C>
+        <G>
+          0.598
+        </G>
+        <T>
+          0.103
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.354
+        </A>
+        <C>
+          0.348
+        </C>
+        <G>
+          0.201
+        </G>
+        <T>
+          0.097
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.287
+        </A>
+        <C>
+          0.067
+        </C>
+        <G>
+          0.439
+        </G>
+        <T>
+          0.207
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.210
+        </A>
+        <C>
+          0.327
+        </C>
+        <G>
+          0.247
+        </G>
+        <T>
+          0.216
         </T>
       </pos>
     </pssm>
@@ -91826,6 +96411,252 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01211">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      6
+    </numseqs>
+    <description>
+      poly (ADP-ribose) polymerase 1
+    </description>
+    <description>
+      poly (ADP-ribose) polymerase family, member 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      142
+    </entrez>
+    <entrez>
+      11545
+    </entrez>
+    <symbol>
+      PARP1
+    </symbol>
+    <symbol>
+      Parp1
+    </symbol>
+    <synonym>
+      ADPRT
+    </synonym>
+    <synonym>
+      ADPRT 1
+    </synonym>
+    <synonym>
+      ADPRT1
+    </synonym>
+    <synonym>
+      PARP
+    </synonym>
+    <synonym>
+      PARP-1
+    </synonym>
+    <synonym>
+      PPOL
+    </synonym>
+    <synonym>
+      pADPRT-1
+    </synonym>
+    <synonym>
+      PARP1
+    </synonym>
+    <synonym>
+      5830444G22Rik
+    </synonym>
+    <synonym>
+      AI893648
+    </synonym>
+    <synonym>
+      Adprp
+    </synonym>
+    <synonym>
+      Adprt1
+    </synonym>
+    <synonym>
+      C80510
+    </synonym>
+    <synonym>
+      PARP
+    </synonym>
+    <synonym>
+      PPOL
+    </synonym>
+    <synonym>
+      parp-1
+    </synonym>
+    <synonym>
+      sPARP-1
+    </synonym>
+    <synonym>
+      Parp1
+    </synonym>
+    <refseq>
+      NM_001618
+    </refseq>
+    <refseq>
+      NM_007415
+    </refseq>
+    <comment1>
+      PARP
+    </comment1>
+    <comment1>
+      PARP1
+    </comment1>
+    <comment1>
+      COL11A2
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.490
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.324
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.480
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.500
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.667
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.156
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.490
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.667
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.156
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.490
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="M00491">
     <source>
       Transfac
@@ -99487,6 +104318,276 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01798">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      505
+    </numseqs>
+    <description>
+      polymerase (RNA) III (DNA directed) polypeptide A, 155kDa
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      11128
+    </entrez>
+    <symbol>
+      POLR3A
+    </symbol>
+    <synonym>
+      RPC1
+    </synonym>
+    <synonym>
+      RPC155
+    </synonym>
+    <synonym>
+      hRPC155
+    </synonym>
+    <synonym>
+      POLR3A
+    </synonym>
+    <refseq>
+      NM_007055
+    </refseq>
+    <comment1>
+      RPC155
+    </comment1>
+    <comment1>
+      POLR3A
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.055
+        </A>
+        <C>
+          0.113
+        </C>
+        <G>
+          0.212
+        </G>
+        <T>
+          0.620
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.030
+        </A>
+        <C>
+          0.814
+        </C>
+        <G>
+          0.020
+        </G>
+        <T>
+          0.136
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.450
+        </A>
+        <C>
+          0.352
+        </C>
+        <G>
+          0.125
+        </G>
+        <T>
+          0.073
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.089
+        </A>
+        <C>
+          0.255
+        </C>
+        <G>
+          0.457
+        </G>
+        <T>
+          0.199
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.103
+        </A>
+        <C>
+          0.055
+        </C>
+        <G>
+          0.745
+        </G>
+        <T>
+          0.097
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.539
+        </A>
+        <C>
+          0.012
+        </C>
+        <G>
+          0.420
+        </G>
+        <T>
+          0.029
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.028
+        </A>
+        <C>
+          0.014
+        </C>
+        <G>
+          0.948
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.085
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.895
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.024
+        </C>
+        <G>
+          0.012
+        </G>
+        <T>
+          0.954
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.848
+        </C>
+        <G>
+          0.020
+        </G>
+        <T>
+          0.122
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.404
+        </A>
+        <C>
+          0.026
+        </C>
+        <G>
+          0.547
+        </G>
+        <T>
+          0.023
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.964
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.016
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.261
+        </A>
+        <C>
+          0.028
+        </C>
+        <G>
+          0.588
+        </G>
+        <T>
+          0.123
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.473
+        </A>
+        <C>
+          0.129
+        </C>
+        <G>
+          0.067
+        </G>
+        <T>
+          0.331
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.046
+        </A>
+        <C>
+          0.919
+        </C>
+        <G>
+          0.016
+        </G>
+        <T>
+          0.019
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.042
+        </A>
+        <C>
+          0.848
+        </C>
+        <G>
+          0.014
+        </G>
+        <T>
+          0.096
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="UP00158">
     <source>
       UniPROBE
@@ -105504,6 +110605,202 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01721">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      12
+    </numseqs>
+    <description>
+      purine-rich element binding protein A
+    </description>
+    <description>
+      MYC-associated zinc finger protein (purine-binding transcription factor)
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      5813
+    </entrez>
+    <entrez>
+      17188
+    </entrez>
+    <symbol>
+      PURA
+    </symbol>
+    <symbol>
+      Maz
+    </symbol>
+    <synonym>
+      PUR-ALPHA
+    </synonym>
+    <synonym>
+      PUR1
+    </synonym>
+    <synonym>
+      PURALPHA
+    </synonym>
+    <synonym>
+      PURA
+    </synonym>
+    <synonym>
+      PUR1
+    </synonym>
+    <synonym>
+      Pur-1
+    </synonym>
+    <synonym>
+      SAF-1
+    </synonym>
+    <synonym>
+      SAF-2
+    </synonym>
+    <synonym>
+      Maz
+    </synonym>
+    <refseq>
+      NM_005859
+    </refseq>
+    <refseq>
+      NM_010772
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.083
+        </C>
+        <G>
+          0.583
+        </G>
+        <T>
+          0.167
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.083
+        </C>
+        <G>
+          0.583
+        </G>
+        <T>
+          0.084
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.813
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.333
+        </G>
+        <T>
+          0.084
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.656
+        </C>
+        <G>
+          0.167
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.917
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.063
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.250
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.250
+        </G>
+        <T>
+          0.333
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.250
+        </C>
+        <G>
+          0.417
+        </G>
+        <T>
+          0.166
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00252">
     <source>
       Cistrome
@@ -106690,6 +111987,281 @@
         </G>
         <T>
           0.012
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01112">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      28
+    </numseqs>
+    <pmid>
+      8152928
+    </pmid>
+    <description>
+      recombination signal binding protein for immunoglobulin kappa J region
+    </description>
+    <description>
+      recombination signal binding protein for immunoglobulin kappa J region
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      3516
+    </entrez>
+    <entrez>
+      19664
+    </entrez>
+    <symbol>
+      RBPJ
+    </symbol>
+    <symbol>
+      Rbpj
+    </symbol>
+    <synonym>
+      CBF1
+    </synonym>
+    <synonym>
+      IGKJRB
+    </synonym>
+    <synonym>
+      IGKJRB1
+    </synonym>
+    <synonym>
+      KBF2
+    </synonym>
+    <synonym>
+      MGC61669
+    </synonym>
+    <synonym>
+      RBP-J
+    </synonym>
+    <synonym>
+      RBPJK
+    </synonym>
+    <synonym>
+      RBPSUH
+    </synonym>
+    <synonym>
+      SUH
+    </synonym>
+    <synonym>
+      csl
+    </synonym>
+    <synonym>
+      RBPJ
+    </synonym>
+    <synonym>
+      AI843960
+    </synonym>
+    <synonym>
+      CBF1
+    </synonym>
+    <synonym>
+      Igkjrb
+    </synonym>
+    <synonym>
+      Igkrsbp
+    </synonym>
+    <synonym>
+      RBP-J
+    </synonym>
+    <synonym>
+      RBPjk
+    </synonym>
+    <synonym>
+      Rbpsuh
+    </synonym>
+    <synonym>
+      Rbpj
+    </synonym>
+    <refseq>
+      NM_005349
+    </refseq>
+    <refseq>
+      NM_015874
+    </refseq>
+    <refseq>
+      NM_203283
+    </refseq>
+    <refseq>
+      NM_203284
+    </refseq>
+    <refseq>
+      NM_001080927
+    </refseq>
+    <refseq>
+      NM_001080928
+    </refseq>
+    <refseq>
+      NM_009035
+    </refseq>
+    <comment1>
+      RBP-Jkappa
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.538
+        </A>
+        <C>
+          0.154
+        </C>
+        <G>
+          0.115
+        </G>
+        <T>
+          0.193
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.148
+        </A>
+        <C>
+          0.370
+        </C>
+        <G>
+          0.296
+        </G>
+        <T>
+          0.186
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.033
+        </A>
+        <C>
+          0.767
+        </C>
+        <G>
+          0.033
+        </G>
+        <T>
+          0.167
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.063
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.906
+        </G>
+        <T>
+          0.021
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.031
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.949
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.125
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.781
+        </G>
+        <T>
+          0.084
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.031
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.949
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.938
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.042
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.883
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.097
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.429
+        </A>
+        <C>
+          0.393
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.168
         </T>
       </pos>
     </pssm>
@@ -121581,233 +127153,266 @@
       </pos>
     </pssm>
   </motif>
-  <motif id="MC00151">
+  <motif id="UP00038">
     <source>
-      Cistrome
+      UniPROBE
     </source>
     <status>
-      20
+      9
     </status>
+    <pmid>
+      19443739
+    </pmid>
     <dbd>
       Ets Domain Family
     </dbd>
     <description>
-      spleen focus forming virus (SFFV) proviral integration oncogene spi1
+      SAM pointed domain containing ets transcription factor
     </description>
     <species>
-      Homo sapiens
+      Mus musculus
     </species>
-    <cellline>
-      HL60
-    </cellline>
     <entrez>
-      6688
+      30051
     </entrez>
     <symbol>
-      SPI1
+      Spdef
     </symbol>
+    <synonym>
+      PDEF
+    </synonym>
+    <synonym>
+      Pse
+    </synonym>
+    <synonym>
+      Spdef
+    </synonym>
     <refseq>
-      NM_001080547
+      NM_013891
     </refseq>
-    <refseq>
-      NM_003120
-    </refseq>
-    <datasetid>
-      2850(3/3)
-    </datasetid>
-    <zscore>
-      -65.209
-    </zscore>
-    <seqfactors>
-      (0) denovo (1) denovo (2) denovo (3) PU.1 SPI1 (4) denovo (5) SPI-B SPIB (6) denovo (7) denovo (8) EFNA2 Efna2 (9) SPI1 (10) PU.1 SPI1 (11) denovo (12) Ets (13) Ets (14) SPIB (15) GABPA GABPB1 GABPB2 Gabpa Gabpb1 Gabpb2 (16) GABP (17) PEA3 ETV4 (18) Ets1 (19) Elk-1 ELK1 (20) denovo (21) NKX2-5 Nkx2-5 (22) c-Ets-1 68 (23) FEV (24) denovo (25) Elk-1 ELK1 (26) GABP-alpha Gabpa (27) NRF-2/GABP (28) ETS2 (29) FLI1 (30) ELF1 Elf1 (31) ERG (32) MAF Maf (33) EHF (34) ETV7 (35) ELF5 (36) Elk-1 ELK1 (37) Blimp-1 (38) STAT1 (39) STAT6 Stat6 (40) GCR2 (41) Ets1 (42) PRDM1 Prdm1 (43) GCR1 (44) ETS2 Ets2
-    </seqfactors>
-    <seqdbds>
-      (0)  (1)  (2)  (3)  (4)  (5)  (6)  (7)  (8)  (9) Ets Domain Family (10)  (11)  (12)  (13)  (14) Ets Domain Family (15) Ets Domain Family (16)  (17)  (18) Ets Domain Family (19)  (20)  (21) Homeodomain Family (22)  (23) Ets Domain Family (24)  (25)  (26)  (27)  (28) Ets Domain Family (29) Ets Domain Family (30) Ets Domain Family (31) Ets Domain Family (32) Leucine zipper Family (bZIP) (33)  (34) Ets Domain Family (35)  (36)  (37)  (38) Stat Protein Family (39) Stat Protein Family (40)  (41) Ets Domain Family (42) BetaBetaAlpha-zinc finger Family (zf-C2H2) (43)  (44) Ets Domain Family
-    </seqdbds>
-    <nmotifs>
-      45
-    </nmotifs>
     <pssm>
       <pos num="1">
         <A>
-          0.585
+          0.278
         </A>
         <C>
-          0.041
+          0.269
         </C>
         <G>
-          0.347
+          0.332
         </G>
         <T>
-          0.027
+          0.121
         </T>
       </pos>
       <pos num="2">
         <A>
-          0.904
+          0.192
         </A>
         <C>
-          0.012
+          0.290
         </C>
         <G>
-          0.057
+          0.165
         </G>
         <T>
-          0.027
+          0.353
         </T>
       </pos>
       <pos num="3">
         <A>
-          0.933
+          0.490
         </A>
         <C>
-          0.002
+          0.027
         </C>
         <G>
-          0.040
+          0.447
         </G>
         <T>
-          0.025
+          0.036
         </T>
       </pos>
       <pos num="4">
         <A>
-          0.761
+          0.092
         </A>
         <C>
-          0.002
+          0.612
         </C>
         <G>
-          0.027
+          0.135
         </G>
         <T>
-          0.209
+          0.161
         </T>
       </pos>
       <pos num="5">
         <A>
-          0.122
+          0.715
         </A>
         <C>
-          0.055
+          0.010
         </C>
         <G>
-          0.819
+          0.043
         </G>
         <T>
-          0.004
+          0.232
         </T>
       </pos>
       <pos num="6">
         <A>
-          0.683
+          0.017
         </A>
         <C>
-          0.041
+          0.015
         </C>
         <G>
-          0.273
+          0.010
         </G>
         <T>
-          0.003
+          0.958
         </T>
       </pos>
       <pos num="7">
         <A>
-          0.028
+          0.010
         </A>
         <C>
-          0.001
+          0.970
         </C>
         <G>
-          0.969
+          0.010
         </G>
         <T>
-          0.002
+          0.010
         </T>
       </pos>
       <pos num="8">
         <A>
-          0.004
+          0.010
         </A>
         <C>
-          0.001
+          0.970
         </C>
         <G>
-          0.991
+          0.010
         </G>
         <T>
-          0.004
+          0.010
         </T>
       </pos>
       <pos num="9">
         <A>
-          0.998
+          0.010
         </A>
         <C>
-          0.001
+          0.010
         </C>
         <G>
-          0.000
+          0.872
         </G>
         <T>
-          0.001
+          0.108
         </T>
       </pos>
       <pos num="10">
         <A>
-          0.993
+          0.010
         </A>
         <C>
-          0.003
+          0.087
         </C>
         <G>
-          0.003
+          0.857
         </G>
         <T>
-          0.001
+          0.046
         </T>
       </pos>
       <pos num="11">
         <A>
-          0.028
+          0.567
         </A>
         <C>
-          0.155
+          0.071
         </C>
         <G>
-          0.814
+          0.194
         </G>
         <T>
-          0.003
+          0.168
         </T>
       </pos>
       <pos num="12">
         <A>
-          0.029
+          0.178
         </A>
         <C>
-          0.029
+          0.059
         </C>
         <G>
-          0.008
+          0.041
         </G>
         <T>
-          0.934
+          0.722
         </T>
       </pos>
       <pos num="13">
         <A>
-          0.007
+          0.256
         </A>
         <C>
-          0.173
+          0.251
         </C>
         <G>
-          0.815
+          0.158
         </G>
         <T>
-          0.005
+          0.335
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.184
+        </A>
+        <C>
+          0.304
+        </C>
+        <G>
+          0.126
+        </G>
+        <T>
+          0.386
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.145
+        </A>
+        <C>
+          0.234
+        </C>
+        <G>
+          0.150
+        </G>
+        <T>
+          0.471
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.093
+        </A>
+        <C>
+          0.314
+        </C>
+        <G>
+          0.190
+        </G>
+        <T>
+          0.403
         </T>
       </pos>
     </pssm>
@@ -122078,6 +127683,237 @@
         </G>
         <T>
           0.535
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="MC00151">
+    <source>
+      Cistrome
+    </source>
+    <status>
+      20
+    </status>
+    <dbd>
+      Ets Domain Family
+    </dbd>
+    <description>
+      spleen focus forming virus (SFFV) proviral integration oncogene spi1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <cellline>
+      HL60
+    </cellline>
+    <entrez>
+      6688
+    </entrez>
+    <symbol>
+      SPI1
+    </symbol>
+    <refseq>
+      NM_001080547
+    </refseq>
+    <refseq>
+      NM_003120
+    </refseq>
+    <datasetid>
+      2850(3/3)
+    </datasetid>
+    <zscore>
+      -65.209
+    </zscore>
+    <seqfactors>
+      (0) denovo (1) denovo (2) denovo (3) PU.1 SPI1 (4) denovo (5) SPI-B SPIB (6) denovo (7) denovo (8) EFNA2 Efna2 (9) SPI1 (10) PU.1 SPI1 (11) denovo (12) Ets (13) Ets (14) SPIB (15) GABPA GABPB1 GABPB2 Gabpa Gabpb1 Gabpb2 (16) GABP (17) PEA3 ETV4 (18) Ets1 (19) Elk-1 ELK1 (20) denovo (21) NKX2-5 Nkx2-5 (22) c-Ets-1 68 (23) FEV (24) denovo (25) Elk-1 ELK1 (26) GABP-alpha Gabpa (27) NRF-2/GABP (28) ETS2 (29) FLI1 (30) ELF1 Elf1 (31) ERG (32) MAF Maf (33) EHF (34) ETV7 (35) ELF5 (36) Elk-1 ELK1 (37) Blimp-1 (38) STAT1 (39) STAT6 Stat6 (40) GCR2 (41) Ets1 (42) PRDM1 Prdm1 (43) GCR1 (44) ETS2 Ets2
+    </seqfactors>
+    <seqdbds>
+      (0)  (1)  (2)  (3)  (4)  (5)  (6)  (7)  (8)  (9) Ets Domain Family (10)  (11)  (12)  (13)  (14) Ets Domain Family (15) Ets Domain Family (16)  (17)  (18) Ets Domain Family (19)  (20)  (21) Homeodomain Family (22)  (23) Ets Domain Family (24)  (25)  (26)  (27)  (28) Ets Domain Family (29) Ets Domain Family (30) Ets Domain Family (31) Ets Domain Family (32) Leucine zipper Family (bZIP) (33)  (34) Ets Domain Family (35)  (36)  (37)  (38) Stat Protein Family (39) Stat Protein Family (40)  (41) Ets Domain Family (42) BetaBetaAlpha-zinc finger Family (zf-C2H2) (43)  (44) Ets Domain Family
+    </seqdbds>
+    <nmotifs>
+      45
+    </nmotifs>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.585
+        </A>
+        <C>
+          0.041
+        </C>
+        <G>
+          0.347
+        </G>
+        <T>
+          0.027
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.904
+        </A>
+        <C>
+          0.012
+        </C>
+        <G>
+          0.057
+        </G>
+        <T>
+          0.027
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.933
+        </A>
+        <C>
+          0.002
+        </C>
+        <G>
+          0.040
+        </G>
+        <T>
+          0.025
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.761
+        </A>
+        <C>
+          0.002
+        </C>
+        <G>
+          0.027
+        </G>
+        <T>
+          0.209
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.122
+        </A>
+        <C>
+          0.055
+        </C>
+        <G>
+          0.819
+        </G>
+        <T>
+          0.004
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.683
+        </A>
+        <C>
+          0.041
+        </C>
+        <G>
+          0.273
+        </G>
+        <T>
+          0.003
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.028
+        </A>
+        <C>
+          0.001
+        </C>
+        <G>
+          0.969
+        </G>
+        <T>
+          0.002
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.004
+        </A>
+        <C>
+          0.001
+        </C>
+        <G>
+          0.991
+        </G>
+        <T>
+          0.004
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.998
+        </A>
+        <C>
+          0.001
+        </C>
+        <G>
+          0.000
+        </G>
+        <T>
+          0.001
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.993
+        </A>
+        <C>
+          0.003
+        </C>
+        <G>
+          0.003
+        </G>
+        <T>
+          0.001
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.028
+        </A>
+        <C>
+          0.155
+        </C>
+        <G>
+          0.814
+        </G>
+        <T>
+          0.003
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.029
+        </A>
+        <C>
+          0.029
+        </C>
+        <G>
+          0.008
+        </G>
+        <T>
+          0.934
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.007
+        </A>
+        <C>
+          0.173
+        </C>
+        <G>
+          0.815
+        </G>
+        <T>
+          0.005
         </T>
       </pos>
     </pssm>
@@ -122428,6 +128264,283 @@
         </G>
         <T>
           0.264
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M00446">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      22
+    </numseqs>
+    <pmid>
+      11165476
+    </pmid>
+    <description>
+      spermatogenic leucine zipper 1
+    </description>
+    <description>
+      spermatogenic leucine zipper 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      84654
+    </entrez>
+    <entrez>
+      79401
+    </entrez>
+    <symbol>
+      SPZ1
+    </symbol>
+    <symbol>
+      Spz1
+    </symbol>
+    <synonym>
+      FLJ25709
+    </synonym>
+    <synonym>
+      NYD-TSP1
+    </synonym>
+    <synonym>
+      SPZ1
+    </synonym>
+    <synonym>
+      1700027M20Rik
+    </synonym>
+    <synonym>
+      AI429130
+    </synonym>
+    <synonym>
+      Spz1
+    </synonym>
+    <refseq>
+      NM_032567
+    </refseq>
+    <refseq>
+      NM_030237
+    </refseq>
+    <comment1>
+      Spz1
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.286
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.429
+        </G>
+        <T>
+          0.275
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.167
+        </A>
+        <C>
+          0.333
+        </C>
+        <G>
+          0.292
+        </G>
+        <T>
+          0.208
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.370
+        </A>
+        <C>
+          0.296
+        </C>
+        <G>
+          0.148
+        </G>
+        <T>
+          0.186
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.133
+        </C>
+        <G>
+          0.847
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.067
+        </C>
+        <G>
+          0.913
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.400
+        </A>
+        <C>
+          0.067
+        </C>
+        <G>
+          0.367
+        </G>
+        <T>
+          0.166
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.133
+        </C>
+        <G>
+          0.847
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.813
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.067
+        </A>
+        <C>
+          0.100
+        </C>
+        <G>
+          0.667
+        </G>
+        <T>
+          0.166
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.100
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.557
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.433
+        </A>
+        <C>
+          0.100
+        </C>
+        <G>
+          0.133
+        </G>
+        <T>
+          0.334
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.200
+        </A>
+        <C>
+          0.167
+        </C>
+        <G>
+          0.200
+        </G>
+        <T>
+          0.433
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.208
+        </A>
+        <C>
+          0.042
+        </C>
+        <G>
+          0.500
+        </G>
+        <T>
+          0.250
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.136
+        </A>
+        <C>
+          0.273
+        </C>
+        <G>
+          0.409
+        </G>
+        <T>
+          0.182
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.182
+        </A>
+        <C>
+          0.409
+        </C>
+        <G>
+          0.318
+        </G>
+        <T>
+          0.091
         </T>
       </pos>
     </pssm>
@@ -125688,247 +131801,6 @@
       </pos>
     </pssm>
   </motif>
-  <motif id="MC00500">
-    <source>
-      Cistrome
-    </source>
-    <status>
-      18
-    </status>
-    <dbd>
-      Stat Protein Family
-    </dbd>
-    <description>
-      signal transducer and activator of transcription 6, interleukin-4 induced
-    </description>
-    <species>
-      Homo sapiens
-    </species>
-    <cellline>
-      CD4+
-    </cellline>
-    <entrez>
-      6778
-    </entrez>
-    <symbol>
-      STAT6
-    </symbol>
-    <synonym>
-      D12S1644
-    </synonym>
-    <synonym>
-      IL-4-STAT
-    </synonym>
-    <synonym>
-      STAT6B
-    </synonym>
-    <synonym>
-      STAT6C
-    </synonym>
-    <synonym>
-      STAT6
-    </synonym>
-    <refseq>
-      NM_001178078
-    </refseq>
-    <refseq>
-      NM_001178079
-    </refseq>
-    <refseq>
-      NM_001178080
-    </refseq>
-    <refseq>
-      NM_001178081
-    </refseq>
-    <refseq>
-      NM_003153
-    </refseq>
-    <refseq>
-      NR_033659
-    </refseq>
-    <datasetid>
-      1766(1/4)
-    </datasetid>
-    <zscore>
-      -20.8318
-    </zscore>
-    <seqfactors>
-      (1) GABP (2) ERG (3) c-Ets-1 68 (4) GABP-alpha Gabpa (5) denovo (6) Elk-1 ELK1 (7) Ets1 (8) Ets1 (9) NRF-2/GABP (11) ELK4 (12) Ets (18) GABPA GABPB1 GABPB2 Gabpa Gabpb1 Gabpb2 (21) ELK4 (22) PEA3 ETV4 (23) FLI1
-    </seqfactors>
-    <seqdbds>
-      (1) None (2) Ets Domain Family (3) None (4) Ets Domain Family (5) None (6) Ets Domain Family (7) Ets Domain Family (8) Ets Domain Family (9) None (11) Ets Domain Family (12) None (18) Ets Domain Family (21) Ets Domain Family (22) Ets Domain Family (23) Ets Domain Family
-    </seqdbds>
-    <pssm>
-      <pos num="1">
-        <A>
-          0.276
-        </A>
-        <C>
-          0.193
-        </C>
-        <G>
-          0.392
-        </G>
-        <T>
-          0.139
-        </T>
-      </pos>
-      <pos num="2">
-        <A>
-          0.325
-        </A>
-        <C>
-          0.279
-        </C>
-        <G>
-          0.258
-        </G>
-        <T>
-          0.138
-        </T>
-      </pos>
-      <pos num="3">
-        <A>
-          0.352
-        </A>
-        <C>
-          0.218
-        </C>
-        <G>
-          0.337
-        </G>
-        <T>
-          0.092
-        </T>
-      </pos>
-      <pos num="4">
-        <A>
-          0.089
-        </A>
-        <C>
-          0.663
-        </C>
-        <G>
-          0.230
-        </G>
-        <T>
-          0.018
-        </T>
-      </pos>
-      <pos num="5">
-        <A>
-          0.453
-        </A>
-        <C>
-          0.505
-        </C>
-        <G>
-          0.017
-        </G>
-        <T>
-          0.025
-        </T>
-      </pos>
-      <pos num="6">
-        <A>
-          0.008
-        </A>
-        <C>
-          0.013
-        </C>
-        <G>
-          0.970
-        </G>
-        <T>
-          0.008
-        </T>
-      </pos>
-      <pos num="7">
-        <A>
-          0.008
-        </A>
-        <C>
-          0.016
-        </C>
-        <G>
-          0.968
-        </G>
-        <T>
-          0.008
-        </T>
-      </pos>
-      <pos num="8">
-        <A>
-          0.947
-        </A>
-        <C>
-          0.020
-        </C>
-        <G>
-          0.017
-        </G>
-        <T>
-          0.017
-        </T>
-      </pos>
-      <pos num="9">
-        <A>
-          0.927
-        </A>
-        <C>
-          0.009
-        </C>
-        <G>
-          0.016
-        </G>
-        <T>
-          0.048
-        </T>
-      </pos>
-      <pos num="10">
-        <A>
-          0.167
-        </A>
-        <C>
-          0.047
-        </C>
-        <G>
-          0.776
-        </G>
-        <T>
-          0.009
-        </T>
-      </pos>
-      <pos num="11">
-        <A>
-          0.068
-        </A>
-        <C>
-          0.272
-        </C>
-        <G>
-          0.124
-        </G>
-        <T>
-          0.536
-        </T>
-      </pos>
-      <pos num="12">
-        <A>
-          0.205
-        </A>
-        <C>
-          0.190
-        </C>
-        <G>
-          0.484
-        </G>
-        <T>
-          0.121
-        </T>
-      </pos>
-    </pssm>
-  </motif>
   <motif id="MA0009">
     <source>
       JASPAR
@@ -126843,6 +132715,692 @@
         </G>
         <T>
           0.125
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="MA0108">
+    <source>
+      JASPAR
+    </source>
+    <status>
+      6
+    </status>
+    <numseqs>
+      389
+    </numseqs>
+    <pmid>
+      2329577
+    </pmid>
+    <dbd>
+      TATA box-binding Family
+    </dbd>
+    <description>
+      TATA box binding protein
+    </description>
+    <description>
+      TATA box binding protein
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      6908
+    </entrez>
+    <entrez>
+      21374
+    </entrez>
+    <symbol>
+      TBP
+    </symbol>
+    <symbol>
+      Tbp
+    </symbol>
+    <synonym>
+      GTF2D
+    </synonym>
+    <synonym>
+      GTF2D1
+    </synonym>
+    <synonym>
+      MGC117320
+    </synonym>
+    <synonym>
+      MGC126054
+    </synonym>
+    <synonym>
+      MGC126055
+    </synonym>
+    <synonym>
+      SCA17
+    </synonym>
+    <synonym>
+      TFIID
+    </synonym>
+    <synonym>
+      TBP
+    </synonym>
+    <synonym>
+      GTF2D1
+    </synonym>
+    <synonym>
+      Gtf2d
+    </synonym>
+    <synonym>
+      SCA17
+    </synonym>
+    <synonym>
+      TFIID
+    </synonym>
+    <synonym>
+      Tbp
+    </synonym>
+    <refseq>
+      NM_001172085
+    </refseq>
+    <refseq>
+      NM_003194
+    </refseq>
+    <refseq>
+      NM_013684
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.157
+        </A>
+        <C>
+          0.373
+        </C>
+        <G>
+          0.391
+        </G>
+        <T>
+          0.079
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.041
+        </A>
+        <C>
+          0.118
+        </C>
+        <G>
+          0.046
+        </G>
+        <T>
+          0.795
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.905
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.075
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.026
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.954
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.910
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.013
+        </G>
+        <T>
+          0.067
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.689
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.291
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.925
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.051
+        </G>
+        <T>
+          0.014
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.571
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.113
+        </G>
+        <T>
+          0.306
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.398
+        </A>
+        <C>
+          0.113
+        </C>
+        <G>
+          0.404
+        </G>
+        <T>
+          0.085
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.144
+        </A>
+        <C>
+          0.347
+        </C>
+        <G>
+          0.386
+        </G>
+        <T>
+          0.123
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.213
+        </A>
+        <C>
+          0.378
+        </C>
+        <G>
+          0.329
+        </G>
+        <T>
+          0.080
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.211
+        </A>
+        <C>
+          0.326
+        </C>
+        <G>
+          0.329
+        </G>
+        <T>
+          0.134
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.211
+        </A>
+        <C>
+          0.303
+        </C>
+        <G>
+          0.329
+        </G>
+        <T>
+          0.157
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.175
+        </A>
+        <C>
+          0.275
+        </C>
+        <G>
+          0.357
+        </G>
+        <T>
+          0.193
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.198
+        </A>
+        <C>
+          0.260
+        </C>
+        <G>
+          0.360
+        </G>
+        <T>
+          0.182
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="MA0386">
+    <source>
+      JASPAR
+    </source>
+    <status>
+      6
+    </status>
+    <numseqs>
+      997
+    </numseqs>
+    <pmid>
+      2329577
+    </pmid>
+    <dbd>
+      TATA box-binding Family
+    </dbd>
+    <description>
+      TATA box binding protein
+    </description>
+    <description>
+      TATA box binding protein
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      6908
+    </entrez>
+    <entrez>
+      21374
+    </entrez>
+    <symbol>
+      TBP
+    </symbol>
+    <symbol>
+      Tbp
+    </symbol>
+    <synonym>
+      GTF2D
+    </synonym>
+    <synonym>
+      GTF2D1
+    </synonym>
+    <synonym>
+      MGC117320
+    </synonym>
+    <synonym>
+      MGC126054
+    </synonym>
+    <synonym>
+      MGC126055
+    </synonym>
+    <synonym>
+      SCA17
+    </synonym>
+    <synonym>
+      TFIID
+    </synonym>
+    <synonym>
+      TBP
+    </synonym>
+    <synonym>
+      GTF2D1
+    </synonym>
+    <synonym>
+      Gtf2d
+    </synonym>
+    <synonym>
+      SCA17
+    </synonym>
+    <synonym>
+      TFIID
+    </synonym>
+    <synonym>
+      Tbp
+    </synonym>
+    <refseq>
+      NM_001172085
+    </refseq>
+    <refseq>
+      NM_003194
+    </refseq>
+    <refseq>
+      NM_013684
+    </refseq>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.278
+        </A>
+        <C>
+          0.251
+        </C>
+        <G>
+          0.387
+        </G>
+        <T>
+          0.084
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.338
+        </A>
+        <C>
+          0.191
+        </C>
+        <G>
+          0.147
+        </G>
+        <T>
+          0.324
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.253
+        </A>
+        <C>
+          0.345
+        </C>
+        <G>
+          0.088
+        </G>
+        <T>
+          0.314
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.160
+        </A>
+        <C>
+          0.200
+        </C>
+        <G>
+          0.154
+        </G>
+        <T>
+          0.486
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.546
+        </A>
+        <C>
+          0.139
+        </C>
+        <G>
+          0.154
+        </G>
+        <T>
+          0.161
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.115
+        </A>
+        <C>
+          0.098
+        </C>
+        <G>
+          0.702
+        </G>
+        <T>
+          0.085
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.288
+        </A>
+        <C>
+          0.198
+        </C>
+        <G>
+          0.267
+        </G>
+        <T>
+          0.247
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.333
+        </A>
+        <C>
+          0.110
+        </C>
+        <G>
+          0.027
+        </G>
+        <T>
+          0.530
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.909
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.025
+        </G>
+        <T>
+          0.056
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.012
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.023
+        </G>
+        <T>
+          0.955
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.038
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.942
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.044
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.936
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.885
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.024
+        </G>
+        <T>
+          0.081
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.186
+        </A>
+        <C>
+          0.062
+        </C>
+        <G>
+          0.094
+        </G>
+        <T>
+          0.658
+        </T>
+      </pos>
+      <pos num="17">
+        <A>
+          0.265
+        </A>
+        <C>
+          0.122
+        </C>
+        <G>
+          0.129
+        </G>
+        <T>
+          0.484
+        </T>
+      </pos>
+      <pos num="18">
+        <A>
+          0.137
+        </A>
+        <C>
+          0.381
+        </C>
+        <G>
+          0.370
+        </G>
+        <T>
+          0.112
+        </T>
+      </pos>
+      <pos num="19">
+        <A>
+          0.266
+        </A>
+        <C>
+          0.228
+        </C>
+        <G>
+          0.384
+        </G>
+        <T>
+          0.122
+        </T>
+      </pos>
+      <pos num="20">
+        <A>
+          0.350
+        </A>
+        <C>
+          0.176
+        </C>
+        <G>
+          0.172
+        </G>
+        <T>
+          0.302
+        </T>
+      </pos>
+      <pos num="21">
+        <A>
+          0.249
+        </A>
+        <C>
+          0.194
+        </C>
+        <G>
+          0.271
+        </G>
+        <T>
+          0.286
         </T>
       </pos>
     </pssm>
@@ -132406,6 +138964,280 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M01237">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      28
+    </numseqs>
+    <pmid>
+      10523316
+    </pmid>
+    <description>
+      telomeric repeat binding factor (NIMA-interacting) 1
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      7013
+    </entrez>
+    <symbol>
+      TERF1
+    </symbol>
+    <synonym>
+      FLJ41416
+    </synonym>
+    <synonym>
+      PIN2
+    </synonym>
+    <synonym>
+      TRBF1
+    </synonym>
+    <synonym>
+      TRF
+    </synonym>
+    <synonym>
+      TRF1
+    </synonym>
+    <synonym>
+      hTRF1-AS
+    </synonym>
+    <synonym>
+      t-TRF1
+    </synonym>
+    <synonym>
+      TERF1
+    </synonym>
+    <refseq>
+      NM_003218
+    </refseq>
+    <refseq>
+      NM_017489
+    </refseq>
+    <comment1>
+      TRF1
+    </comment1>
+    <comment1>
+      TERF1
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.036
+        </A>
+        <C>
+          0.393
+        </C>
+        <G>
+          0.143
+        </G>
+        <T>
+          0.428
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.036
+        </G>
+        <T>
+          0.944
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.357
+        </A>
+        <C>
+          0.143
+        </C>
+        <G>
+          0.464
+        </G>
+        <T>
+          0.036
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="hPDI011">
     <source>
       hPDI
@@ -135449,6 +142281,296 @@
       </pos>
     </pssm>
   </motif>
+  <motif id="M00480">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      24
+    </numseqs>
+    <pmid>
+      11278651
+    </pmid>
+    <description>
+      topoisomerase I binding, arginine/serine-rich, E3 ubiquitin protein ligase
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      10210
+    </entrez>
+    <symbol>
+      TOPORS
+    </symbol>
+    <synonym>
+      LUN
+    </synonym>
+    <synonym>
+      P53BP3
+    </synonym>
+    <synonym>
+      RP31
+    </synonym>
+    <synonym>
+      TP53BPL
+    </synonym>
+    <synonym>
+      TOPORS
+    </synonym>
+    <refseq>
+      NM_001195622
+    </refseq>
+    <refseq>
+      NM_005802
+    </refseq>
+    <comment1>
+      LUN-1
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.042
+        </A>
+        <C>
+          0.906
+        </C>
+        <G>
+          0.042
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.958
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.022
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.042
+        </A>
+        <C>
+          0.938
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.059
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.921
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.970
+        </T>
+      </pos>
+      <pos num="13">
+        <A>
+          0.042
+        </A>
+        <C>
+          0.083
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.865
+        </T>
+      </pos>
+      <pos num="14">
+        <A>
+          0.125
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.855
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="15">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="16">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.970
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="17">
+        <A>
+          0.970
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+    </pssm>
+  </motif>
   <motif id="MC00359">
     <source>
       Cistrome
@@ -136409,6 +143531,198 @@
         </G>
         <T>
           0.421
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01199">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      50
+    </numseqs>
+    <pmid>
+      19339689
+    </pmid>
+    <description>
+      tripartite motif-containing 28
+    </description>
+    <species>
+      Homo sapiens
+    </species>
+    <entrez>
+      10155
+    </entrez>
+    <symbol>
+      TRIM28
+    </symbol>
+    <synonym>
+      FLJ29029
+    </synonym>
+    <synonym>
+      KAP1
+    </synonym>
+    <synonym>
+      RNF96
+    </synonym>
+    <synonym>
+      TF1B
+    </synonym>
+    <synonym>
+      TIF1B
+    </synonym>
+    <synonym>
+      TRIM28
+    </synonym>
+    <refseq>
+      NM_005762
+    </refseq>
+    <comment1>
+      RNF96
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.300
+        </C>
+        <G>
+          0.420
+        </G>
+        <T>
+          0.270
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.060
+        </A>
+        <C>
+          0.620
+        </C>
+        <G>
+          0.200
+        </G>
+        <T>
+          0.120
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.960
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.920
+        </C>
+        <G>
+          0.040
+        </G>
+        <T>
+          0.020
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.860
+        </G>
+        <T>
+          0.110
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.060
+        </A>
+        <C>
+          0.920
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.360
+        </A>
+        <C>
+          0.060
+        </C>
+        <G>
+          0.500
+        </G>
+        <T>
+          0.080
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.040
+        </C>
+        <G>
+          0.940
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.890
+        </C>
+        <G>
+          0.080
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.020
+        </A>
+        <C>
+          0.820
+        </C>
+        <G>
+          0.060
+        </G>
+        <T>
+          0.100
         </T>
       </pos>
     </pssm>
@@ -140317,6 +147631,226 @@
         </G>
         <T>
           0.400
+        </T>
+      </pos>
+    </pssm>
+  </motif>
+  <motif id="M01598">
+    <source>
+      Transfac
+    </source>
+    <status>
+      4
+    </status>
+    <numseqs>
+      534
+    </numseqs>
+    <pmid>
+      20016685
+    </pmid>
+    <description>
+      zinc finger, BED domain containing 6
+    </description>
+    <species>
+      Mus musculus
+    </species>
+    <entrez>
+      667118
+    </entrez>
+    <symbol>
+      Zbed6
+    </symbol>
+    <synonym>
+      Gm8466
+    </synonym>
+    <synonym>
+      MGR
+    </synonym>
+    <synonym>
+      Zbed6
+    </synonym>
+    <refseq>
+      NM_001166552
+    </refseq>
+    <refseq>
+      XR_035385
+    </refseq>
+    <refseq>
+      XR_035411
+    </refseq>
+    <comment1>
+      ZBED6
+    </comment1>
+    <comment1>
+      Zbed6
+    </comment1>
+    <pssm>
+      <pos num="1">
+        <A>
+          0.112
+        </A>
+        <C>
+          0.468
+        </C>
+        <G>
+          0.249
+        </G>
+        <T>
+          0.171
+        </T>
+      </pos>
+      <pos num="2">
+        <A>
+          0.466
+        </A>
+        <C>
+          0.101
+        </C>
+        <G>
+          0.384
+        </G>
+        <T>
+          0.049
+        </T>
+      </pos>
+      <pos num="3">
+        <A>
+          0.348
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.632
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="4">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.015
+        </C>
+        <G>
+          0.965
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="5">
+        <A>
+          0.010
+        </A>
+        <C>
+          0.970
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.010
+        </T>
+      </pos>
+      <pos num="6">
+        <A>
+          0.026
+        </A>
+        <C>
+          0.010
+        </C>
+        <G>
+          0.010
+        </G>
+        <T>
+          0.954
+        </T>
+      </pos>
+      <pos num="7">
+        <A>
+          0.013
+        </A>
+        <C>
+          0.794
+        </C>
+        <G>
+          0.174
+        </G>
+        <T>
+          0.019
+        </T>
+      </pos>
+      <pos num="8">
+        <A>
+          0.047
+        </A>
+        <C>
+          0.032
+        </C>
+        <G>
+          0.721
+        </G>
+        <T>
+          0.200
+        </T>
+      </pos>
+      <pos num="9">
+        <A>
+          0.015
+        </A>
+        <C>
+          0.878
+        </C>
+        <G>
+          0.082
+        </G>
+        <T>
+          0.025
+        </T>
+      </pos>
+      <pos num="10">
+        <A>
+          0.131
+        </A>
+        <C>
+          0.571
+        </C>
+        <G>
+          0.036
+        </G>
+        <T>
+          0.262
+        </T>
+      </pos>
+      <pos num="11">
+        <A>
+          0.114
+        </A>
+        <C>
+          0.232
+        </C>
+        <G>
+          0.279
+        </G>
+        <T>
+          0.375
+        </T>
+      </pos>
+      <pos num="12">
+        <A>
+          0.112
+        </A>
+        <C>
+          0.301
+        </C>
+        <G>
+          0.406
+        </G>
+        <T>
+          0.181
         </T>
       </pos>
     </pssm>
