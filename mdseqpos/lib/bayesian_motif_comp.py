@@ -32,7 +32,7 @@ def BLiC_score(M1,M2):
     n2 = M2.shape[0]
     n = min(n1,n2)
  
-    if n1 > n2:
+    if n1 >= n2: # A the dame length with B, no changes
         A,B = M1,M2 # make sure A is longer, or the same length.
         i_max = 1
     else:
@@ -58,19 +58,38 @@ def BLiC_score(M1,M2):
     #          A:xxxxxxxx 
     for i in range(1-n2, n1):
         if i<0:
-            #Bsub = B[-i:n2-i, :]
-            Bsub = B[-i:, :]
-            Brev_sub = Brev[-i:, :]
-            Asub = A[:n2+i, :]
+            #Bsub = B[-i:, :]
+            #Brev_sub = Brev[-i:, :]
+            #Asub = A[:n2+i, :]
+            #import func;func.debug(locals())
+            Bsub = numpy.vstack((B, [[0.25]*4 for t in range(n1-n2-i)]))
+            Brev_sub = numpy.vstack((Brev, [[0.25]*4 for t in range(n1-n2-i)]))
+            Asub = numpy.vstack(([[0.25]*4 for t in range(-i)], A))
         elif i <= n1-n2:
-            Bsub = B
-            Brev_sub = Brev
-            Asub = A[i:i+n2, :]
+            #Bsub = B
+            #Brev_sub = Brev
+            #Asub = A[i:i+n2, :]
+            tsub = [B[:,:]]
+            trev_sub = [Brev[:,:]]
+            if i != n1-n2:
+                tsub = tsub + [[[0.25]*4 for t in range(n1-i-n2)]]
+                trev_sub = trev_sub + [[0.25]*4 for t in range(n1-i-n2)]
+            if i != 0:
+                tsub = [[[0.25]*4 for t in range(i)]] + tsub
+                trev_sub = [[[0.25]*4 for t in range(i)]] + trev_sub
+            #else:
+            #    tsub = ([[0.25]*4 for t in range(i)], B, [[0.25]*4 for t in range(n1-i-n2)])
+            #    trev_sub = ([[0.25]*4 for t in range(i)], Brev, [[0.25]*4 for t in range(n1-i-n2)])
+            Bsub = numpy.vstack(tuple(tsub))
+            Brev_sub = numpy.vstack(tuple(trev_sub))
+            Asub = A
         elif n1-i < n2:
-            #Asub = A[i:n1, :]    #B:    xCATCGCxxx
-            Asub = A[i:, :]       #B:    xCATCGCxxx
-            Bsub = B[:n1-i, :]    #A: xxxxxxTCGC 
-            Brev_sub = Brev[:n1-i, :]
+            #Bsub = B[:n1-i, :]        #B:    xCATCGCxxx
+            #Brev_sub = Brev[:n1-i, :]
+            #Asub = A[i:, :]           #A: xxxxxxTCGC 
+            Bsub = numpy.vstack(([[0.25]*4 for t in range(i)], B))
+            Brev_sub = numpy.vstack(([[0.25]*4 for t in range(i)], Brev))
+            Asub = numpy.vstack((A, [[0.25]*4 for t in range(n2-n1+i)]))
         
         score   = BLiC_score_aligned( Asub, Bsub )
         score_r = BLiC_score_aligned( Asub, Brev_sub )
@@ -141,7 +160,8 @@ def BLiC_score_aligned(M1, M2):
  
     log_p1 = log_E_p_standard(A1)
     log_p2 = log_E_p_standard(A2)
-    log_p12 = log_p1
+    #log_p12 = log_p1
+    log_p12 = log_E_p_standard(A1*0.5+A2*0.5)
     log_pBG = log_E_p_standard(numpy.ones(A1.shape))
     
     s = 2 * (A12 * log_p12).sum() - (A1 * log_p1 + A2 * log_p2 + A12 * log_pBG).sum()
