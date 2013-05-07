@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/bin/python
 # Time-stamp: <2011-07-22 13:45:10 Jian Ma>
 
 """Description: Draw correlation plot for many wiggle files for a given bed file.
@@ -217,6 +217,7 @@ option.
         rfhd.write('library(gplots)\n')
         rfhd.write('''
 m <- cor(c, method="pearson", use="pairwise.complete.obs")
+cat(c(m, "\n"))
 ''')
         labels = ",".join(map(lambda x:"\""+x+"\"",wiglabel))
         rfhd.write("rownames(m) <- c(%s)\n" % labels)
@@ -233,6 +234,8 @@ m <- cor(c, method="pearson", use="pairwise.complete.obs")
         rfhd.write('heatmap.2(m, col = cr(n), breaks=breaks, trace="none", cellnote=mc, notecol="black", notecex=1.8, keysize=0.5, density.info="histogram", margins=c(27.0,27.0), cexRow=2.20, cexCol=2.20, revC=T, symm=T)\n')
     else:
         rfhd.write('''
+m <- cor(c, method="pearson", use="pairwise.complete.obs")
+cat(c(m, "\n"))
 panel.plot <- function( x,y, ... )
 {
   par(new=TRUE)
