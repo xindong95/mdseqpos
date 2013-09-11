@@ -1,4 +1,4 @@
-#!/opt/bin/python
+#!/usr/local/bin/env python
 # Time-stamp: <2011-07-22 13:45:10 Jian Ma>
 
 """Description: Draw correlation plot for many wiggle files for a given bed file.

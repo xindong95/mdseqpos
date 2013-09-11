@@ -20,6 +20,9 @@
 #delete column "pos" in output, use +/- for "TSS2pCenter" column.
 #use "|" as separate instead of ","
 
+** If TSS2pCenter column is minus, it always present for the gene is located upstream of the peak.
+** If TSS2pCenter column is plus,  it always present for the gene is located downstream of the peak.
+
 """
 import sys, os, time, re
 import sqlite3
