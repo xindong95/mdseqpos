@@ -558,7 +558,7 @@ class MotifList(list):
         of motifs allowed in the list. NOTE: this is non-destructive!
         """
         sig_motifs = filter(lambda m: m.getpvalue() <= pvalcutoff, self)
-        if (maxmotifs != -1) and (len(sig_motifs) > maxmotifs):
+        if (maxmotifs != 0) and (len(sig_motifs) > maxmotifs):
             #sort and return top maxmotifs
             sorted_motifs = sorted(self, key = lambda elem: elem.getpvalue())
             del sorted_motifs[maxmotifs:]
