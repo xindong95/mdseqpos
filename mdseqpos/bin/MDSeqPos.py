@@ -47,7 +47,7 @@ Options:
    -w - width of the region to be scanned for motifs; depends on resoution of
         assay, (default: 600 basepairs)
    -v - verbose: print out debug information (default: False)
-   --maxmotif - the maximum number of motifs to report (defaut: -1, i.e. no max)
+   --maxmotif - the maximum number of motifs to report (defaut: 0, i.e. no max)
 """
 _DEBUG = False
 
@@ -335,9 +335,9 @@ def main():
                       depends on resoution of assay, (default: 600 basepairs)")
     parser.add_option('-v', '--verbose', default=False, action="store_true",
                       help="flag to print debugging info (default: False)")
-    parser.add_option('--maxmotif', default=-1,
+    parser.add_option('--maxmotif', default=0,
                       help="maximum number of motifs to report, \
-                      (default: -1, i.e. no max)")
+                      (default: 0, i.e. no max)")
     parser.add_option('-O', '--output-directory', default="results", 
                       help="output directory name (default: results)")
     
