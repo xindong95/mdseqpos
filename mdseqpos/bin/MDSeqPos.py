@@ -394,6 +394,12 @@ def main():
     dists = calc_motif_dist(sig_motifs)
     #save_to_html(output_dir, sig_motifs, dists)
     save_to_html_plain(output_dir, sig_motifs, dists)
-    
+
+    json_list = [t.to_json() for t in sig_motifs]
+    jsonf = open(os.path.join(output_dir, 'motif_list.json'),'w')
+    for js in json_list:
+        jsonf.write(js +'\n')
+    jsonf.close()
+
 if __name__ == '__main__':
     main()
