@@ -213,8 +213,12 @@ class Motif:
         frac_sort = [frac[i] for i in idx]
         #calculate a mean sliding average using plotPosWin as the window size
         #normalize using (seq_length-offset)*0.5
-        meanSldAvg=[sum(frac_sort[i:i+plotPosWin])/plotPosWin*((seq_length-offset)*0.5)\
-                        for i in range(len(frac_sort) - plotPosWin)]
+        if len(frac_sort) < plotPosWin:
+            tplotPosWin = len(frac_sort) - 1
+        else:
+            tplotPosWin = plotPosWin
+        meanSldAvg=[sum(frac_sort[i:i+tplotPosWin])/tplotPosWin*((seq_length-offset)*0.5)\
+                        for i in range(len(frac_sort) - tplotPosWin)]
 
         #NOTE: downscale the number of means (in meanSldAvg) b/c plotting
         #the full thing will just kill highcharts.js on the front end
