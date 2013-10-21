@@ -157,13 +157,13 @@ def BLiC_score_aligned(M1, M2):
  
     A12 = A1 + A2
  
-    log_p1 = log_E_p_standard(A1)
-    log_p2 = log_E_p_standard(A2)
-    log_p12 = log_E_p_standard(A1*A2)
-    log_pBG = log_E_p_standard(numpy.ones(A1.shape))
-    
-    s = 2 * (A12 * log_p12).sum() - (A1 * log_p1 + A2 * log_p2 + A12 * log_pBG).sum()
-    return s
+    log_p1 = log_E_p_standard(A1)
+    log_p2 = log_E_p_standard(A2)
+    log_p12 = log_E_p_standard(A1*A2)
+    log_pBG = log_E_p_standard(numpy.ones(A1.shape))
+    
+    s = 2 * (A12 * log_p12).sum() - (A1 * log_p1 + A2 * log_p2 + A12 * log_pBG).sum()
+    return s
 
 
 def merge( M1, M2, shift, antisense, normalize=True ):
