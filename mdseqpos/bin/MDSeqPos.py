@@ -164,7 +164,7 @@ def save_to_html(output_dir, motifList, motifDists):
 
     #END save_to_html
 
-def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 2.85):
+def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 3.28):
     #make the class into list with dict of motifs.
     args = []
     for motif in motifList:
