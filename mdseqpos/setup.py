@@ -13,12 +13,6 @@ NUMPY_PATH = os.path.join(sys.prefix,"lib","python"+sys.version[:3],
 def check_pkg_dependencies():
     #CHECK for dependencies:
     try:
-        import django
-    except ImportError, e:
-        sys.stderr.write("CRITICAL: DJANGO 1.1.1 or greater must be installed\n")
-        sys.exit(1)
-
-    try:
         import numpy
         NUMPY_PATH = numpy.__path__[0]
         #print NUMPY_PATH
@@ -50,9 +44,9 @@ def main():
           url='http://liulab.dfci.harvard.edu/ap',
           package_dir={'mdseqpos' : 'lib'},
           packages=['mdseqpos'],
-          package_data={'mdseqpos': ['django/*.html', 
-                                     'django/static/*.*',
-                                     'django/static/dna/*.*',
+          package_data={'mdseqpos': ['template/*.html', 
+                                     'template/static/*.*',
+                                     'template/static/dna/*.*',
                                      'weblogo/*.*', 'weblogo/LICENSE', 
                                      'weblogo/seqlogo', 'weblogo/README', 
                                      'weblogo/cache/*', 'weblogo/img/*', 
@@ -90,7 +84,7 @@ def main():
         'Programming Language :: Python',
         'Topic :: Database',
         ],
-          requires=['numpy (>=1.3.0)', 'Django (>=1.1.1)'],
+          requires=['numpy (>=1.3.0)', 'jinja2'],
       )
 
     #POST DISTUTILS touchups:

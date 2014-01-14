@@ -16,18 +16,13 @@ import numpy
 import math
 from datetime import datetime
 
-from django.template import loader, Context, Template
-from django.core.management import setup_environ
+from jinja2 import Template
 
 import mdseqpos
 from mdseqpos.motif import MotifList
 from mdseqpos.chipregions import ChipRegions
 import mdseqpos.settings as settings
 import mdseqpos.bayesian_motif_comp as bmc
-
-setup_environ(settings)
-#os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-
 
 USAGE = """USAGE: MDSeqPos.py BEDFILE GENOME
 Arguments:
@@ -149,8 +144,8 @@ def save_to_html(output_dir, motifList, motifDists):
                  'now':datetime.now()}) 
     mdseqpos_out_file.write(t.render(c))
 
-    #copy over supporting files--i.e. everything in the django/static dir
-    rootdir = os.path.join(settings.DEPLOY_DIR, 'django', 'static','')
+    #copy over supporting files--i.e. everything in the template/static dir
+    rootdir = os.path.join(settings.DEPLOY_DIR, 'template', 'static','')
     for (path, dirs, files) in os.walk(rootdir):
         for f in files:
             subdir = path.replace(rootdir, '')
@@ -286,12 +281,13 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 3.28):
     render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
 
 def render_to_file(template_html, render_dict, filen):
-    from django.shortcuts import render_to_response
-    p = render_to_response(template_html, render_dict)
+    template_d = os.path.join(settings.DEPLOY_DIR, 'template')
+    template_f = open(os.path.join(template_d, template_html))
+    template = Template(template_f.read())
     outf = open(filen, 'w')
-    outf.write(p.content)
+    outf.write(template.render(render_dict))
     outf.close()
-    p.close()
+    template_f.close()
 
 def calc_motif_dist(motifList):
     """Given a list of motifs, returns a dictionary of the distances
