@@ -6,7 +6,8 @@ from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
 
 import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
-#import mdseqpos.motif as motif
+import mdseqpos.pwmclus_motif_comp as pwmclus_motif_comp
+import mdseqpos.motif as motif
 
 SEP = "|"
 def Info(string):
@@ -82,15 +83,15 @@ def flatTreeDictToList(root):
 			result.extend(flatTreeDictToList(each))
 		return result
 
-def reversePssm(m1):
-    """reversePssm(m1)
-    Create a reversed pssm.
-    """
-    m2 = []
-    for row in m1:
-        row = [1-t for t in row]
-        m2.insert(0, row)
-    return m2
+#def reversePssm(m1):
+#    """reversePssm(m1)
+#    Create a reversed pssm.
+#    """
+#    m2 = []
+#    for row in m1:
+#        row = [1-t for t in row]
+#        m2.insert(0, row)
+#    return m2
 
 class MotifParser:
     """
@@ -144,8 +145,8 @@ class MotifParser:
         
         self.keyName = 'id'
         self.attr_list = [self.keyName,'edition']
-        self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', \
-        'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'comment1', \
+        self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', 'family', \
+        'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'cluster', 'comment1', \
         'comment2', 'comment3', 'comment4', 'comment5', 'datasetid', 'zscore', 'seqfactors', \
         'seqdbds', 'nmotifs']
         self.special_list = ['pssm'] # if you add a element here, need to edit code below -,-
@@ -158,11 +159,7 @@ class MotifParser:
                 self.ParserTable(xmlfile)
             else:
                 Info("Can't parser the file, xml or txt?")
-            
-    #def Refresh(self):
-    #    """Refresh self.all_list, if you ever use sth like self.tag_list.append"""
-    #    self.all_list = self.attr_list + self.tag_list + self.special_list
-
+    
     def AppendTag(self, tag, appendto='tag_list'):
         """AppendTag(self, tag, appendto='tag_list')
         extend tags in MP object.
@@ -173,10 +170,9 @@ class MotifParser:
         self.all_list = self.attr_list + self.tag_list + self.special_list
         
     def Create(self, mid, **argv):
-        """Create(self, id, **argv)
+        """Create(self, mid, **argv)
         Create a single motif.
         """
-        #self.Refresh()
         self.motifs[mid] = {} 
         for i in self.all_list:
             if i in argv.keys():
@@ -342,7 +338,7 @@ class MotifParser:
 
     def ViewSeqLogo(self, mid):
         """Only for Mac OS
-        Open the png file for view.
+        Open the png file for view. simply open it if there exists seqLogo/%s.png.
         """
         pngfile = 'seqLogo/%s.png' %mid
         if os.path.isfile(pngfile):
@@ -504,7 +500,7 @@ class MotifParser:
         else:
             #t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
             try:
-                t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0])
+                t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['symbol'][0])
             except:
                 t_motifs.sort(key=lambda x:x['symbol'])
             #t_motifs.sort(key=lambda x:x['symbol'][0].upper()+' '+x['species'][0]+' '+'0'*(5-len(x['id'][0][9:]))+x['id'][0][9:]) #sort as symbol, then id, shirley asked
@@ -611,8 +607,8 @@ class MotifParser:
 			  </xsl:for-each></TD>
 			<TD><xsl:if test="not(datasetid)">-</xsl:if>	<xsl:value-of select="datasetid" /></TD>
 			<TD><xsl:if test="not(nmotifs)">-</xsl:if>	<xsl:value-of select="nmotifs" /></TD>
-			<TD><xsl:if test="not(msfactors)">-</xsl:if>	<xsl:value-of select="msfactors" /></TD>
-			<TD><xsl:if test="not(msdbds)">-</xsl:if>	<xsl:value-of select="msdbds" /></TD>
+			<TD><xsl:if test="not(seqfactors)">-</xsl:if>	<xsl:value-of select="seqfactors" /></TD>
+			<TD><xsl:if test="not(seqdbds)">-</xsl:if>	<xsl:value-of select="seqdbds" /></TD>
 			<TD><xsl:if test="not(pssm)">-</xsl:if>		<a href="seqLogo/{@id}.png" target="_blank"><img width="180" height="90" src="seqLogo/{@id}.png"></img></a></TD>
 		</TR>
 		</xsl:for-each>
@@ -725,9 +721,33 @@ class MotifParser:
             outf.write('A\tC\tG\tT\n')
             for x in i['pssm'][0]:
                 x2 = ['%.3d'%t for t in x]
-                outf.write(List2Str(x, '\t') + '\n')
+                outf.write(List2Str(x2, '\t') + '\n')
             outf.close()
-            
+    
+    def ToMisDB(self, filen):
+        """ToMisDB(self, filen)
+        Output a db to use in mis (Hanfei's code).
+        **Please use space to separate the numbers.
+        **From left to right, the lines is T, C, G, A. 
+        """
+        outf = open(filen, 'w')
+        for k in self.motifs.keys():
+            outf.write(k + '\n')
+            pssm = self.motifs[k]['pssm']
+            if len(pssm) != 1:
+                Info('Warning: %s may have %d pssm.'%(k, len(pssm)))
+            pssm = pssm[0]
+            pssm = zip(*pssm)
+            pssm_in_mis = ['', '', '', '']
+            mapping = {0:3, 1:1, 2:2, 3:0} # A:0->3 C:1->1 G:2->2 T:3->0
+            for i, b in enumerate(pssm):
+                b = ['%.3f' %t for t in b]
+                pssm_in_mis[mapping[i]] = b
+            for b in pssm_in_mis:
+                outf.write(' '.join(b) + '\n')
+            outf.write('\n')
+        outf.close()
+
     def __len__(self):
         return len(self.motifs)
         
@@ -821,22 +841,31 @@ class MotifParser:
         return motiflist
 
     def _ConvertToOldMotif(self, motifid):
-        import mdseqpos.motif as motif
+        #import mdseqpos.motif as motif
         p = motif.Motif()
         p = p.from_dict(self.motifs[motifid])
         return p
     
-    def _Similarity(self, motifid1, motifid2, metric='Bayesian'):
-        """_Similarity(self, motifid1, motifid2, metric='Bayesian')
-        Return a score for the similarity between two motifs.
-        offset -- number of basepairs to shift the first motif
-        antisense -- whether to take the reverse complement of the first motif
-        """
+    #def _Similarity(self, motifid1, motifid2, metric='Bayesian'):
+    #    """_Similarity(self, motifid1, motifid2, metric='Bayesian')
+    #    Return a score for the similarity between two motifs.
+    #    offset -- number of basepairs to shift the first motif
+    #    antisense -- whether to take the reverse complement of the first motif
+    #    """
+    #    if len(self.motifs[motifid1]['pssm']) == 1 and len(self.motifs[motifid2]['pssm']) == 1:
+    #        m1 = self._ConvertToOldMotif(motifid1)
+    #        m2 = self._ConvertToOldMotif(motifid2)
+    #        similarity_score, offset, antisense = bayesian_motif_comp.BLiC_score(m1.pssm, m2.pssm)
+    #        antisense = bool(antisense)
+    #        return similarity_score, offset, antisense
+    #    else:
+    #        Info('ERROR: It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
+
+    def SimilarityPcc(self, motifid1, motifid2):
         if len(self.motifs[motifid1]['pssm']) == 1 and len(self.motifs[motifid2]['pssm']) == 1:
-            m1 = self._ConvertToOldMotif(motifid1)
-            m2 = self._ConvertToOldMotif(motifid2)
-            similarity_score, offset, antisense = bayesian_motif_comp.BLiC_score(m1.pssm, m2.pssm)
-            antisense = bool(antisense)
+            m1 = self.motifs[motifid1]['pssm'][0]
+            m2 = self.motifs[motifid2]['pssm'][0]
+            similarity_score, offset, antisense = pwmclus_motif_comp.similarity(m1, m2)
             return similarity_score, offset, antisense
         else:
             Info('ERROR: It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))

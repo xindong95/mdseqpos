@@ -23,6 +23,7 @@ from mdseqpos.motif import MotifList
 from mdseqpos.chipregions import ChipRegions
 import mdseqpos.settings as settings
 import mdseqpos.bayesian_motif_comp as bmc
+import mdseqpos.pwmclus_motif_comp as pmc
 
 USAGE = """USAGE: MDSeqPos.py BEDFILE GENOME
 Arguments:
@@ -159,7 +160,136 @@ def save_to_html(output_dir, motifList, motifDists):
 
     #END save_to_html
 
-def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 3.28):
+def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
+    #make the class into list with dict of motifs.
+    args = []
+    for motif in motifList:
+        arg = {}
+        arg['id'] = motif.id
+        arg['dbd'] = motif.dbd
+        arg['hits'] = motif.getnumhits()
+        arg['cutoff'] = round(motif.getcutoff(), 3)
+        arg['zscore'] = round(motif.getzscore(), 3)
+        arg['pval'] = round(-10*math.log(motif.getpvalue(),math.e), 3) #-10logPval
+        arg['position'] = round(motif.getmeanposition(), 3)
+        arg['pssm'] = motif.seqpos_results['pssm']
+        arg['hitseq'] = motif.seqpos_results['seq']
+        if motif.factors is None:
+            arg['factor'] = ""
+        else:
+            arg['factor'] = "|".join(motif.factors)
+            
+        #fix pssm
+        for row in arg['pssm']:
+            rsum = sum([float(t) for t in row])
+            for t in range(len(row)):
+                row[t] = round(float(row[t]) / rsum, 3)
+                if row[t] < 0.001:
+                    row[t] = 0.001
+            imax = row.index(max(row))
+            row[imax] -= sum(row) - 1
+            for t in range(len(row)):
+                row[t] = "%.3f" %row[t]
+        arg['pssm_rev'] = reverse_pssm(arg['pssm'])
+        args.append(arg)
+    
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    
+    #create seqLogo by run Rscript.
+    seqLogoFolder = os.path.join(output_dir, 'seqLogo')
+    if not os.path.exists(seqLogoFolder):
+        os.mkdir(seqLogoFolder)
+    
+    #draw seqLogo to png
+    rfile = os.path.join(seqLogoFolder, 'draw_seqLogo.r')
+    rscript = open(rfile,"w")
+    rscript.write('setwd("%s")\n' %os.path.abspath(seqLogoFolder))
+    rscript.write('library("seqLogo")\n')
+    for arg in args:
+        for mid,pssm in ((arg['id'], arg['pssm']), (arg['id'] + '_rev', arg['pssm_rev'])):
+            t1 = ['c(%s)' %(','.join(t),) for t in pssm]
+            t2 = 'data<-cbind(%s)\n' %(','.join(t1),)
+            rscript.write('png("%s.png", width=660, height=300)\n' %mid)
+            rscript.write(t2)
+            rscript.write('seqLogo(as.matrix(data))\n')
+            rscript.write('dev.off()\n\n')
+    rscript.close()
+    cmd = 'Rscript %s' %rfile
+    os.system(cmd)
+        
+    #create each motif's single page
+    motifFolder = os.path.join(output_dir, 'motif')
+    if not os.path.exists(motifFolder):
+        os.mkdir(motifFolder)
+    pssmFolder = os.path.join(output_dir, 'pssm')
+    if not os.path.exists(pssmFolder):
+        os.mkdir(pssmFolder)
+    for arg in args:
+        render_to_file('single_motif.html', {'motif': arg}, os.path.join(motifFolder, arg['id'] + '.html'))
+    
+        #create pssm page.
+        arg['pssm_string'] = arg['pssm'][:]
+        for i,row in enumerate(arg['pssm_string']):
+            arg['pssm_string'][i] = str(row).replace("'","")
+        render_to_file('single_pssm.html', {'motif': arg}, os.path.join(pssmFolder, arg['id'] + '.html'))
+    
+    #create hit seq pages
+    #hitseqFolder = os.path.join(output_dir, 'hitseq')
+    #if not os.path.exists(hitseqFolder):
+    #    os.mkdir(hitseqFolder)
+    #for arg in args:
+    #    outf = open(os.path.join(hitseqFolder, arg['id']+'.txt'), 'w')
+    #    outf.writelines([t+'\n' for t in arg['hitseq']])
+    #    outf.close()
+    
+    #collapse motifs
+    flat_clusters = pmc.motif_hcluster(args, distCutoff)
+    flat_clusters.sort(key = lambda x: min([t['zscore'] for t in x]))
+    args_dict = {}
+    for i in args:
+        args_dict[i['id']] = i
+        
+    #args.sort(key=lambda x:x['zscore'])
+    args_collapse = []
+    for c in flat_clusters:
+        c.sort(key=lambda x:x['zscore'])
+        args_collapse.append(c.pop(0))
+        
+        
+            
+    #while args:
+    #    args_collapse.append(args.pop(0))
+        args_collapse[-1]['similar_motifs'] = [args_collapse[-1]] #also put self into similarity_motifs list.
+        i = 0
+        while i < len(c):
+            m = c[i]
+            similarity_score = pmc.similarity(m['pssm'], args_collapse[-1]['pssm'])[0]
+            #try:
+            #    sskey = "%s:%s" %(args_collapse[-1]['id'], arg['id'])
+            #    similarity_score = motifDists[sskey][0]
+            #except KeyError:
+            #    sskey = "%s:%s" %(arg['id'], args_collapse[-1]['id'])
+            #    similarity_score = motifDists[sskey][0]
+            #if similarity_score >= distCutoff:
+            m['similarity_score'] = round(similarity_score, 3)
+            args_collapse[-1]['similar_motifs'].append(m)
+                #if arg['dbd']:
+                #    args_collapse[-1]['dbd'].append(arg['dbd'])
+            del c[i]
+            #else:
+            i += 1
+        #args_collapse[-1]['dbd'] = list(set(args_collapse[-1]['dbd']))
+    for i in range(len(args_collapse)):
+        arg = args_collapse[i]
+        arg['collapse_num'] = len(arg['similar_motifs'])
+        arg['class_id'] = i + 1
+    
+    #create table page and home page.
+    render_to_file('table.html', {'motifs': args_collapse}, os.path.join(output_dir, 'table.html'))
+    render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
+
+def save_to_html_plain_old(output_dir, motifList, motifDists, distCutoff = 0.8):
     #make the class into list with dict of motifs.
     args = []
     for motif in motifList:
@@ -178,8 +308,6 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 3.28):
         else:
             #arg['factor'] = ", ".join(list(set([t.upper() for t in motif.factors])))
             arg['factor'] = "|".join(motif.factors)
-            #if arg['zscore'] > -15:
-            #    arg['factor'] += " (weak)"
             
         #fix pssm
         for row in arg['pssm']:
@@ -244,6 +372,8 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff = 3.28):
     #    outf.close()
     
     #collapse motifs
+    #flat_clusters = pmc.motif_hcluster(motifList)
+    
     args.sort(key=lambda x:x['zscore'])
     args_collapse = []
     while args:
@@ -305,6 +435,24 @@ def calc_motif_dist(motifList):
                                           numpy.array(m2.pssm, float))
                     ret["%s:%s" % (m1.id,m2.id)] = dist
     return ret
+    
+def calc_motif_dist_pcc(motifList):
+    """Given a list of motifs, returns a dictionary of the distances
+    for each motif pair, e.g. {Motif1:Motif2:(dist, offset, sense/antisense)}
+    """
+    ret = {}
+    for m1 in motifList:
+        for m2 in motifList:
+            if m1.id != m2.id:
+                #check if the score is already calculated
+                if ("%s:%s" % (m1.id,m2.id)) not in ret and \
+                        ("%s:%s" % (m2.id,m1.id)) not in ret:
+                    #must send in pssms as numpy arrays
+                    dist = pmc.similarity(m1.pssm, m2.pssm)
+                    #dist = bmc.BLiC_score(numpy.array(m1.pssm, float),
+                    #                      numpy.array(m2.pssm, float))
+                    ret["%s:%s" % (m1.id,m2.id)] = dist
+    return ret
             
 def main():
     #ALWAYS PRINT OUT VERSION INFO: 
@@ -331,6 +479,9 @@ def main():
                       depends on resoution of assay, (default: 600 basepairs)")
     parser.add_option('-v', '--verbose', default=False, action="store_true",
                       help="flag to print debugging info (default: False)")
+    parser.add_option('--hcluster', type = 'float', default=0.8,
+                      help="The similarity cutoff for hierarchical clustering of \
+                      the result, (default: 0.8, The higher, the more groups, 0 ~ 1)")
     parser.add_option('--maxmotif', default=0,
                       help="maximum number of motifs to report, \
                       (default: 0, i.e. no max)")
@@ -387,9 +538,9 @@ def main():
         species_list = opts.species_list.split(',')
         sig_motifs = sig_motifs.filterBySpecies(species_list)
 
-    dists = calc_motif_dist(sig_motifs)
+    dists = calc_motif_dist_pcc(sig_motifs)
     #save_to_html(output_dir, sig_motifs, dists)
-    save_to_html_plain(output_dir, sig_motifs, dists)
+    save_to_html_plain(output_dir, sig_motifs, dists, opts.hcluster)
 
     json_list = [t.to_json() for t in sig_motifs]
     jsonf = open(os.path.join(output_dir, 'motif_list.json'),'w')
