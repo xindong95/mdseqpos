@@ -12,7 +12,7 @@
       </TR>
     </THEAD>
     <TBODY>
-    {% for line in motif.pssm %}
+    {% for line in motif.seqpos_results.pssm %}
 	<TR>
 	    {% for pos in line %}
 		<TD>{{pos}}</TD>
@@ -33,8 +33,8 @@
     3. run Motif:Screen All Motifs selecting the text file as the PSSM file <br />
   </p>
   [
-  {% for line in motif.pssm_string %}
-  {{line}},<br />
+  {% for line in motif.seqpos_results.pssm %}
+  [{{line[0]}}, {{line[1]}}, {{line[2]}}, {{line[3]}}],<br />
   {% endfor %}
   ]
 </html>

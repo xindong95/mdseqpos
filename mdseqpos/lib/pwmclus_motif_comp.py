@@ -4,10 +4,11 @@
 """Reference: http://nar.oxfordjournals.org/content/early/2013/12/23/nar.gkt1302.full
 
 Created by: Jian Ma 2014-03-15
-Modiied by: Jian Ma 2014-03-15
+Modiied by: Jian Ma 2014-04-14
 """
 import math
 import numpy
+import mdseqpos
 #import MotifParser as mp
 
 def sum_IC(m1):
@@ -221,6 +222,100 @@ def motif_hcluster(motif_list, cutoff):
         # Append merged motif to cluster
         clusters.append(merged)
         print 'Finish round', mround
+        mround += 1
+        
+        # Refine score matrix and list. Including cut 2 line and 2 col, and then add 1 line and 1 col.
+        i, j = max_index
+        score_y1 = numpy.append(cluster_score_mat[:,i][:i], cluster_score_mat[i][i:])
+        score_y2 = numpy.append(cluster_score_mat[:,j][:j], cluster_score_mat[j][j:])
+        score_ymin = []
+        for x1, x2 in zip(score_y1, score_y2):
+            if x1 is None or x2 is None:
+                pass
+            elif x1 > x2:
+                score_ymin.append(x2)
+            else:
+                score_ymin.append(x1)
+        cluster_score_mat = numpy.append(cluster_score_mat[:j], cluster_score_mat[j+1:],0)
+        cluster_score_mat = numpy.append(cluster_score_mat[:i], cluster_score_mat[i+1:],0)
+        cluster_score_mat = numpy.append(cluster_score_mat[:,:j], cluster_score_mat[:,j+1:], 1)
+        cluster_score_mat = numpy.append(cluster_score_mat[:,:i], cluster_score_mat[:,i+1:], 1)
+        x = cluster_score_mat.shape[0]
+        
+        if score_ymin:
+            cluster_score_mat = numpy.append(cluster_score_mat, [[t] for t in score_ymin], 1)
+            cluster_score_mat = numpy.append(cluster_score_mat, [[None for t in range(x+1)]], 0)
+        else:
+            break # all motif in it are 1 cluster.
+    
+    #print 'Cluster %d motifs into %d clusters' %(len(keys), len(clusters))
+    flat_clusters = [flat(t) for t in clusters]
+    return flat_clusters
+
+def motif_hcluster2(motif_list, cutoff):
+    """Use complete distance, that mean get farest for each cluster.
+    
+    This one is for the MDSeqPos.py to use, input motif_list is list of Motif() obj.
+    """
+    clusters = [] # a list with clustered motifs.
+    cluster_score_mat = numpy.array([[None for t in range(len(motif_list))] for m in range(len(motif_list))]) # 2d matrix, order as keys.
+    
+    # Adding motifs from mp to clusters
+    for m in motif_list:
+        cl = Cluster()
+        cl.motif = m
+        #cl.motif['pssm'] = [[float(t1) for t1 in t] for t in m['pssm']]  #numpy.array(m['pssm'])
+        #cl.motif['id'] = m['id']
+        clusters.append(cl)
+
+    #Calc each 2 pair of motifs and fill (score, position, strand) in matrix like below
+    # xxx
+    #  xx
+    #   x
+    #    
+    for i in range(len(clusters)-1):
+        for j in range(i+1, len(clusters)):
+            #import func; func.debug(locals())
+            ts = similarity(clusters[i].motif.seqpos_results['pssm'], clusters[j].motif.seqpos_results['pssm']) # score, position, strand
+            cluster_score_mat[i][j] = ts[0] # 1-distance score
+
+    idcount = 0
+    mround = 0
+    
+    #find index of the max score
+    while 1:
+        max_score = cluster_score_mat.max()
+        mshape = cluster_score_mat.shape
+        max_index = (999, 999)
+        findit = False
+        for i in range(mshape[0]):
+            for j in range(i+1, mshape[1]):
+                if abs(max_score - cluster_score_mat[i][j]) < 1e-5:
+                    max_index = (i, j)
+                    findit = True
+                    break
+            if findit:
+                break
+        
+        # if the max is smaller than cutoff, end of clustering
+        if max_score < cutoff:
+            break
+        
+        # Build merged motif except the matrix, matrix will add later.
+        max2 = clusters.pop(max_index[1])
+        max1 = clusters.pop(max_index[0])
+        merged = Cluster()
+        merged.motif = mdseqpos.motif.Motif()
+        merged.score_for_node = max_score
+        merged.nodescount = max1.nodescount + max2.nodescount
+        merged.nodes = [max1,max2]
+        merged.motif.id = 'MT%d'%idcount
+        
+        idcount += 1
+        
+        # Append merged motif to cluster
+        clusters.append(merged)
+        print 'Clustering, finish round', mround
         mround += 1
         
         # Refine score matrix and list. Including cut 2 line and 2 col, and then add 1 line and 1 col.

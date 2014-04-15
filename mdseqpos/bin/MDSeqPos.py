@@ -162,25 +162,23 @@ def save_to_html(output_dir, motifList, motifDists):
 
 def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
     #make the class into list with dict of motifs.
-    args = []
+    
+    # > dir(motifList[0])
+    # ['_ATTRIBUTES', '__doc__', '__init__', '__module__', '__str__', '_results_fields', 
+    # '_validpssm', 'antisense', 'dbd', 'entrezs', 'equals', 'factors', 'from_dict', 
+    # 'from_flat_file', 'from_xml', 'fullname', 'getText', 'getcutoff()', 'getmeanposition()', 
+    # 'getnumhits()', 'getpvalue()', 'getzscore()', 'id', 'numseqs', 'pmid', 'pssm', 
+    # 'pssm_from_xml', 'pssm_to_xml', 'refseqs', 'seqpos', 'seqpos_results', 'seqpos_stat', 
+    # 'setpssm', 'source', 'sourcefile', 'species', 'status', 'symbols', 'synonyms', 
+    # 'to_json', 'to_xml']
+    #
+    # > motifList[0].seqpos_results.keys()
+    # ['plot', 'zscore', 'seq', 'cutoff', 'pssm', 'meanposition', 'numhits', 'pvalue']
+
+    # fix pssm, and change pvalue to -10log(pval, e)
+    mlist = []
     for motif in motifList:
-        arg = {}
-        arg['id'] = motif.id
-        arg['dbd'] = motif.dbd
-        arg['hits'] = motif.getnumhits()
-        arg['cutoff'] = round(motif.getcutoff(), 3)
-        arg['zscore'] = round(motif.getzscore(), 3)
-        arg['pval'] = round(-10*math.log(motif.getpvalue(),math.e), 3) #-10logPval
-        arg['position'] = round(motif.getmeanposition(), 3)
-        arg['pssm'] = motif.seqpos_results['pssm']
-        arg['hitseq'] = motif.seqpos_results['seq']
-        if motif.factors is None:
-            arg['factor'] = ""
-        else:
-            arg['factor'] = "|".join(motif.factors)
-            
-        #fix pssm
-        for row in arg['pssm']:
+        for row in motif.seqpos_results['pssm']:
             rsum = sum([float(t) for t in row])
             for t in range(len(row)):
                 row[t] = round(float(row[t]) / rsum, 3)
@@ -188,10 +186,9 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
                     row[t] = 0.001
             imax = row.index(max(row))
             row[imax] -= sum(row) - 1
-            for t in range(len(row)):
-                row[t] = "%.3f" %row[t]
-        arg['pssm_rev'] = reverse_pssm(arg['pssm'])
-        args.append(arg)
+        motif.seqpos_results['pvalue'] = round(-10*math.log(motif.getpvalue(), math.e), 3)
+        motif.seqpos_results['pssm_rev'] = reverse_pssm(motif.seqpos_results['pssm'])
+        mlist.append(motif)
     
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -203,13 +200,14 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
     
     #draw seqLogo to png
     rfile = os.path.join(seqLogoFolder, 'draw_seqLogo.r')
-    rscript = open(rfile,"w")
+    rscript = open(rfile, 'w')
     rscript.write('setwd("%s")\n' %os.path.abspath(seqLogoFolder))
     rscript.write('library("seqLogo")\n')
-    for arg in args:
-        for mid,pssm in ((arg['id'], arg['pssm']), (arg['id'] + '_rev', arg['pssm_rev'])):
-            t1 = ['c(%s)' %(','.join(t),) for t in pssm]
-            t2 = 'data<-cbind(%s)\n' %(','.join(t1),)
+    for motif in mlist:
+        # create png for both seqlogo and reversed seqlogo.
+        for mid, pssm in ((motif.id, motif.seqpos_results['pssm']), (motif.id + '_rev', motif.seqpos_results['pssm_rev'])):
+            t1 = ['c(%s)' % ','.join([str(t2) for t2 in t]) for t in pssm]
+            t2 = 'data<-cbind(%s)\n' % ','.join(t1)
             rscript.write('png("%s.png", width=660, height=300)\n' %mid)
             rscript.write(t2)
             rscript.write('seqLogo(as.matrix(data))\n')
@@ -225,14 +223,9 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
     pssmFolder = os.path.join(output_dir, 'pssm')
     if not os.path.exists(pssmFolder):
         os.mkdir(pssmFolder)
-    for arg in args:
-        render_to_file('single_motif.html', {'motif': arg}, os.path.join(motifFolder, arg['id'] + '.html'))
-    
-        #create pssm page.
-        arg['pssm_string'] = arg['pssm'][:]
-        for i,row in enumerate(arg['pssm_string']):
-            arg['pssm_string'][i] = str(row).replace("'","")
-        render_to_file('single_pssm.html', {'motif': arg}, os.path.join(pssmFolder, arg['id'] + '.html'))
+    for motif in mlist:
+        render_to_file('single_motif.html', {'motif': motif}, os.path.join(motifFolder, motif.id + '.html'))
+        render_to_file('single_pssm.html', {'motif': motif}, os.path.join(pssmFolder, motif.id + '.html'))
     
     #create hit seq pages
     #hitseqFolder = os.path.join(output_dir, 'hitseq')
@@ -244,49 +237,27 @@ def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
     #    outf.close()
     
     #collapse motifs
-    flat_clusters = pmc.motif_hcluster(args, distCutoff)
-    flat_clusters.sort(key = lambda x: min([t['zscore'] for t in x]))
-    args_dict = {}
-    for i in args:
-        args_dict[i['id']] = i
-        
-    #args.sort(key=lambda x:x['zscore'])
-    args_collapse = []
+    flat_clusters = pmc.motif_hcluster2(mlist, distCutoff)
+    flat_clusters.sort(key = lambda x: min([t.getzscore() for t in x]))
+    
+    m_collapse = []
     for c in flat_clusters:
-        c.sort(key=lambda x:x['zscore'])
-        args_collapse.append(c.pop(0))
+        c.sort(key=lambda x:x.getzscore())
+        m_collapse.append(c.pop(0))
         
-        
-            
-    #while args:
-    #    args_collapse.append(args.pop(0))
-        args_collapse[-1]['similar_motifs'] = [args_collapse[-1]] #also put self into similarity_motifs list.
-        i = 0
-        while i < len(c):
-            m = c[i]
-            similarity_score = pmc.similarity(m['pssm'], args_collapse[-1]['pssm'])[0]
-            #try:
-            #    sskey = "%s:%s" %(args_collapse[-1]['id'], arg['id'])
-            #    similarity_score = motifDists[sskey][0]
-            #except KeyError:
-            #    sskey = "%s:%s" %(arg['id'], args_collapse[-1]['id'])
-            #    similarity_score = motifDists[sskey][0]
-            #if similarity_score >= distCutoff:
-            m['similarity_score'] = round(similarity_score, 3)
-            args_collapse[-1]['similar_motifs'].append(m)
-                #if arg['dbd']:
-                #    args_collapse[-1]['dbd'].append(arg['dbd'])
-            del c[i]
-            #else:
-            i += 1
-        #args_collapse[-1]['dbd'] = list(set(args_collapse[-1]['dbd']))
-    for i in range(len(args_collapse)):
-        arg = args_collapse[i]
-        arg['collapse_num'] = len(arg['similar_motifs'])
-        arg['class_id'] = i + 1
+        m_collapse[-1].similar_motifs = [m_collapse[-1]] #also put self into similarity_motifs list.
+        for m in c:
+            similarity_score = pmc.similarity(m.seqpos_results['pssm'], m_collapse[-1].seqpos_results['pssm'])[0]
+            m.similarity_score = round(similarity_score, 3)
+            m_collapse[-1].similar_motifs.append(m)
+
+    for i in range(len(m_collapse)):
+        motif = m_collapse[i]
+        motif.collapse_num = len(motif.similar_motifs)
+        motif.class_id = i + 1
     
     #create table page and home page.
-    render_to_file('table.html', {'motifs': args_collapse}, os.path.join(output_dir, 'table.html'))
+    render_to_file('table.html', {'motifs': m_collapse}, os.path.join(output_dir, 'table.html'))
     render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
 
 def save_to_html_plain_old(output_dir, motifList, motifDists, distCutoff = 0.8):
@@ -411,12 +382,16 @@ def save_to_html_plain_old(output_dir, motifList, motifDists, distCutoff = 0.8):
     render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
 
 def render_to_file(template_html, render_dict, filen):
+    #from django.shortcuts import render_to_response
+    #p = render_to_response(template_html, render_dict)
     template_d = os.path.join(settings.DEPLOY_DIR, 'template')
     template_f = open(os.path.join(template_d, template_html))
     template = Template(template_f.read())
     outf = open(filen, 'w')
+    #outf.write(p.content)
     outf.write(template.render(render_dict))
     outf.close()
+    #p.close()
     template_f.close()
 
 def calc_motif_dist(motifList):
@@ -457,6 +432,7 @@ def calc_motif_dist_pcc(motifList):
 def main():
     #ALWAYS PRINT OUT VERSION INFO: 
     print mdseqpos.__version__
+    print 'Library path:', mdseqpos.__file__
 
     parser = optparse.OptionParser(usage=USAGE)
     parser.add_option('-d', '--denovo', default=False, action="store_true",

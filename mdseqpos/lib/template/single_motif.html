@@ -11,12 +11,12 @@
       </td>
       <td>
         id: {{motif.id}}<br />
-        factors: {{motif.factor}}<br />
+        factors: {% if motif.factors %} {{motif.factors|join('|')}} {% endif %}<br />
         DBD: {{motif.dbd}}<br />
-        hits: {{motif.hits}}<br />
-        cutoff: {{motif.cutoff}}<br />
-        zscore: {{motif.zscore}}<br />
-        pval: {{motif.pval}}<br />
+        hits: {{motif.getnumhits()}}<br />
+        cutoff: {{motif.getcutoff()|float|round(3)}}<br />
+        zscore: {{motif.getzscore()|float|round(3)}}<br />
+        -10log(pval): {{motif.getpvalue()}}<br />
         <a href="../pssm/{{motif.id}}.html" target="_blank"><button type="button">show pssm of this motif</button></a>
       </td>
       </tr>

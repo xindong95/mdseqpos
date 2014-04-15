@@ -28,17 +28,17 @@
           {% endif %}
             <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><a href="motif/{{e.id}}.html" target="ftop"> {{e.id}} </a></TD>
             <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> 
-              {% if e.factor %} 
-              <font color="#000000">{{e.factor}}</font>
+              {% if e.factors %} 
+              <font color="#000000">{{e.factors|join('|')}}</font>
               {% endif %} 
             </TD>
             <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.dbd}} </TD>
-            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.hits}} </TD>
-            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.cutoff}} </TD>
-            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.zscore}} </TD>
-            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.pval}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getnumhits()}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getcutoff()|float|round(3)}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getzscore()|float|round(3)}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getpvalue()}} </TD>
             <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.similarity_score}} </TD>
-            <TD style="border-left:#E7E7E7 solid 1px;"> {{e.position}} </TD>
+            <TD style="border-left:#E7E7E7 solid 1px;"> {{e.getmeanposition()|float|round(3)}} </TD>
           </TR>
         {% endfor %}
       {% endfor %}
@@ -48,12 +48,11 @@
   <p>
   The MDSeqPos results are classified into several groups depend on their sequence logo similarity.<br />
   For the "zscore" column with negative number, the smaller means more enriched. e.g. these with zscore < -15 are much much better. <br />
-  For "similarity to top" column, it calculate a similarity score[1] with the top one in this class. If the score 
-  is larger than 3.28, we think them are similar logos.<br/>
+  For "similarity to top" column, it calculate a similarity score[1] with the top one in this class based on weighted PCC.<br/>
   </p>
   
   <p><b>
-  [1] Habib N. A Novel Bayesian DNA Motif Comparison Method for Clustering and Retrieval. PLoS Comput Biol. 2011 May;7(5).
+  [1] Jiang P, Singh M. CCAT: Combinatorial Code Analysis Tool for transcriptional regulation. Nucleic Acids Res. 2014 Mar 1;42(5):2833-47.
   </b></p>
 </html>
 

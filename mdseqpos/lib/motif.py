@@ -250,8 +250,7 @@ class Motif:
                                'plot': {'chunk':chunk,
                                         'width':seq_length,
                                         'bin_avg': binAvg}}
-        #import func
-        #func.debug(locals())
+        #import func; func.debug(locals())
         
 
     def seqpos(self, chip_regions, width=600, margin=50):
@@ -611,7 +610,8 @@ class MotifList(list):
         """Filter the list by the species in species_list"""
         mapSpecies = {'hs' : 'Homo sapiens', 'mm' : 'Mus musculus',
                       'dm' : 'Drosophila melanogaster',
-                      'ce' : 'Caenorhabditis elegans'}
+                      'ce' : 'Caenorhabditis elegans',
+                      'zv' : 'Danio rerio'}
         #MAP short names to long names
         sl = map(lambda s: mapSpecies[s], species_list)
         motifs = []
