@@ -264,8 +264,6 @@ def motif_hcluster2(motif_list, cutoff):
     for m in motif_list:
         cl = Cluster()
         cl.motif = m
-        #cl.motif['pssm'] = [[float(t1) for t1 in t] for t in m['pssm']]  #numpy.array(m['pssm'])
-        #cl.motif['id'] = m['id']
         clusters.append(cl)
 
     #Calc each 2 pair of motifs and fill (score, position, strand) in matrix like below
@@ -273,9 +271,11 @@ def motif_hcluster2(motif_list, cutoff):
     #  xx
     #   x
     #    
+    count = 0
     for i in range(len(clusters)-1):
+        count+=1
+        print count
         for j in range(i+1, len(clusters)):
-            #import func; func.debug(locals())
             ts = similarity(clusters[i].motif.seqpos_results['pssm'], clusters[j].motif.seqpos_results['pssm']) # score, position, strand
             cluster_score_mat[i][j] = ts[0] # 1-distance score
 
@@ -284,6 +284,8 @@ def motif_hcluster2(motif_list, cutoff):
     
     #find index of the max score
     while 1:
+        if not cluster_score_mat.any():
+            break
         max_score = cluster_score_mat.max()
         mshape = cluster_score_mat.shape
         max_index = (999, 999)

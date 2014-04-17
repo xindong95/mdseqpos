@@ -43,9 +43,12 @@ Options:
    -w - width of the region to be scanned for motifs; depends on resoution of
         assay, (default: 600 basepairs)
    -v - verbose: print out debug information (default: False)
-   --maxmotif - the maximum number of motifs to report (defaut: 0, i.e. no max)
+   -c - cluster: This option only for know-motifs cistrome.xml, use pre-clustered 
+        known motif database to accelerate seqpos (defalut: False)
+   --maxmotif - the maximum number of motifs to report (defaut: -1, i.e. no max)
 """
 _DEBUG = False
+
 
 #REMOVE _DEBUG as a parameter
 def read_known_motifs(motif_dbs, _DEBUG):
@@ -62,6 +65,32 @@ def read_known_motifs(motif_dbs, _DEBUG):
         known_motifs.extend(tmp)
         if _DEBUG: print "load Complete (time): %s (%s)" % (db, time.ctime())
     return known_motifs
+
+def cluster_known_motifs(known_motifs, chip_regions, width=600, cutoff=0.001):
+    """Cluster the known motifs based on their similarity score,then one motif
+    could represent the whole cluster
+    """
+    CLUSTER = os.path.join(settings.DEPLOY_DIR, 'database', 'cistrome.cluster')
+    cluster_motifs,refID = {},{}
+    for m in known_motifs:
+        refID[m.id] = m
+    for line in open(CLUSTER,'r').readlines():
+        mid, cid = line.strip().split('\t')
+        if refID.has_key(mid):
+            if cluster_motifs.has_key(cid):
+                cluster_motifs[cid].append(refID[mid])
+            else:
+                cluster_motifs[cid] = [refID[mid]]
+    
+    fitered_motifs = []
+    for motifs in cluster_motifs.values():
+        m0 = motifs[0]
+        m0.seqpos(chip_regions, width)
+        if m0.seqpos_results['pvalue'] <= cutoff:
+            for m in motifs:
+                m.seqpos(chip_regions, width)
+                fitered_motifs.append(m)
+    return MotifList(fitered_motifs)
 
 def sample(p):
     """Given an array of probabilities, which sum to 1.0, randomly choose a 'bin',
@@ -160,7 +189,7 @@ def save_to_html(output_dir, motifList, motifDists):
 
     #END save_to_html
 
-def save_to_html_plain(output_dir, motifList, motifDists, distCutoff):
+def save_to_html_plain(output_dir, motifList, distCutoff):
     #make the class into list with dict of motifs.
     
     # > dir(motifList[0])
@@ -382,16 +411,12 @@ def save_to_html_plain_old(output_dir, motifList, motifDists, distCutoff = 0.8):
     render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
 
 def render_to_file(template_html, render_dict, filen):
-    #from django.shortcuts import render_to_response
-    #p = render_to_response(template_html, render_dict)
     template_d = os.path.join(settings.DEPLOY_DIR, 'template')
     template_f = open(os.path.join(template_d, template_html))
     template = Template(template_f.read())
     outf = open(filen, 'w')
-    #outf.write(p.content)
     outf.write(template.render(render_dict))
     outf.close()
-    #p.close()
     template_f.close()
 
 def calc_motif_dist(motifList):
@@ -458,6 +483,9 @@ def main():
     parser.add_option('--hcluster', type = 'float', default=0.8,
                       help="The similarity cutoff for hierarchical clustering of \
                       the result, (default: 0.8, The higher, the more groups, 0 ~ 1)")
+    parser.add_option('-c', '--cluster', default=False, action="store_true",
+                      help="This option only for know-motifs cistrome.xml, If you want to use \
+                      pre-clustered database to accelerate seqpos. default: False")
     parser.add_option('--maxmotif', default=0,
                       help="maximum number of motifs to report, \
                       (default: 0, i.e. no max)")
@@ -492,6 +520,18 @@ def main():
         if _DEBUG: print "completed denovo search...(time: %s)" % time.ctime()
         new_motifs.save_to_xml(os.path.join(output_dir, opts.new_motifs))
         
+    #Run seqpos stats on all_motifs
+    if _DEBUG: print "starting seqpos stats...(time: %s)" % time.ctime()
+    if new_motifs:
+        for m in new_motifs:
+            m.seqpos(chip_regions, width=int(opts.width))
+    if opts.cluster and opts.known_motifs == 'cistrome.xml': #only for cistrome.xml to accelerate
+        known_motifs = cluster_known_motifs(known_motifs, chip_regions, int(opts.width), float(opts.pval))
+    elif known_motifs:
+        for m in known_motifs:
+            m.seqpos(chip_regions, width=int(opts.width))
+    if _DEBUG: print "completed seqpos stats...(time: %s)" % time.ctime()
+
     #Combine both known and new motifs
     all_motifs = None
     if known_motifs and new_motifs:
@@ -501,11 +541,6 @@ def main():
     else:
         all_motifs = new_motifs
 
-    #Run seqpos stats on all_motifs
-    if _DEBUG: print "starting seqpos stats...(time: %s)" % time.ctime()
-    for m in all_motifs: m.seqpos(chip_regions, width=int(opts.width))
-    if _DEBUG: print "completed seqpos stats...(time: %s)" % time.ctime()
-
     #CULL the results to see only the relevant results, and output
     sig_motifs = all_motifs.cull(float(opts.pval), int(opts.maxmotif))
     
@@ -514,9 +549,9 @@ def main():
         species_list = opts.species_list.split(',')
         sig_motifs = sig_motifs.filterBySpecies(species_list)
 
-    dists = calc_motif_dist_pcc(sig_motifs)
+    #dists = calc_motif_dist_pcc(sig_motifs)
     #save_to_html(output_dir, sig_motifs, dists)
-    save_to_html_plain(output_dir, sig_motifs, dists, opts.hcluster)
+    save_to_html_plain(output_dir, sig_motifs, opts.hcluster)
 
     json_list = [t.to_json() for t in sig_motifs]
     jsonf = open(os.path.join(output_dir, 'motif_list.json'),'w')

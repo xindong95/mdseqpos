@@ -291,10 +291,11 @@ class Motif:
         fracpos = [abs(0.5*(s + e) - (margin + width)/2.0) / (width/2.0)
                    for (s,e) in zip(start, end)]
         #retrieve sequences whose fracposition is in (0.0, 1.0]
-        seq = []
+        seq,dis = [],[]
         for j,elem in enumerate(fracpos):
             if elem <= 1.0:
                 t = list(chip_regions.sequence[int(s_idx[j])])
+                dis.append(int(start[j])-len(t)/2)
                 t = t[int(start[j]):int(end[j])]
                 if orient[j] == ANTISENSE:
                     seq.append(revcomp(t))
@@ -302,6 +303,7 @@ class Motif:
                     seq.append(t)
         self.seqpos_results['pssm'] = calc_pssm(seq)
         self.seqpos_results['seq'] = ["".join(t) for t in seq]
+        self.seqpos_results['dis'] = dis
         #if self.id == "MA0104":
         #    import func
         #    func.debug(locals())
@@ -613,7 +615,7 @@ class MotifList(list):
                       'ce' : 'Caenorhabditis elegans',
                       'zv' : 'Danio rerio'}
         #MAP short names to long names
-        sl = map(lambda s: mapSpecies[s], species_list)
+        sl = map(lambda s: mapSpecies[s].lower(), species_list)
         motifs = []
         for m in self:
             #take the motif IFF species = [], OR an element in species is
@@ -623,9 +625,10 @@ class MotifList(list):
                 found = False
                 i = 0
                 while (i < len(m.species) and not found):
-                    if (m.species[i] in sl): found = True
+                    if (m.species[i].lower() in sl): found = True
                     i += 1
-                if found: motifs.append(m)
+                if found: 
+                    motifs.append(m)
             else:
                 motifs.append(m)
         return MotifList(motifs)

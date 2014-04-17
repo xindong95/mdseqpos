@@ -7,7 +7,7 @@ import xml.dom.minidom as minidom
 
 import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
 import mdseqpos.pwmclus_motif_comp as pwmclus_motif_comp
-import mdseqpos.motif as motif
+#import mdseqpos.motif as motif
 
 SEP = "|"
 def Info(string):
@@ -841,7 +841,7 @@ class MotifParser:
         return motiflist
 
     def _ConvertToOldMotif(self, motifid):
-        #import mdseqpos.motif as motif
+        import mdseqpos.motif as motif
         p = motif.Motif()
         p = p.from_dict(self.motifs[motifid])
         return p
