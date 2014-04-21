@@ -15,5 +15,5 @@ if len(_configParser.read(os.path.join(_DEPLOY_DIR[0], "pkg.cfg"))) != 0:
 #and the changeset is automatically updated in the pkg.cfg file by machine
 #**THEREFORE: you should only need to modify _preamble and _major_version.
 _preamble = "mdseqpos (official trunk)"
-_major_version = "2.0"
+_major_version = "2.01"
 __version__ = "%s: Version %s\nChangeset: %s" % (_preamble, _major_version, _changeset)

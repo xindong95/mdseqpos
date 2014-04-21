@@ -25,33 +25,10 @@ import mdseqpos.settings as settings
 import mdseqpos.bayesian_motif_comp as bmc
 import mdseqpos.pwmclus_motif_comp as pmc
 
-USAGE = """USAGE: MDSeqPos.py BEDFILE GENOME
-Arguments:
-   BEDFILE - regions file
-   GENOME  - assembly which the regions pertain to, e.g. 'hg18', 'mm9', etc.
-             as defined in BUILD_DICT in lib/settings.py
-   
-Options:
-   -d - flag to run denovo motif search (default: False)
-   -m - comma separated list of known motifs dbs to use in the motif search,
-        e.g. -m pbm.xml,transfac.xml
-   -n - name of the output XML file which stores new motifs found during a
-        denovo search, e.g. -n foo.xml (default: denovo.xml)
-   -p - pvalue cutoff for the motif signficance, (default: 0.001)
-   -s - name of species to filter the results with--if multiple species, comma
-        separate them, e.g. hs,mm,dm
-   -w - width of the region to be scanned for motifs; depends on resoution of
-        assay, (default: 600 basepairs)
-   -v - verbose: print out debug information (default: False)
-   -c - cluster: This option only for know-motifs cistrome.xml, use pre-clustered 
-        known motif database to accelerate seqpos (defalut: False)
-   --maxmotif - the maximum number of motifs to report (defaut: -1, i.e. no max)
-"""
 _DEBUG = False
 
-
 #REMOVE _DEBUG as a parameter
-def read_known_motifs(motif_dbs, _DEBUG):
+def read_known_motifs(motif_dbs, _DEBUG = False):
     """Given a list of xml file names, this function tries to load the motifs
     in those databases
     """
@@ -66,28 +43,30 @@ def read_known_motifs(motif_dbs, _DEBUG):
         if _DEBUG: print "load Complete (time): %s (%s)" % (db, time.ctime())
     return known_motifs
 
-def cluster_known_motifs(known_motifs, chip_regions, width=600, cutoff=0.001):
+def seqpos_cluster_known_motifs(known_motifs, chip_regions, width, cutoff):
     """Cluster the known motifs based on their similarity score,then one motif
     could represent the whole cluster
     """
     CLUSTER = os.path.join(settings.DEPLOY_DIR, 'database', 'cistrome.cluster')
-    cluster_motifs,refID = {},{}
+    cluster_motifs = {} #cluster_id to motifs
+    id2motif = {}
     for m in known_motifs:
-        refID[m.id] = m
+        id2motif[m.id] = m
     for line in open(CLUSTER,'r').readlines():
         mid, cid = line.strip().split('\t')
-        if refID.has_key(mid):
-            if cluster_motifs.has_key(cid):
-                cluster_motifs[cid].append(refID[mid])
+        if mid in id2motif:
+            if cid in cluster_motifs:
+                cluster_motifs[cid].append(id2motif[mid])
             else:
-                cluster_motifs[cid] = [refID[mid]]
+                cluster_motifs[cid] = [id2motif[mid]]
     
     fitered_motifs = []
     for motifs in cluster_motifs.values():
         m0 = motifs[0]
         m0.seqpos(chip_regions, width)
         if m0.seqpos_results['pvalue'] <= cutoff:
-            for m in motifs:
+            fitered_motifs.append(m0)
+            for m in motifs[1:]:
                 m.seqpos(chip_regions, width)
                 fitered_motifs.append(m)
     return MotifList(fitered_motifs)
@@ -189,9 +168,7 @@ def save_to_html(output_dir, motifList, motifDists):
 
     #END save_to_html
 
-def save_to_html_plain(output_dir, motifList, distCutoff):
-    #make the class into list with dict of motifs.
-    
+def save_to_html_plain(output_dir, motifList, distCutoff):   
     # > dir(motifList[0])
     # ['_ATTRIBUTES', '__doc__', '__init__', '__module__', '__str__', '_results_fields', 
     # '_validpssm', 'antisense', 'dbd', 'entrezs', 'equals', 'factors', 'from_dict', 
@@ -289,127 +266,6 @@ def save_to_html_plain(output_dir, motifList, distCutoff):
     render_to_file('table.html', {'motifs': m_collapse}, os.path.join(output_dir, 'table.html'))
     render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
 
-def save_to_html_plain_old(output_dir, motifList, motifDists, distCutoff = 0.8):
-    #make the class into list with dict of motifs.
-    args = []
-    for motif in motifList:
-        arg = {}
-        arg['id'] = motif.id
-        arg['dbd'] = motif.dbd
-        arg['hits'] = motif.getnumhits()
-        arg['cutoff'] = round(motif.getcutoff(), 3)
-        arg['zscore'] = round(motif.getzscore(), 3)
-        arg['pval'] = round(-10*math.log(motif.getpvalue(),math.e), 3) #-10logPval
-        arg['position'] = round(motif.getmeanposition(), 3)
-        arg['pssm'] = motif.seqpos_results['pssm']
-        arg['hitseq'] = motif.seqpos_results['seq']
-        if motif.factors is None:
-            arg['factor'] = ""
-        else:
-            #arg['factor'] = ", ".join(list(set([t.upper() for t in motif.factors])))
-            arg['factor'] = "|".join(motif.factors)
-            
-        #fix pssm
-        for row in arg['pssm']:
-            rsum = sum([float(t) for t in row])
-            for t in range(len(row)):
-                row[t] = round(float(row[t])/rsum,3)
-                if row[t]<0.001:
-                    row[t] = 0.001
-            imax = row.index(max(row))
-            row[imax] -= sum(row)-1
-            for t in range(len(row)):
-                row[t] = "%.3f" %row[t]
-        arg['pssm_rev'] = reverse_pssm(arg['pssm'])
-        args.append(arg)
-    
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    
-    #create seqLogo by run Rscript.
-    seqLogoFolder = os.path.join(output_dir, 'seqLogo')
-    if not os.path.exists(seqLogoFolder):
-        os.mkdir(seqLogoFolder)
-    rfile = os.path.join(seqLogoFolder, 'draw_seqLogo.r')
-    rscript = open(rfile,"w")
-    rscript.write('setwd("%s")\n' %os.path.abspath(seqLogoFolder))
-    rscript.write('library("seqLogo")\n')
-    for arg in args:
-        for mid,pssm in ((arg['id'], arg['pssm']), (arg['id']+'_rev', arg['pssm_rev'])):
-            t1 = ['c(%s)' %(','.join(t),) for t in pssm]
-            t2 = 'data<-cbind(%s)\n' %(','.join(t1),)
-            rscript.write('png("%s.png", width=660, height=300)\n' %mid)
-            rscript.write(t2)
-            rscript.write('seqLogo(as.matrix(data))\n')
-            rscript.write('dev.off()\n\n')
-    rscript.close()
-    cmd = 'Rscript %s' %rfile
-    os.system(cmd)
-        
-    #create each motif's single page
-    motifFolder = os.path.join(output_dir, 'motif')
-    if not os.path.exists(motifFolder):
-        os.mkdir(motifFolder)
-    pssmFolder = os.path.join(output_dir, 'pssm')
-    if not os.path.exists(pssmFolder):
-        os.mkdir(pssmFolder)
-    for arg in args:
-        render_to_file('single_motif.html', {'motif': arg}, os.path.join(motifFolder, arg['id']+'.html'))
-    
-        #create pssm page.
-        arg['pssm_string'] = arg['pssm'][:]
-        for i,row in enumerate(arg['pssm_string']):
-            arg['pssm_string'][i] = str(row).replace("'","")
-        render_to_file('single_pssm.html', {'motif': arg}, os.path.join(pssmFolder, arg['id']+'.html'))
-    
-    #create hit seq pages
-    #hitseqFolder = os.path.join(output_dir, 'hitseq')
-    #if not os.path.exists(hitseqFolder):
-    #    os.mkdir(hitseqFolder)
-    #for arg in args:
-    #    outf = open(os.path.join(hitseqFolder, arg['id']+'.txt'), 'w')
-    #    outf.writelines([t+'\n' for t in arg['hitseq']])
-    #    outf.close()
-    
-    #collapse motifs
-    #flat_clusters = pmc.motif_hcluster(motifList)
-    
-    args.sort(key=lambda x:x['zscore'])
-    args_collapse = []
-    while args:
-        args_collapse.append(args.pop(0))
-        args_collapse[-1]['similar_motifs'] = [args_collapse[-1]] #also put self into similarity_motifs list.
-        #if not args_collapse[-1]['dbd']:
-        #    args_collapse[-1]['dbd'] = []
-        #else:
-        #    args_collapse[-1]['dbd'] = [args_collapse[-1]['dbd']]
-        i = 0
-        while i < len(args):
-            arg = args[i]
-            try:
-                sskey = "%s:%s" %(args_collapse[-1]['id'], arg['id'])
-                similarity_score = motifDists[sskey][0]
-            except KeyError:
-                sskey = "%s:%s" %(arg['id'], args_collapse[-1]['id'])
-                similarity_score = motifDists[sskey][0]
-            if similarity_score >= distCutoff:
-                arg['similarity_score'] = round(similarity_score, 3)
-                args_collapse[-1]['similar_motifs'].append(arg)
-                #if arg['dbd']:
-                #    args_collapse[-1]['dbd'].append(arg['dbd'])
-                del args[i]
-            else:
-                i += 1
-        #args_collapse[-1]['dbd'] = list(set(args_collapse[-1]['dbd']))
-    for i in range(len(args_collapse)):
-        arg = args_collapse[i]
-        arg['collapse_num'] = len(arg['similar_motifs'])
-        arg['class_id'] = i+1
-    
-    #create table page and home page.
-    render_to_file('table.html', {'motifs': args_collapse}, os.path.join(output_dir, 'table.html'))
-    render_to_file('mdseqpos_index.html', {}, os.path.join(output_dir, 'mdseqpos_index.html'))
-
 def render_to_file(template_html, render_dict, filen):
     template_d = os.path.join(settings.DEPLOY_DIR, 'template')
     template_f = open(os.path.join(template_d, template_html))
@@ -458,37 +314,35 @@ def main():
     #ALWAYS PRINT OUT VERSION INFO: 
     print mdseqpos.__version__
     print 'Library path:', mdseqpos.__file__
-
+    print 
+    
+    USAGE = """USAGE: MDSeqPos.py [options] BEDFILE GENOME
+    
+    BEDFILE - regions file
+    GENOME  - assembly which the regions pertain to, e.g. 'hg18', 'mm9', etc.
+              as defined in BUILD_DICT in lib/settings.py"""
+              
     parser = optparse.OptionParser(usage=USAGE)
     parser.add_option('-d', '--denovo', default=False, action="store_true",
                       help="flag to run denovo motif search (default: False)")
     parser.add_option('-m', '--known-motifs', default=None,
-                      help="comma separated list of known motifs dbs to use \
-                      in the motif search, e.g. -m pbm.xml,transfac.xml")
+                      help="comma separated list of known motifs dbs to use in the motif search, e.g. -m pbm.xml,transfac.xml")
     parser.add_option('-n', '--new-motifs', default='denovo.xml',
-                      help="name of the output XML file which stores new \
-                      motifs found during adenovo search, e.g. -n foo.xml \
-                      (default: denovo.xml)")
+                      help="name of the output XML file which stores new motifs found during adenovo search, e.g. -n foo.xml (default: denovo.xml)")
     parser.add_option('-p', '--pval', default=0.001,
-                      help="pvalue cutoff for motif significance, \
-                      (default: 0.001)")
-    parser.add_option('-s', '--species-list', default=None, help="name of \
-                      species to filter the results with--if multuple \
-                      species, comma-separate them, e.g. hs,mm,dm")
+                      help="pvalue cutoff for motif significance, (default: 0.001)")
+    parser.add_option('-s', '--species-list', default=None, 
+                      help="name of species to filter the results with--if multuple species, comma-separate them, e.g. hs,mm,dm")
     parser.add_option('-w', '--width', default=600,
-                      help="width of the region to be scanned for motifs; \
-                      depends on resoution of assay, (default: 600 basepairs)")
+                      help="width of the region to be scanned for motifs; depends on resoution of assay, (default: 600 basepairs)")
     parser.add_option('-v', '--verbose', default=False, action="store_true",
                       help="flag to print debugging info (default: False)")
     parser.add_option('--hcluster', type = 'float', default=0.8,
-                      help="The similarity cutoff for hierarchical clustering of \
-                      the result, (default: 0.8, The higher, the more groups, 0 ~ 1)")
+                      help="The similarity cutoff for hierarchical clustering of the result, (default: 0.8, The higher, the more groups, 0 ~ 1)")
     parser.add_option('-c', '--cluster', default=False, action="store_true",
-                      help="This option only for know-motifs cistrome.xml, If you want to use \
-                      pre-clustered database to accelerate seqpos. default: False")
+                      help="This option only for know-motifs cistrome.xml, If you want to use pre-clustered database to accelerate seqpos. default (not set): False")
     parser.add_option('--maxmotif', default=0,
-                      help="maximum number of motifs to report, \
-                      (default: 0, i.e. no max)")
+                      help="maximum number of motifs to report, (default: 0, i.e. no max)")
     parser.add_option('-O', '--output-directory', default="results", 
                       help="output directory name (default: results)")
     
@@ -503,10 +357,10 @@ def main():
     output_dir = opts.output_directory
 
     #READ in the regions that are specified in the BED file
-    if _DEBUG: print "read regions start time: %s" % time.ctime()
+    print "read regions start time: %s" % time.ctime()
     #HERE we should rely on a standard package to read in bed files; stub it
     chip_regions = ChipRegions(bedfile_name, genome)
-    if _DEBUG: print "read regions end time: %s" % time.ctime()
+    print "read regions end time: %s" % time.ctime()
 
     #LOAD the motifs (both known and denovo)
     known_motifs, new_motifs = None, None
@@ -515,22 +369,22 @@ def main():
         known_motifs = read_known_motifs(motif_dbs, _DEBUG)
 
     if opts.denovo:
-        if _DEBUG: print "starting denovo search...(time: %s)" % time.ctime()
+        print "starting denovo search...(time: %s)" % time.ctime()
         new_motifs = chip_regions.mdmodule(width=int(opts.width))
-        if _DEBUG: print "completed denovo search...(time: %s)" % time.ctime()
+        print "completed denovo search...(time: %s)" % time.ctime()
         new_motifs.save_to_xml(os.path.join(output_dir, opts.new_motifs))
         
     #Run seqpos stats on all_motifs
-    if _DEBUG: print "starting seqpos stats...(time: %s)" % time.ctime()
+    print "starting seqpos stats...(time: %s)" % time.ctime()
     if new_motifs:
         for m in new_motifs:
             m.seqpos(chip_regions, width=int(opts.width))
-    if opts.cluster and opts.known_motifs == 'cistrome.xml': #only for cistrome.xml to accelerate
-        known_motifs = cluster_known_motifs(known_motifs, chip_regions, int(opts.width), float(opts.pval))
+    if opts.cluster and opts.known_motifs == 'cistrome.xml': #only for cistrome.xml to use cistrome.cluster
+        known_motifs = seqpos_cluster_known_motifs(known_motifs, chip_regions, int(opts.width), float(opts.pval))
     elif known_motifs:
         for m in known_motifs:
             m.seqpos(chip_regions, width=int(opts.width))
-    if _DEBUG: print "completed seqpos stats...(time: %s)" % time.ctime()
+    print "completed seqpos stats...(time: %s)" % time.ctime()
 
     #Combine both known and new motifs
     all_motifs = None
