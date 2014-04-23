@@ -2,16 +2,18 @@
 import os
 import sys
 import math
+import time
 from xml.etree.ElementTree import *
 import xml.dom.minidom as minidom
 
 import mdseqpos.bayesian_motif_comp as bayesian_motif_comp
 import mdseqpos.pwmclus_motif_comp as pwmclus_motif_comp
-#import mdseqpos.motif as motif
+import mdseqpos.motif as motif
 
 SEP = "|"
+
 def Info(string):
-    print string
+    logger.info(string)
 
 def List2Str(l, con=SEP):
     """use SEP to join list"""
@@ -22,9 +24,8 @@ def PssmValidator(pssm):
     """validate each PSSM matrix format, no head.
     pssm = [[], [], ... , []]
     """
-    #print pssm
     for pos in pssm:
-        if len(pos)!=4:
+        if len(pos) != 4:
             return False
         for base in pos:
             try:
@@ -35,15 +36,17 @@ def PssmValidator(pssm):
 
 def FixPssm(p):
     """FixPssm(p)
-    p is a MP object. This function fix the pssm, make each position sum to 1.
+    p is a MP object. This function fix the pssm, 
+    1) Make each position sum to 1.
+    2) The min number in matrix should be at least 0.01
     """
     for k in p.motifs.keys():
         for pssm in p.motifs[k]['pssm']:
             for row in pssm:
                 rsum = sum([float(t) for t in row])
                 for t in range(len(row)):
-                    row[t] = round(float(row[t])/rsum,3)
-                    if row[t]<0.01:
+                    row[t] = round(float(row[t]) / rsum, 3)
+                    if row[t] < 0.01:
                         row[t] = 0.01
                 imax = row.index(max(row))
                 row[imax] -= sum(row)-1
@@ -56,11 +59,11 @@ def calcMatrixDistance(m1, m2):
     """
     score = 0
     if len(m1) != len(m2):
-        print 'input matrix in different dim #1.'
+        logger.error('Input matrix in different dim #1.')
         return None
     for ir in range(len(m1)):
         if len(m1[ir]) != len(m2[ir]):
-            print 'input matrix in different dim #2.'
+            logger.error('input matrix in different dim #2.')
             return None
         for ic in range(len(m1[ir])):
             score += math.sqrt((m1[ir][ic]-m2[ir][ic])**2)
@@ -83,15 +86,104 @@ def flatTreeDictToList(root):
 			result.extend(flatTreeDictToList(each))
 		return result
 
-#def reversePssm(m1):
-#    """reversePssm(m1)
-#    Create a reversed pssm.
-#    """
-#    m2 = []
-#    for row in m1:
-#        row = [1-t for t in row]
-#        m2.insert(0, row)
-#    return m2
+def reversePssm(pssm):
+    """Return a reversed pssm"""
+    pssm_rev = [t[::-1] for t in pssm[::-1]]
+    return pssm_rev
+
+class SimpleLogging(object):
+    CRITICAL = 50
+    #FATAL = CRITICAL
+    ERROR = 40
+    WARNING = 30
+    WARN = WARNING
+    SUMMARY = 25
+    INFO = 20
+    SLEEP = INFO
+    DEBUG = 10
+    NOTSET = 0
+    def __init__(self, *args, **kwargs):
+        """available options for init:
+        stream, filename, level, levelf, format, datafmt
+        """
+        # Set options
+        self.stream = kwargs.get('stream', sys.stderr)
+        self.logfilen = kwargs.get('filename', None)
+        self.logfile = None
+        if self.logfilen:
+            self.logfile = open(self.logfilen, 'a')
+        self.level = kwargs.get('level', 20)
+        self.levelf = kwargs.get('levelf', 25)
+        self.format = kwargs.get('format', '[%(asctime)s] %(levelname)-7s - %(message)s\n')
+        self.datafmt = kwargs.get('datafmt', '%Y-%m-%d %H:%M:%S')
+
+        # Set colors
+        self.__write = __write = sys.stderr.write
+        self.set_error_color = lambda: None
+        self.set_warning_color = lambda: None
+        self.set_warn_color = lambda: None
+        self.set_summary_color = lambda: None
+        self.set_info_color = lambda: None
+        self.set_sleep_color = lambda: None
+        self.set_debug_color = lambda: None
+        self.reset_color = lambda: None
+        
+        self.isatty = getattr(sys.stderr, 'isatty', lambda: False)()
+        if self.isatty:
+            if os.name == 'nt':
+                import ctypes
+                SetConsoleTextAttribute = ctypes.windll.kernel32.SetConsoleTextAttribute
+                GetStdHandle = ctypes.windll.kernel32.GetStdHandle
+                self.set_error_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x0C)
+                self.set_warning_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x06)
+                self.set_warn_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x06)
+                self.set_debug_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x02)
+                self.set_sleep_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x08)
+                self.set_debug_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x0F)
+                self.reset_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x07)
+                self.set_info_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x07)
+                self.set_summary_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x07)
+            elif os.name == 'posix':
+                self.set_error_color = lambda: __write('\033[31m')
+                self.set_warning_color = lambda: __write('\033[33m')
+                self.set_warn_color = lambda: __write('\033[33m')
+                self.set_debug_color = lambda: __write('\033[32m')
+                self.set_sleep_color = lambda: __write('\033[36m')
+                self.set_debug_color = lambda: __write('\033[32m')
+                self.reset_color = lambda: __write('\033[0m')
+                self.set_info_color = lambda: __write('\033[0m')
+                self.set_summary_color = lambda: __write('\033[0m')
+
+    def log(self, level, msg):
+        logstr = self.format % {'asctime': time.strftime(self.datafmt, time.localtime()), 'levelname': level, 'message': msg}
+        if level >= self.level and self.stream:
+            getattr(self, 'set_%s_color' %level.lower())()
+            self.__write(logstr)
+            self.reset_color()
+        if level >= self.levelf and self.logfile:
+            self.logfile.write(logstr)
+
+    #def dummy(self, msg):
+    #    pass
+    def debug(self, msg):
+        self.log('DEBUG', msg)
+    def info(self, msg):
+        self.log('INFO', msg)
+    def summary(self, msg):
+        self.log('SUMMARY', msg)
+    def sleep(self, msg):
+        self.log('SLEEP', msg)
+    def warning(self, msg):
+        self.log('WARNING', msg)
+    def warn(self, msg):
+        self.warning(msg)
+    def error(self, msg):
+        self.log('ERROR', msg)
+    #def exception(self, msg):
+    #    self.error(msg)
+    #    traceback.print_exc(file = sys.stderr)
+    def critical(self, msg):
+        self.log('CRITICAL', msg)
 
 class MotifParser:
     """
@@ -141,10 +233,9 @@ class MotifParser:
         Setup a MP Object, and parser the xmlfile.
         """
         self.motifs = {}
-        #self.temp_print = ''
         
         self.keyName = 'id'
-        self.attr_list = [self.keyName,'edition']
+        self.attr_list = [self.keyName, 'edition']
         self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', 'family', \
         'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'cluster', 'comment1', \
         'comment2', 'comment3', 'comment4', 'comment5', 'datasetid', 'zscore', 'seqfactors', \
@@ -158,7 +249,7 @@ class MotifParser:
             elif xmlfile[-3:] == 'txt':
                 self.ParserTable(xmlfile)
             else:
-                Info("Can't parser the file, xml or txt?")
+                logger.error("Can't parser the file, xml or txt?")
     
     def AppendTag(self, tag, appendto='tag_list'):
         """AppendTag(self, tag, appendto='tag_list')
@@ -190,17 +281,17 @@ class MotifParser:
         try:
             xmltree.parse(xmlfile)
         except IOError:
-            Info("Fail to parser the xml file. Not exist or format error?")
+            logger.error("Fail to parser the xml file. Not exist or format error?")
             return None
 
         for pos in xmltree.findall("motif"):
             #get key and set empty element
             key = pos.get(self.keyName)
             if not key:
-                Info('ERROR: No %s found for node.' %self.keyName)
+                logger.error('No %s found for node.' %self.keyName)
                 return None
             if key in self.motifs.keys():
-                Info("WARNING: %s has exist in instance."%key)
+                logger.warning("%s has exist in instance."%key)
             self.motifs[key] = {}
 
             #add attribs and tags for each element.
@@ -242,14 +333,14 @@ class MotifParser:
             headIndex[headList[i]] = i #headIndex['sourcefile'] = 3
         for each in headList:
             if each not in self.all_list:
-                Info("WARNING: column name <%s> is not a node, it will input but can't output. use 'MP_Object.all_list' to get formal format." %each)
+                logger.warning("column name <%s> is not a node, it will input but can't output. use 'MP_Object.all_list' to get formal format." %each)
                 #return 1
 
         for line in inf:
             linel = line.rstrip('\n').split('\t')
             key = linel[headIndex[self.keyName]] #eg. key = MA00004
             if key in self.motifs.keys():
-                Info("WARNING: %s has exist in instance"%key)
+                logger.warning("%s has exist in instance"%key)
             self.motifs[key] = {}
 
             for iattr in self.attr_list:
@@ -278,13 +369,13 @@ class MotifParser:
                     exec('matrix=%s' %matrix_string)
                     for imatrix in matrix:
                         if not PssmValidator(imatrix):
-                            Info("ERROR: Matrix format error. id: %s" %key)
+                            logger.error("Matrix format error. id: %s" %key)
                             return False
                     else:
                         self.motifs[key][itag] = matrix
-        print "Success parser from table."
+        logger.info("Success parser from table.")
 
-    def ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 2.85):
+    def ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 0.2):
         """ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 2.85)
         The function only retrieve observed motifs.
         The startid should be in format: 2 alphabet + 5 number.
@@ -296,7 +387,7 @@ class MotifParser:
         if os.path.isfile(filepath):
             inf = open(filepath)
         else:
-            print 'Failed to open file: %s' %filepath
+            logger.error('Failed to open file: %s' %filepath)
             return None
         for i in inf:
             if i.startswith('var mtree'):
@@ -324,7 +415,7 @@ class MotifParser:
                 i = 0
                 while i < len(motiflist):
 
-                    similarity = self._Similarity(motiflist[i]['id'][0], new_motiflist[-1]['id'][0])
+                    similarity = self.SimilarityPcc(motiflist[i]['id'][0], new_motiflist[-1]['id'][0])
                     if similarity[0] >= collapse_cutoff:
                         del(motiflist[i])
                     else:
@@ -349,10 +440,10 @@ class MotifParser:
         Get all data of the attribute / tag. Return a string.
         """
         if attr not in self.all_list:
-            print "Wrong input attr, select attr from: \n:",List2Str(self.all_list, ",")
+            logger.error("Wrong input attr, select attr from: \n" + List2Str(self.all_list, ", "))
             return ''
         if attr == 'pssm':
-            print "Not support to get pssm. you can use MP.ToTable() ;)\n"
+            logger.error("Not support to get pssm. you can use MP.ToTable()")
             return ''
         res = []
         for i in self.motifs.values():
@@ -372,10 +463,10 @@ class MotifParser:
         choose arguments from self.all_list
         e.g) MP2 = MP.SearchMotif(species="Homo sapiens",source="JASPAR")
         """
-        #print attrs
+        logger.debug('attrs ' + attrs)
         for i in attrs.keys():
             if i not in self.all_list:
-                Info("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
+                logger.error("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
                 return None
         sub_motifs = MotifParser() #self
         sub_motifs.motifs = self.motifs
@@ -388,7 +479,7 @@ class MotifParser:
                 elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
                     temp_dict[i[0]] = i[1].copy()
             sub_motifs.motifs = temp_dict
-        Info("Extract %d records." %len(sub_motifs))
+        logger.info("Extract %d records." %len(sub_motifs))
         return sub_motifs
 
     def String(self, mid):
@@ -398,7 +489,7 @@ class MotifParser:
         if mid in self.motifs.keys():
             dMotif = self.motifs[mid]
         else:
-            Info("ID incorrect, can't find Motif ID: %s" %mid)
+            logger.error("Can't find Motif ID: %s" %mid)
             return ''
         motif_string = ['\n']
         for itag in self.attr_list + self.tag_list:
@@ -471,7 +562,7 @@ class MotifParser:
             if not pssm:
                 continue
             if len(pssm)>1:
-                print 'ERROR: it has more than 1 pssm'
+                logger.error('It has more than 1 pssm.')
             else:
                 pssm = pssm[0]
             t1 = ['c(%s)' %(','.join([str(m) for m in t]),) for t in pssm]
@@ -525,7 +616,7 @@ class MotifParser:
                 
             itag = "pssm"
             for matrix in mo[itag]:
-                #print matrix
+                logger.debug(matrix)
                 baseIndex = ['A', 'C', 'G', 'T']
                 pssm = doc.createElement(itag)
                 motif.appendChild(pssm)
@@ -549,7 +640,7 @@ class MotifParser:
             outf.write(r'<?xml-stylesheet type="text/xsl" href="%s.xsl"?>'% os.path.split(xmlfile_)[-1] +"\n")
         outf.write(xmlString[1])
         outf.close()
-        print "Output xml to file: %s.xml." %xmlfile_
+        logger.info("Output xml to file: %s.xml." %xmlfile_)
         
         if xsl:
             outf = open(xmlfile_+".xsl",'w')
@@ -714,7 +805,7 @@ class MotifParser:
         for i in self.motifs.values():
             filen = os.path.join(folder, List2Str(i[self.keyName])+'.pwm')
             if len(i['pssm'])!=1:
-                Info('Warning: %s may have %d pssm.'%(i[self.keyName][0], len(i['pssm'])))
+                logger.warning('%s may have %d pssm.'%(i[self.keyName][0], len(i['pssm'])))
             if not len(i['pssm']):
                 continue
             outf = open(filen, 'w')
@@ -735,7 +826,7 @@ class MotifParser:
             outf.write(k + '\n')
             pssm = self.motifs[k]['pssm']
             if len(pssm) != 1:
-                Info('Warning: %s may have %d pssm.'%(k, len(pssm)))
+                logger.warning('%s may have %d pssm.'%(k, len(pssm)))
             pssm = pssm[0]
             pssm = zip(*pssm)
             pssm_in_mis = ['', '', '', '']
@@ -760,14 +851,14 @@ class MotifParser:
         try:
             xmltree.parse(xmlfile)
         except IOError:
-            print "Fail to parser the xml file. Not exist or format error?"
+            logger.error("Fail to parser the xml file. Not exist or format error?")
             return None
 
         for pos in xmltree.findall("motif"):
             tag = 'id'
             attrib = pos.attrib
             id = attrib[tag]
-            #print id
+            logger.debug(id)
             self.motifs[id] = {}
             self.motifs[id][tag] = [id]
             
@@ -841,7 +932,7 @@ class MotifParser:
         return motiflist
 
     def _ConvertToOldMotif(self, motifid):
-        import mdseqpos.motif as motif
+        #import mdseqpos.motif as motif
         p = motif.Motif()
         p = p.from_dict(self.motifs[motifid])
         return p
@@ -868,7 +959,7 @@ class MotifParser:
             similarity_score, offset, antisense = pwmclus_motif_comp.similarity(m1, m2)
             return similarity_score, offset, antisense
         else:
-            Info('ERROR: It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
+            logger.error('It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
 
     def _ParserTable(self, tfile):
         """Parser from a "\t" splitted table txt file. 
@@ -884,7 +975,7 @@ class MotifParser:
             headIndex[headList[i]] = i #headIndex['sourcefile'] = 3
         for each in headList:
             if each not in self.all_list:
-                print "WARNING: column name '%s' is not a node, use 'MP_Object.attr_list' to get formal format." %each
+                logger.warning("column name '%s' is not a node, use 'MP_Object.attr_list' to get formal format." %each)
                 #return 1
                 
         for line in inf:
@@ -920,11 +1011,12 @@ class MotifParser:
                         exec('pssm=[%s]' %linel[headIndex[tag]])
                         for ipssm in pssm:
                             if not PssmValidator(ipssm):
-                                print "pssm format error. id: %s" %id
+                                logger.error("pssm format error. id: %s" %id)
                     self.motifs[id][tag] = pssm
 
-        print "Success parser from table. %s"%tfile
+        logger.info("Success parser from table. %s" %tfile)
 
-                
-        
+
+logger = SimpleLogging(level=SimpleLogging.DEBUG)
+
 
