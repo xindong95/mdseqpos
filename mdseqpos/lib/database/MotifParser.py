@@ -588,7 +588,7 @@ class MotifParser:
         
         t_motifs = self.motifs.values()
         if sortkey:
-            t_motifs.sort(key=lambda x: x[sortkey])
+            t_motifs.sort(key=sortkey)
         else:
             #t_motifs.sort(key=lambda x:x[self.keyName]) #sort value as keyName before output
             try:
