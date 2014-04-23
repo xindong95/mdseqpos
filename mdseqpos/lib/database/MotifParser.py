@@ -12,8 +12,8 @@ import mdseqpos.motif as motif
 
 SEP = "|"
 
-def Info(string):
-    logger.info(string)
+#def Info(string):
+#    logger.info(string)
 
 def List2Str(l, con=SEP):
     """use SEP to join list"""
@@ -116,7 +116,7 @@ class SimpleLogging(object):
         self.levelf = kwargs.get('levelf', 25)
         self.format = kwargs.get('format', '[%(asctime)s] %(levelname)-7s - %(message)s\n')
         self.datafmt = kwargs.get('datafmt', '%Y-%m-%d %H:%M:%S')
-
+        
         # Set colors
         self.__write = __write = sys.stderr.write
         self.set_error_color = lambda: None
@@ -153,16 +153,17 @@ class SimpleLogging(object):
                 self.reset_color = lambda: __write('\033[0m')
                 self.set_info_color = lambda: __write('\033[0m')
                 self.set_summary_color = lambda: __write('\033[0m')
-
+            
     def log(self, level, msg):
         logstr = self.format % {'asctime': time.strftime(self.datafmt, time.localtime()), 'levelname': level, 'message': msg}
-        if level >= self.level and self.stream:
+        level_value = getattr(self, level)
+        if level_value >= self.level and self.stream != None:
             getattr(self, 'set_%s_color' %level.lower())()
             self.__write(logstr)
             self.reset_color()
-        if level >= self.levelf and self.logfile:
+        if level_value >= self.levelf and self.logfile != None:
             self.logfile.write(logstr)
-
+    
     #def dummy(self, msg):
     #    pass
     def debug(self, msg):
@@ -239,7 +240,7 @@ class MotifParser:
         self.tag_list = ['source', 'sourcefile', 'status', 'numseqs', 'pmid', 'dbd', 'family', \
         'description', 'species', 'cellline', 'entrez', 'symbol', 'synonym', 'refseq', 'cluster', 'comment1', \
         'comment2', 'comment3', 'comment4', 'comment5', 'datasetid', 'zscore', 'seqfactors', \
-        'seqdbds', 'nmotifs']
+        'seqdbds', 'seqdatasetid', 'nmotifs']
         self.special_list = ['pssm'] # if you add a element here, need to edit code below -,-
         self.all_list = self.attr_list + self.tag_list + self.special_list
         
@@ -373,7 +374,7 @@ class MotifParser:
                             return False
                     else:
                         self.motifs[key][itag] = matrix
-        logger.info("Success parser from table.")
+        logger.debug("Success parser from table.")
 
     def ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 0.2):
         """ParserSeqposHtml(self, filepath, cutoff = -15, startid = 'MT00001', collapse = True, collapse_cutoff = 2.85)
@@ -463,7 +464,7 @@ class MotifParser:
         choose arguments from self.all_list
         e.g) MP2 = MP.SearchMotif(species="Homo sapiens",source="JASPAR")
         """
-        logger.debug('attrs ' + attrs)
+        logger.debug('attrs ' + str(attrs))
         for i in attrs.keys():
             if i not in self.all_list:
                 logger.error("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
@@ -479,7 +480,7 @@ class MotifParser:
                 elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
                     temp_dict[i[0]] = i[1].copy()
             sub_motifs.motifs = temp_dict
-        logger.info("Extract %d records." %len(sub_motifs))
+        logger.debug("Extract %d records." %len(sub_motifs))
         return sub_motifs
 
     def String(self, mid):
@@ -640,7 +641,7 @@ class MotifParser:
             outf.write(r'<?xml-stylesheet type="text/xsl" href="%s.xsl"?>'% os.path.split(xmlfile_)[-1] +"\n")
         outf.write(xmlString[1])
         outf.close()
-        logger.info("Output xml to file: %s.xml." %xmlfile_)
+        logger.debug("Output xml to file: %s.xml." %xmlfile_)
         
         if xsl:
             outf = open(xmlfile_+".xsl",'w')
@@ -950,7 +951,7 @@ class MotifParser:
     #        antisense = bool(antisense)
     #        return similarity_score, offset, antisense
     #    else:
-    #        Info('ERROR: It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
+    #        logger.error('It has no matrix or more than 1 matrix: %s, %s'%(motifid1, motifid2))
 
     def SimilarityPcc(self, motifid1, motifid2):
         if len(self.motifs[motifid1]['pssm']) == 1 and len(self.motifs[motifid2]['pssm']) == 1:
@@ -1014,9 +1015,9 @@ class MotifParser:
                                 logger.error("pssm format error. id: %s" %id)
                     self.motifs[id][tag] = pssm
 
-        logger.info("Success parser from table. %s" %tfile)
+        logger.debug("Success parser from table. %s" %tfile)
 
 
-logger = SimpleLogging(level=SimpleLogging.DEBUG)
+logger = SimpleLogging(level=SimpleLogging.INFO)
 
 
