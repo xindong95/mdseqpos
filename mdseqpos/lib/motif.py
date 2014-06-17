@@ -213,7 +213,7 @@ class Motif:
         frac_sort = [frac[i] for i in idx]
         #calculate a mean sliding average using plotPosWin as the window size
         #normalize using (seq_length-offset)*0.5
-        if len(frac_sort) < plotPosWin:
+        if len(frac_sort) <= plotPosWin:
             tplotPosWin = len(frac_sort) - 1
         else:
             tplotPosWin = plotPosWin
