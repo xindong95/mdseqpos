@@ -29,7 +29,7 @@ class ChipRegions:
     """A class for ChIP regions.
     
     Adapted from Cliff Meyer's ChIP_region class."""
-    def __init__(self, bedfilename=None, genome=None):
+    def __init__(self, bedfilename=None, genome=None, genome_dir=None):
         """Initialize ChIP region.
         
         Adapted from Cliff Meyer's ChIP_region.__init__() method."""
@@ -41,10 +41,13 @@ class ChipRegions:
         self.strand = []
         self.hitscore = []
         self.genome = None
+        self.genome_dir = None
         if bedfilename is not None:
             self.read(bedfilename)
         if genome is not None:
             self.genome = genome
+        if genome_dir is not None:
+            self.genome_dir = genome_dir
         self.preprocessed_regions = False
 
     def preprocess(self, width, margin):
@@ -78,7 +81,7 @@ class ChipRegions:
 
     def len_read_sequence(self, repeatMasked=False):
         """Read in region sequences, len style!"""
-        build_dir = os.path.join(settings.ASSEMBLY_DIR,
+        build_dir = self.genome_dir if self.genome_dir else os.path.join(settings.ASSEMBLY_DIR,
                                  settings.BUILD_DICT[self.genome])
         #SORT the reads so that we're more efficient about our File I/O
         tuples = zip(range(len(self.chrom)), self.chrom, self.start, self.end)
@@ -162,7 +165,7 @@ class ChipRegions:
         
         Adapted from Cliff Meyer's ChIP_region.getSequence() method."""
         #BUILD_DICT has been moved to settings.py
-        build_dir = os.path.join(settings.ASSEMBLY_DIR,
+        build_dir = self.genome_dir if self.genome_dir else os.path.join(settings.ASSEMBLY_DIR,
                                  settings.BUILD_DICT[ self.genome ])
         self.sequence = []
         for i,x in enumerate(self.chrom):

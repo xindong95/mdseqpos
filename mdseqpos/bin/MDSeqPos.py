@@ -323,6 +323,8 @@ def main():
               as defined in BUILD_DICT in lib/settings.py"""
               
     parser = optparse.OptionParser(usage=USAGE)
+    parser.add_option('-g', '--genome-dir', dest="genome_dir", default=None,
+                      help="Path to the genome assembly dir")
     parser.add_option('-d', '--denovo', default=False, action="store_true",
                       help="flag to run denovo motif search (default: False)")
     parser.add_option('-m', '--known-motifs', default=None,
@@ -359,7 +361,7 @@ def main():
     #READ in the regions that are specified in the BED file
     print "read regions start time: %s" % time.ctime()
     #HERE we should rely on a standard package to read in bed files; stub it
-    chip_regions = ChipRegions(bedfile_name, genome)
+    chip_regions = ChipRegions(bedfile_name, genome, genome_dir=opts.genome_dir)
     print "read regions end time: %s" % time.ctime()
 
     #LOAD the motifs (both known and denovo)

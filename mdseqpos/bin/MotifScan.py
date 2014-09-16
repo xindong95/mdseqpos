@@ -50,6 +50,8 @@ if __name__ == '__main__':
     # 4. fasta_file, fasta_dir -- output FASTA file
     # 
     parser = OptionParser(usage=USAGE)
+    parser.add_option('-g', '--genome-dir', dest="genome_dir", default=None,
+                      help="Path to the genome assembly dir")
     parser.add_option('-m', '--known-motifs-file', default=KNOWN_MOTIFS_FILE,
                       help="name of input XML file containing known motifs")
     parser.add_option('-M', '--known-motifs-dir', default=KNOWN_MOTIFS_DIR,
@@ -121,7 +123,7 @@ if __name__ == '__main__':
         desired_motif = Motif.from_flat_file(opts.pssm_file)
     
     # retrieve ChIP regions
-    chip_regions = ChipRegions(chip_regions_path, genome)
+    chip_regions = ChipRegions(chip_regions_path, genome, opts.genome_dir)
     
     # scan ChIP regions for motif
     hits = chip_regions.motifscan(desired_motif)
