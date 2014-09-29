@@ -320,7 +320,7 @@ me start', start, here, left, right, line_len, x
         s_idx, start, end, orient, score = \
                _seq.seqscan(self.sequence, pssm, bgseqprob_mat,
                             markov_order, prob_option)
-        hits = ChipRegions()
+        hits = ChipRegions(genome=self.genome,genome_dir=self.genome_dir)
         hits.genome = self.genome
 
         for i,idx in enumerate(s_idx):
