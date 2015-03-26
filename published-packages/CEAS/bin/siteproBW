@@ -280,6 +280,7 @@ def main():
     super_confid_interval = []
     
     for iw in range(len(opts.wig)):
+        info('processing wig %s %s', iw, os.path.split(opts.wig[iw])[1])
         bw = BigWigFile(open(opts.wig[iw], 'rb'))
         #avg_siteprofs = []
         ibed = 0
@@ -289,7 +290,7 @@ def main():
             siteprofs = []
             for line in bedlist:
                 center = (int(line[1])+int(line[2]))/2
-                prange = (center-opts.span, center+opts.span+opts.pf_res)
+                prange = (center-opts.span-opts.pf_res/2, center+opts.span-opts.pf_res/2+opts.pf_res)
                 if prange[0] <= 0 or prange[1] <= 0:
                     continue
                 summarize = bw.summarize(line[0], prange[0], prange[1], 2*opts.span/opts.pf_res+1)
@@ -310,7 +311,13 @@ def main():
                 super_confid_interval.append([CalcConfidInterval(t) for t in siteprofs_t])
             else:
                 super_confid_interval.append(None)
-            super_avg_siteprofs.append([ {True:sum(t)/len(t), False:0}[len(t)!=0] for t in siteprofs_t])
+            kk = []
+            for t in siteprofs_t:
+                if len(t):
+                    kk.append(sum(t)/len(t))
+                else:
+                    kk.append(0)
+            super_avg_siteprofs.append(kk)
 
     # write the R script
     info('# writing R script of profiling...')
@@ -319,7 +326,7 @@ def main():
     rscript += R.pdf(opts.name+'.pdf', height=6, width=8.5)
     
     # if single profile; otherwise multiple profiles
-    if len(opts.wig)==1 and len(opts.bed) == 1:
+    if len(opts.wig) == 1 and len(opts.bed) == 1:
         rscript += draw_siteprofiles(sitebreaks, super_avg_siteprofs[0], super_confid_interval[0])
     else:
         rscript += draw_multiple_siteprofiles(sitebreaks, super_avg_siteprofs, super_confid_interval, opts.label)

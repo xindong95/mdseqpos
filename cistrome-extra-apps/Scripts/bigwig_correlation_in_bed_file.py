@@ -181,6 +181,7 @@ option.
     profiles = []
     # for each wig file, sample...
     for i in range(len(options.wig)):
+        info("Processing wig file: %s" %options.wig[i])
         bw = BigWigFile(open(options.wig[i], 'rb'))
         
         profile = []
