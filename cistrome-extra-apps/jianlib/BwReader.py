@@ -65,7 +65,7 @@ class BwIO:
                     })
             elif self.chromosomeTree['isLeaf'] == 0:
                 t = struct.unpack("=%ds" %self.chromosomeTree['keySize'] + "Q", bwfh.read(self.chromosomeTree['keySize'] + 8))
-                self.chromosomeTree['node'].append({
+                self.chromosomeTree['nodes'].append({
                     'key': t[0].rstrip('\x00'),
                     'childOffset': t[1],
                     })
