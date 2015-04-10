@@ -22,9 +22,18 @@ class BwIO:
         bwfh = self.bwfh
         
         #bbiHeader, 64 bytes
-        t = struct.unpack('=IHHQQQHHQQIQ', bwfh.read(64))
+        magic = bwfh.read(4)
+        if magic == '&\xfc\x8f\x88':
+            endianness = '<'
+        elif magic == '\x88\x8f\xfc&':
+            endianness = '>'
+        else:
+            raise IOError("The file is not in bigwig format")
+        t = struct.unpack(endianness + 'HHQQQHHQQIQ', bwfh.read(60))
         k = {}
-        k['magic'], k['version'], k['zoomLevels'], k['chromosomeTreeOffset'], k['fullDataOffset'], k['fullIndexOffset'], k['fieldCount'], k['definedFieldCount'], k['autoSqlOffset'], k['totalSummaryOffset'], k['uncompressBufSize'], k['reserved'] = t
+        k['version'], k['zoomLevels'], k['chromosomeTreeOffset'], k['fullDataOffset'], k['fullIndexOffset'], k['fieldCount'], k['definedFieldCount'], k['autoSqlOffset'], k['totalSummaryOffset'], k['uncompressBufSize'], k['reserved'] = t
+        if k['version'] < 3:
+            raise IOError("Bigwig files version <3 are not supported")
         self.bbiHeader = k
         
         #zoomHeaders, 24B, one for each zoomLevel
@@ -46,27 +55,34 @@ class BwIO:
 
         #chromosomeTree, 
         bwfh.seek(self.bbiHeader['chromosomeTreeOffset'])
-        t = struct.unpack("IIIIQQ", bwfh.read(32))
+        magic = bwfh.read(4)
+        if magic == '\x91\x8c\xcax':
+            endianness = '<'
+        elif magic == 'x\xca\x8c\x91':
+            endianness = '>'
+        else:
+            raise ValueError("Wrong magic for this bigwig data file")
+        t = struct.unpack(endianness + "IIIQQ", bwfh.read(28))
         k={}
-        k['magic'], k['blockSize'], k['keySize'], k['valSize'], k['itemCount'], k['reserved'] = t
+        k['blockSize'], k['keySize'], k['valSize'], k['itemCount'], k['reserved'] = t
         
-        t = struct.unpack("bbH", bwfh.read(4))
+        t = struct.unpack(endianness + "bbH", bwfh.read(4))
         k['isLeaf'], k['reserved'], k['count'] = t
         self.chromosomeTree = k
 
         self.chromosomeTree['nodes'] = []
         for i in range(self.chromosomeTree['itemCount']):
             if self.chromosomeTree['isLeaf'] == 1:
-                t = struct.unpack("=%ds" %self.chromosomeTree['keySize'] + "II", bwfh.read(self.chromosomeTree['keySize'] + 8))
+                t = struct.unpack(endianness + "%dsII" %self.chromosomeTree['keySize'], bwfh.read(self.chromosomeTree['keySize'] + 8))
                 self.chromosomeTree['nodes'].append({
-                    'key': t[0].rstrip('\x00'),
+                    'key': t[0].strip('\x00'),
                     'chromId': t[1],
                     'chromSize': t[2],
                     })
             elif self.chromosomeTree['isLeaf'] == 0:
-                t = struct.unpack("=%ds" %self.chromosomeTree['keySize'] + "Q", bwfh.read(self.chromosomeTree['keySize'] + 8))
+                t = struct.unpack(endianness + "%dsQ" %self.chromosomeTree['keySize'], bwfh.read(self.chromosomeTree['keySize'] + 8))
                 self.chromosomeTree['nodes'].append({
-                    'key': t[0].rstrip('\x00'),
+                    'key': t[0].strip('\x00'),
                     'childOffset': t[1],
                     })
         
