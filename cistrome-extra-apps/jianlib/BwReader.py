@@ -25,14 +25,14 @@ class BwIO:
         """
         cmd = 'bigWigChromList -chroms {bigwig}'
         output = os.popen(cmd.format(bigwig=filen)).read()
-        chrom_list = [line.strip() for line in output.strip().split('\n') if line.strip()]
         self.chromosomeTree = {}
         self.chromosomeTree['nodes'] = []
-        for chrom in chrom_list:
-            self.chromosomeTree['nodes'].append({'key': chrom})
-        #chrset = set([t['key'] for t in p.chromosomeTree['nodes']])
-        
-        
+        for line in output.strip().split('\n'):
+            line = line.strip()
+            if not line:
+                continue
+            chrom, length = line.split()
+            self.chromosomeTree['nodes'].append({'key': chrom, 'chromSize': int(length)})        
     
     def _outdated_Read(self, filen):
         self.bwfh = open(filen, 'rb')
