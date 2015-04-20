@@ -2,6 +2,7 @@
 
 ''' script to read bigwig, only read meta information.'''
 
+import os
 import struct
 #uint2 = 'H'
 #uint4 = 'I'
@@ -18,14 +19,30 @@ class BwIO:
             print "%s %s" %(i.ljust(30), getattr(self, i))
     
     def Read(self, filen):
+        """This function only get chromosome name in bigWig file.
+        Need to make  bigWigInfo.c to bigWigChromList to use this.
+        
+        """
+        cmd = 'bigWigChromList -chroms {bigwig}'
+        output = os.popen(cmd.format(bigwig=filen)).read()
+        chrom_list = [line.strip() for line in output.strip().split('\n') if line.strip()]
+        self.chromosomeTree = {}
+        self.chromosomeTree['nodes'] = []
+        for chrom in chrom_list:
+            self.chromosomeTree['nodes'].append({'key': chrom})
+        #chrset = set([t['key'] for t in p.chromosomeTree['nodes']])
+        
+        
+    
+    def _outdated_Read(self, filen):
         self.bwfh = open(filen, 'rb')
         bwfh = self.bwfh
         
         #bbiHeader, 64 bytes
         magic = bwfh.read(4)
-        if magic == '&\xfc\x8f\x88':
+        if magic == '\x26\xfc\x8f\x88':
             endianness = '<'
-        elif magic == '\x88\x8f\xfc&':
+        elif magic == '\x88\x8f\xfc\x26':
             endianness = '>'
         else:
             raise IOError("The file is not in bigwig format")
@@ -48,10 +65,27 @@ class BwIO:
                 })
         
         #totalSummary, 40B
-        t = struct.unpack("Qdddd", bwfh.read(40))
+        if self.bbiHeader['totalSummaryOffset'] != 0:
+            t = struct.unpack("Qdddd", bwfh.read(40))
+            k = {}
+            k['basesCovered'], k['minVal'], k['maxVal'], k['sumData'], k['sumSquares'] = t
+            self.totalSummary = k
+        else:
+            self.totalSummary = {}
+        
+        #extendedHeader
+        t = struct.unpack("HHQ", bwfh.read(12))
         k = {}
-        k['basesCovered'], k['minVal'], k['maxVal'], k['sumData'], k['sumSquares'] = t
-        self.totalSummary = k
+        k['extensionSize'], k['extraIndexCount'], k['extraIndexListOffset'] = t
+        k['reserved'] = bwfh.read(48)
+        self.extendedHeader = k
+        
+        #extraIndexList
+        #self.extraIndexList = []
+        #for i in range(self.extendedHeader['extraIndexCount']):
+        #    t = struct.unpack("HHQI", bwfh.read(16))
+        #    k = {'type': t[0], 'fieldCount': t[1], 'indexOffset': t[2], 'reserved': t[3]}
+        #    for j in range()
 
         #chromosomeTree, 
         bwfh.seek(self.bbiHeader['chromosomeTreeOffset'])
