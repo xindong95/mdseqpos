@@ -23,16 +23,15 @@ class BwIO:
         Need to make  bigWigInfo.c to bigWigChromList to use this.
         
         """
-        cmd = 'bigWigChromList -chroms {bigwig}'
+        cmd = 'bigWigInfo -chroms {bigwig}'
         output = os.popen(cmd.format(bigwig=filen)).read()
         self.chromosomeTree = {}
         self.chromosomeTree['nodes'] = []
         for line in output.strip().split('\n'):
-            line = line.strip()
-            if not line:
-                continue
-            chrom, length = line.split()
-            self.chromosomeTree['nodes'].append({'key': chrom, 'chromSize': int(length)})        
+            if line.startswith('\t') and line.strip():
+                line = line.strip()
+                chrom, chrom_id, length = line.split()
+                self.chromosomeTree['nodes'].append({'key': chrom, 'chromSize': int(length)})        
     
     def _outdated_Read(self, filen):
         self.bwfh = open(filen, 'rb')
