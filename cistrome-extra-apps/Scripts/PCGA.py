@@ -146,6 +146,7 @@ class PCA:
 
         count = 0
         flag_line = 0 # mark the position of genelist having read.
+        break_chrom = ''
         for peak in self.peakList:
             #if not re.findall("chr\d+", peak[0]):
             #    continue
@@ -153,6 +154,8 @@ class PCA:
             strandList = []
             disList = []
             chrom, pSummit, pName, pScore = peak[0], (int(peak[1])+int(peak[2]))/2, peak[3], peak[4]
+            if chrom == break_chrom:
+                continue
 
             flag_skip = 0 # use to optimize script.
             for gene in geneInfo[flag_line:]:
@@ -182,6 +185,11 @@ class PCA:
                 else:
                     if flag_skip == 0:
                         flag_line += 1
+                        if flag_line >= len(geneInfo):
+                            flag_skip = 0
+                            flag_line = 0
+                            break_chrom = chrom
+                            break
                     elif flag_skip == 1:
                         self.annotated.append([chrom, peak[1], peak[2], pName, pScore, '0', "|".join(geneList), "|".join(strandList), "|".join(disList)])
                         count += 1
