@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-11-04 14:15:51 sunhf>
+# Time-stamp: <2015-7-29 14:15:51 jian>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -28,11 +28,6 @@ import subprocess
 from CistromeAP.taolib.CoreLib.BasicStat.Func import * 
 from CistromeAP.jianlib.BwReader import BwIO
 
-try:
-    from bx.bbi.bigwig_file import BigWigFile
-except:
-    sys.stderr.write("Need bx-python!")
-    sys.exit()
 
 # ------------------------------------
 # constants
@@ -63,7 +58,7 @@ def main():
     usage = "usage: %prog <-r rfile> [options] <bigwig files> ..."
     description = "Draw correlation plot for many bigwig files. Based on qc_chIP_whole.py"
     
-    optparser = OptionParser(version="%prog 0.1",description=description,usage=usage,add_help_option=False)
+    optparser = OptionParser(version="%prog 0.2",description=description,usage=usage,add_help_option=False)
     optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
     #optparser.add_option("-d","--db",type="str",dest="dbname",help="UCSC db name for the assembly. Default: ce4",default="ce4")
     optparser.add_option("-r","--rfile",dest="rfile",
@@ -146,8 +141,9 @@ def main():
 
     # for each wig file, sample...
     for i in range(len(wigfiles)):
-        bw = BigWigFile(open(wigfiles[i],'rb'))
-        
+        #bw = BigWigFile(open(wigfiles[i],'rb'))
+        bw = BwIO(wigfiles[i])
+
         info("read wiggle track from bigwig file #%d" % (i+1))
         profile = []
         for chrom in chroms:
@@ -158,10 +154,11 @@ def main():
                 warn("A very-short chromosome (%s) found and skipped"%chrom)
                 continue
             
+            #summary = bw.summarize(chrom, 0, chrom_len[chrom], chrom_len[chrom]/options.step/1000)
             summary = bw.summarize(chrom, 0, chrom_len[chrom], chrom_len[chrom]/options.step/1000)
-            if not summary:
-                continue
-            profile_chr = summary.sum_data / summary.valid_count
+            #if summary is None:
+            #    continue
+            profile_chr = summary
             profile_chr = [str(t).replace('nan', 'NA') for t in profile_chr]
             profile.extend(profile_chr)
             

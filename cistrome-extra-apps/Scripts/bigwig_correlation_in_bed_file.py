@@ -1,5 +1,5 @@
 #!/usr/local/bin/env python
-# Time-stamp: <2011-07-22 13:45:10 Jian Ma>
+# Time-stamp: <2015-07-29 13:45:10 Jian Ma>
 
 """Description: Draw correlation plot for many wiggle files for a given bed file.
 
@@ -31,11 +31,6 @@ import subprocess
 #from CistromeAP.taolib.CoreLib.Parser import WiggleIO, BedIO
 from CistromeAP.taolib.CoreLib.BasicStat.Func import * 
 from CistromeAP.jianlib.BwReader import BwIO
-try:
-    from bx.bbi.bigwig_file import BigWigFile
-except:
-    sys.stderr.write("Need bx-python!")
-    sys.exit()
 
 # ------------------------------------
 # constants
@@ -92,7 +87,7 @@ file based on each bigwig files. The method can be chosen from -m
 option.
     """
     
-    optparser = OptionParser(version="%prog 0.2",description=description,usage=usage,add_help_option=False)
+    optparser = OptionParser(version="%prog 0.3",description=description,usage=usage,add_help_option=False)
     optparser.add_option("-h","--help",action="help",help="Show this help message and exit.")
     #optparser.add_option("-d","--db",type="str",dest="dbname",help="UCSC db name for the assembly. Default: ce4",default="ce4")
     optparser.add_option("-z","--imgsize",dest="imgsize",type="int",
@@ -182,7 +177,7 @@ option.
     # for each wig file, sample...
     for i in range(len(options.wig)):
         info("Processing wig file: %s" %options.wig[i])
-        bw = BigWigFile(open(options.wig[i], 'rb'))
+        bw = BwIO(options.wig[i])
         
         profile = []
         for k in index_all:
@@ -194,7 +189,7 @@ option.
                     pass
                 profile.append(None)
             else:
-                profile.append((summary.sum_data / summary.valid_count)[0])
+                profile.append(summary[0])
         profiles.append(profile)
     
     for i in range(len(profiles)):

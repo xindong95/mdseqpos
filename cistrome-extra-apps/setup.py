@@ -58,7 +58,6 @@ def main():
               'Scripts/prof_sort.py',
               'Scripts/PCGA.py',
               'Scripts/heatmapr',
-              'Scripts/heatmaprBW',
               'Scripts/bigwig_correlation_in_bed_file.py',
               'Scripts/bigwig_correlation.py',
               'Scripts/RegPotential.py',

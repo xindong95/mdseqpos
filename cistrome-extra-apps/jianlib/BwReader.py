@@ -4,12 +4,14 @@
 
 import os
 import struct
+import numpy
 #uint2 = 'H'
 #uint4 = 'I'
 #uint8 = 'Q'
 
 class BwIO:
     def __init__(self, filen = None):
+        self.fn = filen
         if filen:
             self.Read(filen)
     
@@ -33,6 +35,23 @@ class BwIO:
                 chrom, chrom_id, length = line.split()
                 self.chromosomeTree['nodes'].append({'key': chrom, 'chromSize': int(length)})        
     
+    def summarize(self, chrom, start, end, points):
+        '''return [float, nan, ...]
+        '''
+        if not self.fn:
+            return None
+        cmd = 'bigWigSummary {fn} {chrom} {start} {end} {count}'.format(fn=self.fn, chrom=chrom, start=start, end=end, count=points)
+        output = os.popen(cmd).read().strip()
+        if not output:
+            return []
+        dat = []
+        for each in output.split():
+            if each == 'n/a':
+                dat.append(numpy.nan)
+            else:
+                dat.append(float(each))
+        return dat
+        
     def _outdated_Read(self, filen):
         self.bwfh = open(filen, 'rb')
         bwfh = self.bwfh

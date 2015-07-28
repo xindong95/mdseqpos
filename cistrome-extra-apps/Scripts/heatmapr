@@ -51,6 +51,9 @@
 # (1) merge wig input and bigwig input into one file -> heatmapr.
 # (2) add --method=none, can do unsort heatmapr.
 
+#1.51
+#use bigWigSummary instead of bx-python
+
 # """
 
 import os, sys, re
@@ -63,15 +66,10 @@ import CistromeAP.jianlib.R as R
 import CistromeAP.jianlib.myfunc as jlib
 from CistromeAP.jianlib.BwReader import BwIO
 
-try:
-    from bx.bbi.bigwig_file import BigWigFile
-except:
-    sys.stderr.write("Need bx-python!")
-    sys.exit()
 
 #import func
 Info = jlib.Info
-VERSION = "1.50"
+VERSION = "1.51"
 
 class WigProfilerwBed:
     """WigProfiler for regions in Bed"""
@@ -372,7 +370,7 @@ def WigProfiler(opts, bed, wig, head_ref): # return a instance of WigProfilerwBe
     return siteprofs
 
 def bigwigProfiler(opts, bed, wig, head_ref):
-    bw = BigWigFile(open(wig, 'rb'))
+    bw = BwIO(wig) #BigWigFile(open(wig, 'rb'))
     siteprofs = []
     hf = opts.step/2
     for region in bed:
@@ -387,7 +385,7 @@ def bigwigProfiler(opts, bed, wig, head_ref):
         if not summary:
             siteprofs.append([0]*((end - start) / opts.step))
             continue
-        value = summary.sum_data / summary.valid_count
+        value = summary[:]
         value = [str(t).replace('nan','0') for t in value]
         if opts.dir and region[5] == '-':
                 value = value[::-1] #reverse if -

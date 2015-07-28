@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Time-stamp: <2011-07-15 21:12:20 Jian Ma>
+# Time-stamp: <2015-07-29 21:12:20 Jian Ma>
 
 """Description: Draw correlation plot for many wiggle files.
 
@@ -29,12 +29,8 @@ from optparse import OptionParser
 
 from CistromeAP.taolib.CoreLib.Parser import WiggleIO, BedIO
 from CistromeAP.taolib.CoreLib.BasicStat.Func import * 
+from CistromeAP.jianlib.BwReader import BwIO
 
-try:
-    from bx.bbi.bigwig_file import BigWigFile
-except:
-    sys.stderr.write("Need bx-python!")
-    sys.exit()
 
 # ------------------------------------
 # constants
@@ -158,7 +154,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width, pf_res ):
     for chrom in chrs:
         info("processing chromosome: %s" %chrom)
         pchrom = bed.peaks[chrom]
-        bw = BigWigFile(open(chrom+'.bw', 'rb'))
+        bw = BwIO(chrom+'.bw') #BigWigFile(open(chrom+'.bw', 'rb'))
         for i in range(len(pchrom)):
             mid = int((pchrom[i][0]+pchrom[i][1])/2)
             left = int(mid - width/2)
@@ -171,7 +167,7 @@ def extract_phastcons ( bedfile, phas_chrnames, width, pf_res ):
             summarize = bw.summarize(chrom, left, right, width/pf_res)
             if not summarize:
                 continue
-            dat = summarize.sum_data / summarize.valid_count
+            dat = summarize
             #dat = dat.strip().split('\t')
             sumscores.append(dat)
             
