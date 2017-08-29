@@ -127,7 +127,8 @@ class Bed(object):
         type_coversion={'int':'l','float':'d'}
         self.bed={}
         for line in f.xreadlines():
-            if line.startswith('track') or line=='' or line=='\n' or line.startswith('#') or line.startswith('browser'):continue
+            if line.startswith('track') or line.startswith('#') or line.startswith('browser') or not line.strip():
+                continue
             l=line.strip().split()
             
             # when new chromosome met, initialize the dictionary 

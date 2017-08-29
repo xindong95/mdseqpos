@@ -34,11 +34,7 @@ import CEAS.R as R
 import CEAS.inout as inout
 #from numpy import seterr
 
-try:
-    from bx.bbi.bigwig_file import BigWigFile
-except:
-    sys.stderr.write("Need bx-python!")
-    sys.exit()
+from CistromeAP.jianlib.BwReader import BwIO
 
 # ------------------------------------
 # constants
@@ -281,7 +277,7 @@ def main():
     
     for iw in range(len(opts.wig)):
         info('processing wig %s %s', iw, os.path.split(opts.wig[iw])[1])
-        bw = BigWigFile(open(opts.wig[iw], 'rb'))
+        bw = BwIO(opts.wig[iw]) #BigWigFile(open(opts.wig[iw], 'rb'))
         #avg_siteprofs = []
         ibed = 0
         for ib in range(len(opts.bed)):
@@ -297,7 +293,7 @@ def main():
                 if not summarize:
                     continue
                 valid_bedlist.append(line)
-                siteprof = summarize.sum_data/summarize.valid_count
+                siteprof = summarize
                 if len(line) >5: #if set --dir, reverse the profile.
                     if opts.dir and line[5] == '-':
                         siteprof = siteprof[::-1]
