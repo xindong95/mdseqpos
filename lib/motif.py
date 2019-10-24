@@ -18,9 +18,9 @@ try:
 except:
     import mdseqpos._seq as _seq
 
-import count
-from database import MotifParser
-import Prob
+import mdseqpos.count
+from .database import MotifParser
+from . import Prob
 
 def calc_pssm(sequences):
     """Given a list of sequences, e.g.
@@ -46,7 +46,7 @@ def calc_pssm(sequences):
                     tmp[3] += 1
             #Step 2: normalize the counts
             hit_sum = sum(tmp)
-            pssm.append(map(lambda ct: float(ct)/float(hit_sum), tmp))
+            pssm.append([float(ct)/float(hit_sum) for ct in tmp])
     return pssm
 
 def revcomp(s):
@@ -195,7 +195,7 @@ class Motif:
         #so far--ie. simply the index, and i is the score/fracpos index
         for numhits, i in enumerate(idx):
             if frac[i] > 1.0 or frac[i] < 0.0:                
-                raise(ValueError,"Fraction out of bounds %4.2f" % frac[i] )
+                raise ValueError
 
             cumfrac += frac[i]
             if numhits > MINHITS: #a valid number of sites have been computed
@@ -281,7 +281,7 @@ class Motif:
                _seq.seqscan(chip_regions.sequence, pssm, bgseqprob_mat,
                             markov_order, prob_option)
         #adjust score
-        adj_score = map(lambda s: math.log(s + MOTIFMIN), score)
+        adj_score = [math.log(s + MOTIFMIN) for s in score]
 
         #calculate the seqpos_results (stats)
         self.seqpos_stat(start, end, adj_score, width + margin)
@@ -414,7 +414,7 @@ class Motif:
             elms_list = ls[0].getElementsByTagName(singular_name) if ls else None
             if elms_list:
                 setattr(tmp, attr,
-                        map(Motif.getText, [e.childNodes for e in elms_list]))
+                        list(map(Motif.getText, [e.childNodes for e in elms_list])))
 
         pssm_node = dom_node.getElementsByTagName("pssm")
         if pssm_node:
@@ -562,7 +562,7 @@ class MotifList(list):
         """Filter the MotifList based on the pvalue and the max number
         of motifs allowed in the list. NOTE: this is non-destructive!
         """
-        sig_motifs = filter(lambda m: m.getpvalue() <= pvalcutoff, self)
+        sig_motifs = [m for m in self if m.getpvalue() <= pvalcutoff]
         if (maxmotifs != 0) and (len(sig_motifs) > maxmotifs):
             #sort and return top maxmotifs
             sorted_motifs = sorted(self, key = lambda elem: elem.getpvalue())
@@ -615,7 +615,7 @@ class MotifList(list):
                       'ce' : 'Caenorhabditis elegans',
                       'zv' : 'Danio rerio'}
         #MAP short names to long names
-        sl = map(lambda s: mapSpecies[s].lower(), species_list)
+        sl = [mapSpecies[s].lower() for s in species_list]
         motifs = []
         for m in self:
             #take the motif IFF species = [], OR an element in species is

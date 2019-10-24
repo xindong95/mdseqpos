@@ -109,7 +109,7 @@ def BLiC_score(M1,M2):
 def BLiC_score_aligned_old(M1, M2):
     
     A1 = numpy.zeros(M1.shape)
-    for i in xrange(M1.shape[0]): 
+    for i in range(M1.shape[0]): 
         sum_M1_i = M1[i].sum()
         if sum_M1_i != 0:
             A1[i] = M1[i] / sum_M1_i
@@ -205,11 +205,11 @@ def merge( M1, M2, shift, antisense, normalize=True ):
         else:
             M3 = A[ashift:ashift+n,:] + B 
     except:
-        print 'exception', A.shape, B.shape, A[ashift:ashift+n,:][::-1,::-1].shape 
+        print('exception', A.shape, B.shape, A[ashift:ashift+n,:][::-1,::-1].shape) 
 
     #scale each row
     if normalize == True:
-        for i in xrange(M3.shape[0]):
+        for i in range(M3.shape[0]):
             if M3[i].sum() != 0:
                 M3[i] /= M3[i].sum()
 

@@ -36,11 +36,11 @@ def read_known_motifs(motif_dbs, _DEBUG = False):
 
     known_motifs = MotifList()
     for db in motif_dbs:
-        if _DEBUG: print "loading (time): %s (%s)" % (db, time.ctime())
+        if _DEBUG: print("loading (time): %s (%s)" % (db, time.ctime()))
         tmp = MotifList()
         tmp.from_xml_file(os.path.join(DATA_DIR, db))
         known_motifs.extend(tmp)
-        if _DEBUG: print "load Complete (time): %s (%s)" % (db, time.ctime())
+        if _DEBUG: print("load Complete (time): %s (%s)" % (db, time.ctime()))
     return known_motifs
 
 def seqpos_cluster_known_motifs(known_motifs, chip_regions, width, cutoff):
@@ -61,7 +61,7 @@ def seqpos_cluster_known_motifs(known_motifs, chip_regions, width, cutoff):
                 cluster_motifs[cid] = [id2motif[mid]]
     
     fitered_motifs = []
-    for motifs in cluster_motifs.values():
+    for motifs in list(cluster_motifs.values()):
         m0 = motifs[0]
         m0.seqpos(chip_regions, width)
         if m0.seqpos_results['pvalue'] <= cutoff:
@@ -86,10 +86,10 @@ def pssm_to_fasta(pssm, fastafilename, n=1000):
     """Generate a fastafile that approximates the base frequences of the pssm"""
     base = ('A', 'C', 'G', 'T')
     fastafile = open(fastafilename, 'w')
-    for seqnum in xrange(n):
+    for seqnum in range(n):
         seqstr = "".join(base[sample(p)] for p in pssm)
-        print >> fastafile, ">%d" % seqnum
-        print >> fastafile, seqstr
+        print(">%d" % seqnum, file=fastafile)
+        print(seqstr, file=fastafile)
     fastafile.close()
 
 def reverse_pssm(pssm):
@@ -312,9 +312,9 @@ def calc_motif_dist_pcc(motifList):
             
 def main():
     #ALWAYS PRINT OUT VERSION INFO: 
-    print mdseqpos.__version__
-    print 'Library path:', mdseqpos.__file__
-    print 
+    print(mdseqpos.__version__)
+    print('Library path:', mdseqpos.__file__)
+    print() 
     
     USAGE = """USAGE: MDSeqPos.py [options] BEDFILE GENOME
     
@@ -359,10 +359,10 @@ def main():
     output_dir = opts.output_directory
 
     #READ in the regions that are specified in the BED file
-    print "read regions start time: %s" % time.ctime()
+    print("read regions start time: %s" % time.ctime())
     #HERE we should rely on a standard package to read in bed files; stub it
     chip_regions = ChipRegions(bedfile_name, genome, genome_dir=opts.genome_dir)
-    print "read regions end time: %s" % time.ctime()
+    print("read regions end time: %s" % time.ctime())
 
     #LOAD the motifs (both known and denovo)
     known_motifs, new_motifs = None, None
@@ -371,13 +371,13 @@ def main():
         known_motifs = read_known_motifs(motif_dbs, _DEBUG)
 
     if opts.denovo:
-        print "starting denovo search...(time: %s)" % time.ctime()
+        print("starting denovo search...(time: %s)" % time.ctime())
         new_motifs = chip_regions.mdmodule(width=int(opts.width))
-        print "completed denovo search...(time: %s)" % time.ctime()
+        print("completed denovo search...(time: %s)" % time.ctime())
         new_motifs.save_to_xml(os.path.join(output_dir, opts.new_motifs))
         
     #Run seqpos stats on all_motifs
-    print "starting seqpos stats...(time: %s)" % time.ctime()
+    print("starting seqpos stats...(time: %s)" % time.ctime())
     if new_motifs:
         for m in new_motifs:
             m.seqpos(chip_regions, width=int(opts.width))
@@ -386,7 +386,7 @@ def main():
     elif known_motifs:
         for m in known_motifs:
             m.seqpos(chip_regions, width=int(opts.width))
-    print "completed seqpos stats...(time: %s)" % time.ctime()
+    print("completed seqpos stats...(time: %s)" % time.ctime())
 
     #Combine both known and new motifs
     all_motifs = None

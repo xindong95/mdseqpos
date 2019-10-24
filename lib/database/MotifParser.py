@@ -40,13 +40,13 @@ def FixPssm(p):
     1) Make each position sum to 1.
     2) The min number in matrix should be at least 0.01
     """
-    for k in p.motifs.keys():
+    for k in list(p.motifs.keys()):
         for pssm in p.motifs[k]['pssm']:
             for row in pssm:
                 rsum = sum([float(t) for t in row])
                 for t in range(len(row)):
-                    row[t] = round(float(row[t]) / rsum, 3)
-                    if row[t] < 0.01:
+                    row[t] = round(float(row[t])/rsum,3)
+                    if row[t]<0.01:
                         row[t] = 0.01
                 imax = row.index(max(row))
                 row[imax] -= sum(row)-1
@@ -506,11 +506,11 @@ class MotifParser:
                 motif_string.append("|%6d"%(i+1,) + "  %3.3f  %3.3f  %3.3f  %3.3f\n" %tuple(imatrix[i]))
             motif_string.append("\n")
             
-        print List2Str(motif_string,"")
+        print(List2Str(motif_string,""))
 
     def Patch(self, mp2): #marked as not useful
         """patch motif in mp2 to self, simply replace the motif in self, identified by motif id."""
-        for item in mp2.motifs.items():
+        for item in list(mp2.motifs.items()):
             self.motifs[item[0]] = item[1]
             
     def __add__(self, mp2):
@@ -525,9 +525,9 @@ class MotifParser:
         res_motifs.all_list = self.all_list[:]
         
         temp_dict = {}
-        for i in self.motifs.keys():
+        for i in list(self.motifs.keys()):
             temp_dict[i] = self.motifs[i].copy()
-        for i in mp2.motifs.keys():
+        for i in list(mp2.motifs.keys()):
             temp_dict[i] = mp2.motifs[i].copy()
         #res_motifs.motifs.update(self.motifs)
         #res_motifs.motifs.update(mp2.motifs)
@@ -546,7 +546,7 @@ class MotifParser:
         res_motifs.all_list = self.all_list[:]
 
         res_motifs.motifs = self.motifs.copy()
-        motif_id_list = res_motifs.motifs.keys()
+        motif_id_list = list(res_motifs.motifs.keys())
         for i in mp2.motifs:
             if i in motif_id_list:
                 del(res_motifs.motifs[i])
@@ -803,7 +803,7 @@ class MotifParser:
         """
         if not os.path.exists(folder):
             os.mkdir(folder)
-        for i in self.motifs.values():
+        for i in list(self.motifs.values()):
             filen = os.path.join(folder, List2Str(i[self.keyName])+'.pwm')
             if len(i['pssm'])!=1:
                 logger.warning('%s may have %d pssm.'%(i[self.keyName][0], len(i['pssm'])))
@@ -899,7 +899,7 @@ class MotifParser:
         from parser_ying import base_ying
         import numpy
         motiflist = base_ying.MotifList()
-        for each in self.motifs.values():
+        for each in list(self.motifs.values()):
             pm = base_ying.Motif()
             pm.id = each['id'][0]
             pm.status = None
@@ -924,7 +924,7 @@ class MotifParser:
             if each['pssm']:
                 pm.pssm = numpy.array(each['pssm'][0], float)
                 if pm.pssm.shape[1] != 4:
-                    raise ValueError, "motif PSSM must have 4 columns"
+                    raise ValueError("motif PSSM must have 4 columns")
             pm.numseqs = None
             pm.curators = []
             pm.results = None

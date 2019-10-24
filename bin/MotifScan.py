@@ -34,7 +34,7 @@ FASTA_DIR = '.'
 
 if __name__ == '__main__':
     #ALWAYS PRINT OUT VERSION INFO: 
-    print mdseqpos.__version__
+    print(mdseqpos.__version__)
 
     # parse command line arguments
     # 

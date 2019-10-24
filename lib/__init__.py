@@ -1,10 +1,10 @@
 import os
-import ConfigParser
+import configparser
 
 #THE following line is cool b/c it allows us to introspect the module!
 from . import __path__ as _DEPLOY_DIR
 
-_configParser = ConfigParser.ConfigParser()
+_configParser = configparser.ConfigParser()
 _changeset = "Unknown"
 if len(_configParser.read(os.path.join(_DEPLOY_DIR[0], "pkg.cfg"))) != 0:
     _changeset = _configParser.get("pkg_info", "hg_changeset")

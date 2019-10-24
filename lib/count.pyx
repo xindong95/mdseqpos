@@ -1,3 +1,5 @@
+# cython: language_level=3
+
 import sys    
 import math
 #sys.path.append( '/cluster/homes/cliff/PYTHON/cistrome' )
@@ -25,9 +27,9 @@ def permutations(items, n):
 
 #sort a dictionary
 def sortdict(adict):
-        keys = adict.keys()
+        keys = list(adict.keys())
         keys.sort()
-        return map(adict.get, keys)
+        return list(map(adict.get, keys))
 
 nucleotides = ['A', 'C', 'G', 'T'] 
 

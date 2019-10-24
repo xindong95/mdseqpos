@@ -14,15 +14,15 @@ from copy import deepcopy
 import numpy
 
 try:
-    from _MDmod import MDmod
+    import _MDmod
     import _seq
 except:
-    from mdseqpos._MDmod import MDmod
+    import mdseqpos._MDmod as MDmod
     import mdseqpos._seq as _seq
 
-import motif
-import settings
-import count
+from . import motif
+from . import settings
+import mdseqpos.count
 
 #NOTE: this should maybe be moved to lenlib.core.regions - for maximum reuse
 class ChipRegions:
@@ -84,7 +84,7 @@ class ChipRegions:
         build_dir = self.genome_dir if self.genome_dir else os.path.join(settings.ASSEMBLY_DIR,
                                  settings.BUILD_DICT[self.genome])
         #SORT the reads so that we're more efficient about our File I/O
-        tuples = zip(range(len(self.chrom)), self.chrom, self.start, self.end)
+        tuples = list(zip(list(range(len(self.chrom))), self.chrom, self.start, self.end))
         #sort by chr and then start
         sorted_tuples = sorted(tuples, key=itemgetter(1,2))
 
@@ -106,7 +106,7 @@ class ChipRegions:
                     fpchr = open(chr_file, 'r')
                     last_file = chr_file
                 except:
-                    print "Could not open file:", chr_file
+                    print("Could not open file:", chr_file)
                     unsorted_seq.append((order, None))
                     continue
             else: #continue using same fpchr
@@ -177,7 +177,7 @@ class ChipRegions:
                 try:
                     fpchr = open(chr_file, 'r')
                 except:
-                    print "Could not open file: %s ignoring:%s,%s,%s" % (chr_file, chr, left, right)
+                    print("Could not open file: %s ignoring:%s,%s,%s" % (chr_file, chr, left, right))
                     #NOTE: Should be ignored--not set to None
                     #self.sequence.append(None)
                     continue
@@ -190,7 +190,7 @@ class ChipRegions:
                 try:
                     fpchr = open(chr_file, 'r')
                 except:
-                    print "Could not open file: %s--ignoring:%s,%s,%s" % (chr_file, chr, left, right)
+                    print("Could not open file: %s--ignoring:%s,%s,%s" % (chr_file, chr, left, right))
                     #NOTE: Should be ignored--not set to None
                     #self.sequence.append(None)
                     continue
@@ -207,21 +207,21 @@ class ChipRegions:
             try:
                 fpchr.seek(start + here - 25)
             except:
-                print 'WARNING: requesting invalid chr location before chromoso\
-me start', start, here, left, right, line_len, x
+                print('WARNING: requesting invalid chr location before chromoso\
+me start', start, here, left, right, line_len, x)
                 fpchr.close()
                 continue
             try:
                 fpchr.seek(stop + here + 25)
             except:
-                print 'WARNING: requesting invalid chr location over chromosome\
- end', stop, here, left, right, line_len, x
+                print('WARNING: requesting invalid chr location over chromosome\
+ end', stop, here, left, right, line_len, x)
                 fpchr.close()
                 continue
 
             fpchr.seek(start + here)
 
-            seq = fpchr.read(stop - start)
+            seq = fpchr.read(int(stop - start))
             seq = seq.replace('\n', '')
             self.sequence.append(seq.upper())
             fpchr.close()
@@ -252,7 +252,7 @@ me start', start, here, left, right, line_len, x
 
         Adapted from Cliff Meyer's ChIP_region.TrimBed() method."""
         half_length = length / 2.0
-        for i in xrange(len(self.chrom)):
+        for i in range(len(self.chrom)):
             midpoint = (self.chromStart[i] + self.chromEnd[i]) / 2.0
             self.chromStart[i] = int(midpoint - half_length)
             self.chromEnd[i] = int(midpoint + half_length)
