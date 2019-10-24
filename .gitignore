@@ -3,3 +3,6 @@ build/
 build/*
 *.pyc
 lib/pkg.cfg
+lib/count.c
+
+
