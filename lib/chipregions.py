@@ -24,7 +24,7 @@ from . import motif
 from . import settings
 import mdseqpos.count
 
-print(MDmod)
+
 #NOTE: this should maybe be moved to lenlib.core.regions - for maximum reuse
 class ChipRegions:
     """A class for ChIP regions.

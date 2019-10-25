@@ -9,6 +9,7 @@ Modiied by: Jian Ma 2014-04-14
 import math
 import numpy
 import mdseqpos
+# from numpy import NaN
 #import MotifParser as mp
 
 def sum_IC(m1):
@@ -191,7 +192,7 @@ def motif_hcluster(motif_list, cutoff):
     
     #find index of the max score
     while 1:
-        max_score = cluster_score_mat.max()
+        max_score = numpy.nanmax(numpy.array(cluster_score_mat, dtype=numpy.float64))
         mshape = cluster_score_mat.shape
         max_index = (999, 999)
         findit = False
@@ -286,7 +287,7 @@ def motif_hcluster2(motif_list, cutoff):
     while 1:
         if not cluster_score_mat.any():
             break
-        max_score = cluster_score_mat.max()
+        max_score = numpy.nanmax(numpy.array(cluster_score_mat, dtype=numpy.float64)) # convert None to numpy.nan since None will cause error in python3
         mshape = cluster_score_mat.shape
         max_index = (999, 999)
         findit = False

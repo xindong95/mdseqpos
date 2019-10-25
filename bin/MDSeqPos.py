@@ -243,6 +243,7 @@ def save_to_html_plain(output_dir, motifList, distCutoff):
     #    outf.close()
     
     #collapse motifs
+    print(mlist, distCutoff)
     flat_clusters = pmc.motif_hcluster2(mlist, distCutoff)
     flat_clusters.sort(key = lambda x: min([t.getzscore() for t in x]))
     
@@ -362,7 +363,6 @@ def main():
     #HERE we should rely on a standard package to read in bed files; stub it
     chip_regions = ChipRegions(bedfile_name, genome, genome_dir=opts.genome_dir)
     print("read regions end time: %s" % time.ctime())
-    print(chip_regions)
     #LOAD the motifs (both known and denovo)
     known_motifs, new_motifs = None, None
     if opts.known_motifs:

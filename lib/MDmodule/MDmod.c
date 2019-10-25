@@ -347,7 +347,7 @@ static PyObject *pyError;
  ******************************/
 
 static PyMethodDef myMethods[] = {
-    { "MDmod", MDmod, METH_VARARGS|METH_KEYWORDS, MDMOD_DOC},
+    { "MDmod", (PyCFunction)MDmod, METH_VARARGS|METH_KEYWORDS, MDMOD_DOC},
     { NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -401,13 +401,13 @@ static struct PyModuleDef _MDmod =
 PyMODINIT_FUNC PyInit__MDmod(void)
 {
   PyObject *m;
-    PyObject *tmp;
+  PyObject *tmp;
   /*import_array();*/
   m=PyModule_Create(&_MDmod);
   pyError = PyErr_NewException("MDmod.error", NULL, NULL);
-    Py_INCREF(pyError);
-    PyModule_AddObject(m, "error", pyError);
-    return m;
+  Py_INCREF(pyError);
+  PyModule_AddObject(m, "error", pyError);
+  return m;
 };
 
 /******************************
@@ -824,7 +824,7 @@ void readSeqFile(PyObject *listObj, int isSeq, struct sequence **seqs, struct
         strObj = PyList_GetItem(listObj, i); /* Can't fail */
  
         /* make it a string */
-        line = PyUnicode_AsUnicode( strObj );
+        line = PyUnicode_AsUTF8( strObj );
         /*fprintf( stdout, "%s\n", line );*/
 
 
