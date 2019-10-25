@@ -243,7 +243,6 @@ def save_to_html_plain(output_dir, motifList, distCutoff):
     #    outf.close()
     
     #collapse motifs
-    print(mlist, distCutoff)
     flat_clusters = pmc.motif_hcluster2(mlist, distCutoff)
     flat_clusters.sort(key = lambda x: min([t.getzscore() for t in x]))
     
