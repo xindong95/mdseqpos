@@ -18,7 +18,7 @@ try:
 except:
     import mdseqpos._seq as _seq
 
-import mdseqpos.count
+import mdseqpos.count as count
 from .database import MotifParser
 from . import Prob
 
@@ -225,7 +225,7 @@ class Motif:
 
         #sample numBins = 50 at regular intervals along meanSldAvg
         chunk = len(meanSldAvg)/numBins
-        binAvg = [meanSldAvg[chunk*i] for i in range(numBins-1)]
+        binAvg = [meanSldAvg[int(chunk*i)] for i in range(numBins-1)]
         #last one:
         binAvg.append(meanSldAvg[-1])
 

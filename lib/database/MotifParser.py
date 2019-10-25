@@ -76,7 +76,7 @@ def flatTreeDictToList(root):
 	"""
 	
 	result = []
-	if 'node' not in root.keys():
+	if 'node' not in list(root.keys()):
 		return []
 	if not root['node']:
 		return result
@@ -267,7 +267,7 @@ class MotifParser:
         """
         self.motifs[mid] = {} 
         for i in self.all_list:
-            if i in argv.keys():
+            if i in list(argv.keys()):
                 self.motifs[mid][i] = argv[i][:]
             else:
                 self.motifs[mid][i] = []
@@ -291,7 +291,7 @@ class MotifParser:
             if not key:
                 logger.error('No %s found for node.' %self.keyName)
                 return None
-            if key in self.motifs.keys():
+            if key in list(self.motifs.keys()):
                 logger.warning("%s has exist in instance."%key)
             self.motifs[key] = {}
 
@@ -340,7 +340,7 @@ class MotifParser:
         for line in inf:
             linel = line.rstrip('\n').split('\t')
             key = linel[headIndex[self.keyName]] #eg. key = MA00004
-            if key in self.motifs.keys():
+            if key in list(self.motifs.keys()):
                 logger.warning("%s has exist in instance"%key)
             self.motifs[key] = {}
 
@@ -408,7 +408,7 @@ class MotifParser:
             startid_suf += 1
 
         if collapse:
-            motiflist = self.motifs.values()
+            motiflist = list(self.motifs.values())
             motiflist = sorted(motiflist, key=lambda x: x['zscore'])
             new_motiflist = []
             while motiflist:
@@ -425,7 +425,7 @@ class MotifParser:
             for m in new_motiflist:
                 self.motifs[m['id'][0]] = m
         
-        for k in self.motifs.keys():
+        for k in list(self.motifs.keys()):
             self.motifs[k]['zscore'] = ['%.4f' %self.motifs[k]['zscore'][0]]
 
     def ViewSeqLogo(self, mid):
@@ -447,7 +447,7 @@ class MotifParser:
             logger.error("Not support to get pssm. you can use MP.ToTable()")
             return ''
         res = []
-        for i in self.motifs.values():
+        for i in list(self.motifs.values()):
             if attr == 'symbol':
                 res.extend(i[attr])
             else:
@@ -465,16 +465,16 @@ class MotifParser:
         e.g) MP2 = MP.SearchMotif(species="Homo sapiens",source="JASPAR")
         """
         logger.debug('attrs ' + str(attrs))
-        for i in attrs.keys():
+        for i in list(attrs.keys()):
             if i not in self.all_list:
                 logger.error("Wrong input attr:%s, select attr from:\n: %s" %(i, List2Str(self.attr_list+self.tag_list, ",")))
                 return None
         sub_motifs = MotifParser() #self
         sub_motifs.motifs = self.motifs
 
-        for attr in attrs.items():
+        for attr in list(attrs.items()):
             temp_dict = {}
-            for i in sub_motifs.motifs.items():
+            for i in list(sub_motifs.motifs.items()):
                 if not attr[1] and not i[1][attr[0]]: #search for empty
                     temp_dict[i[0]] = i[1].copy()
                 elif attr[1].upper() in (SEP.join(i[1][attr[0]])).upper().replace('::',SEP).split(SEP):
@@ -487,7 +487,7 @@ class MotifParser:
         """Return a specific motif in a formatted string and readable type.
         e.g) MP.String("M00913")
         """
-        if mid in self.motifs.keys():
+        if mid in list(self.motifs.keys()):
             dMotif = self.motifs[mid]
         else:
             logger.error("Can't find Motif ID: %s" %mid)
@@ -506,7 +506,7 @@ class MotifParser:
                 motif_string.append("|%6d"%(i+1,) + "  %3.3f  %3.3f  %3.3f  %3.3f\n" %tuple(imatrix[i]))
             motif_string.append("\n")
             
-        print(List2Str(motif_string,""))
+        print((List2Str(motif_string,"")))
 
     def Patch(self, mp2): #marked as not useful
         """patch motif in mp2 to self, simply replace the motif in self, identified by motif id."""
@@ -558,7 +558,7 @@ class MotifParser:
         rscript = open(os.path.join(folder, rfile),"w")
         rscript.write('setwd("%s")\n' %folder)
         rscript.write('library("seqLogo")\n')
-        for each in self.motifs.keys():
+        for each in list(self.motifs.keys()):
             pssm = self.motifs[each]['pssm']
             if not pssm:
                 continue
@@ -586,7 +586,7 @@ class MotifParser:
         motifs = doc.createElement("motifs")
         doc.appendChild(motifs)
         
-        t_motifs = self.motifs.values()
+        t_motifs = list(self.motifs.values())
         if sortkey:
             t_motifs.sort(key=sortkey)
         else:
@@ -776,7 +776,7 @@ class MotifParser:
         pssm_index = self.all_list.index("pssm")
         outf = open(tabfile,'w')
         outf.write(List2Str(self.all_list, "\t")+"\n")
-        t_motifs = self.motifs.values()
+        t_motifs = list(self.motifs.values())
         if sortkey:
             t_motifs.sort(key=sortkey)
         else:
@@ -823,13 +823,13 @@ class MotifParser:
         **From left to right, the lines is T, C, G, A. 
         """
         outf = open(filen, 'w')
-        for k in self.motifs.keys():
+        for k in list(self.motifs.keys()):
             outf.write(k + '\n')
             pssm = self.motifs[k]['pssm']
             if len(pssm) != 1:
                 logger.warning('%s may have %d pssm.'%(k, len(pssm)))
             pssm = pssm[0]
-            pssm = zip(*pssm)
+            pssm = list(zip(*pssm))
             pssm_in_mis = ['', '', '', '']
             mapping = {0:3, 1:1, 2:2, 3:0} # A:0->3 C:1->1 G:2->2 T:3->0
             for i, b in enumerate(pssm):

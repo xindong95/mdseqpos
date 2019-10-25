@@ -14,16 +14,17 @@ from copy import deepcopy
 import numpy
 
 try:
-    import _MDmod
+    from _MDmod import MDmod
     import _seq
 except:
-    import mdseqpos._MDmod as MDmod
+    from mdseqpos._MDmod import MDmod
     import mdseqpos._seq as _seq
 
 from . import motif
 from . import settings
 import mdseqpos.count
 
+print(MDmod)
 #NOTE: this should maybe be moved to lenlib.core.regions - for maximum reuse
 class ChipRegions:
     """A class for ChIP regions.
@@ -207,15 +208,13 @@ class ChipRegions:
             try:
                 fpchr.seek(start + here - 25)
             except:
-                print('WARNING: requesting invalid chr location before chromoso\
-me start', start, here, left, right, line_len, x)
+                print('WARNING: requesting invalid chr location before chromosome start', start, here, left, right, line_len, x)
                 fpchr.close()
                 continue
             try:
                 fpchr.seek(stop + here + 25)
             except:
-                print('WARNING: requesting invalid chr location over chromosome\
- end', stop, here, left, right, line_len, x)
+                print('WARNING: requesting invalid chr location over chromosome end', stop, here, left, right, line_len, x)
                 fpchr.close()
                 continue
 
@@ -289,6 +288,7 @@ me start', start, here, left, right, line_len, x)
         # scan for motifs
         for motif_width in motif_widths:
             raw_pssms = MDmod(i=input.sequence, b=background.sequence, w=motif_width, t=50, s=50, n=100, r=10)
+            # print(raw_pssms)
             for raw_pssm in raw_pssms:
                 motif_id = 'denovo%d' % len(motifs)
                 tmp = motif.Motif()

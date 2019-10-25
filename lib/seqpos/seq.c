@@ -1,5 +1,6 @@
 #include <Python.h>
 /*#include <Numeric/arrayobject.h>*/
+// #include <py3c.h>
 #include <numpy/arrayobject.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -76,14 +77,14 @@ static PyObject *seqscan(PyObject *self, PyObject *args)
                         -146944 , -136673 , -149957 , -128074 , 
                         -113112 , -125407 , -124022 , -93492 };
 
-    if (! PyArg_ParseTuple( args, "O!O!O!O!i", &PyList_Type, &listObj, &PyArray_Type, &pssmArrayObj, &PyList_Type, &listBG, &PyInt_Type, &orderBG, &prob_option ) )
+    if (! PyArg_ParseTuple( args, "O!O!O!O!i", &PyList_Type, &listObj, &PyArray_Type, &pssmArrayObj, &PyList_Type, &listBG, &PyLong_Type, &orderBG, &prob_option ) )
         return NULL;
 
     if ( pssmArrayObj == NULL )
         return NULL;        
  
     /* get the background frequencies from listBG */
-    bgmkv = PyInt_AsLong(orderBG);
+    bgmkv = PyLong_AsLong(orderBG);
     //fprintf(stdout, "%d\n", bgmkv);    
 
     /* give new background probabilities */
@@ -92,17 +93,17 @@ static PyObject *seqscan(PyObject *self, PyObject *args)
         
         for( i = 0; i < 4; i++){ 
             strObj = PyList_GetItem(listBG, i);
-            bgprob[i] = PyInt_AsLong( strObj );
+            bgprob[i] = PyLong_AsLong( strObj );
         }
         
         for( i = 4; i < 20; i++){ 
             strObj = PyList_GetItem(listBG, i);
-            cond2g1[i - 4] = PyInt_AsLong( strObj );
+            cond2g1[i - 4] = PyLong_AsLong( strObj );
         }
         
         for( i = 20; i < 84; i++){ 
             strObj = PyList_GetItem(listBG, i);
-            cond3g2[i - 20] = PyInt_AsLong( strObj );
+            cond3g2[i - 20] = PyLong_AsLong( strObj );
         }
 
     }
@@ -127,7 +128,7 @@ static PyObject *seqscan(PyObject *self, PyObject *args)
     if ( motifLength == 1 )
         return PyErr_Format( PyExc_RuntimeError, "Incorrect motif length (%d)", motifLength );
     if ( pssmArrayObj->dimensions[1] != 4 )
-        //return PyErr_Format( PyExc_RuntimeError, "Incorrect PSSM dimension not 4 (%ld)", PyInt_AsLong(pssmArrayObj->dimensions[1]) );
+        //return PyErr_Format( PyExc_RuntimeError, "Incorrect PSSM dimension not 4 (%ld)", PyLong_AsLong(pssmArrayObj->dimensions[1]) );
         return PyErr_Format( PyExc_RuntimeError, "Incorrect PSSM dimension not 4 (%d)", motifBases);
 
     pssm_p = ( float ** )malloc( motifLength*sizeof( float * ) );
@@ -152,7 +153,7 @@ static PyObject *seqscan(PyObject *self, PyObject *args)
         strObj = PyList_GetItem(listObj, i); /* Can't fail */
  
         /* make it a string */
-        line = PyString_AsString( strObj );
+        line = PyUnicode_AsUTF8( strObj );
 
         for( numChars = 0; line[numChars]; numChars++ ){}
         seqarray[i]  = (int *)malloc((numChars)*sizeof(int));
@@ -260,15 +261,24 @@ static PyObject *seqscan(PyObject *self, PyObject *args)
 }
 
 PyMethodDef myMethods[] = {
-    { "seqscan", seqscan, METH_VARARGS, SEQSCAN_DOC },
+    { "seqscan", (PyCFunction)seqscan, METH_VARARGS, SEQSCAN_DOC },
     { NULL, NULL, 0, NULL }
 };
 
-void init_seq(void)
+static struct PyModuleDef _seq =
+{
+    PyModuleDef_HEAD_INIT,
+    "_seq", /* name of module */
+    SEQSCAN_DOC, /* module documentation, may be NULL */
+    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    myMethods,
+};
+
+PyMODINIT_FUNC PyInit__seq(void)
 {       
     PyObject *m,*d;
     PyObject *tmp;
-    m=Py_InitModule("_seq", myMethods);
+    m=PyModule_Create(&_seq);
     import_array();
     pyError = PyErr_NewException("seq.error", NULL, NULL);
     Py_INCREF(pyError);
@@ -276,24 +286,26 @@ void init_seq(void)
 
     d = PyModule_GetDict(m);
 
-    tmp = PyInt_FromLong(MAX_OPTION);
+    tmp = PyLong_FromLong(MAX_OPTION);
     PyDict_SetItemString(d,"MAX_OPTION",tmp);
     Py_DECREF(tmp);
 
-    tmp = PyInt_FromLong(MEAN_OPTION);
+    tmp = PyLong_FromLong(MEAN_OPTION);
     PyDict_SetItemString(d,"MEAN_OPTION",tmp);
     Py_DECREF(tmp);
 
-    tmp = PyInt_FromLong(CUTOFF_OPTION);
+    tmp = PyLong_FromLong(CUTOFF_OPTION);
     PyDict_SetItemString(d,"CUTOFF_OPTION",tmp);
     Py_DECREF(tmp);
 
-    tmp = PyInt_FromLong(MINSCORE);
+    tmp = PyLong_FromLong(MINSCORE);
     PyDict_SetItemString(d,"MINSCORE",tmp);
     Py_DECREF(tmp);
 
-    tmp = PyInt_FromLong(MAXMOTIFS);
+    tmp = PyLong_FromLong(MAXMOTIFS);
     PyDict_SetItemString(d,"MAXMOTIFS",tmp);
     Py_DECREF(tmp);
+
+    return m;
 
 }

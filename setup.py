@@ -16,7 +16,7 @@ def check_pkg_dependencies():
         import numpy
         NUMPY_PATH = numpy.__path__[0]
         #print NUMPY_PATH
-    except ImportError, e:
+    except ImportError as e:
         sys.stderr.write("CRITICAL: numpy 1.3 or greater must be installed\n")
         sys.exit(1)
 
@@ -99,7 +99,7 @@ def main():
                                        'twoBitToFa')
         os.chmod(seqlogo_path, file_exe_perm)
         os.chmod(twoBitToFa_path, file_exe_perm)
-    except ImportError, e:
+    except ImportError as e:
         pass
     
 if __name__ == '__main__':

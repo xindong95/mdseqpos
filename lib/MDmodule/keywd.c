@@ -30,8 +30,17 @@ static PyMethodDef keywdarg_methods[] = {
     {NULL,  NULL}   /* sentinel */
 };
 
-void init_keywdarg(){
-/* Create the module and add the functions */
-    Py_InitModule("_keywdarg", keywdarg_methods);
+static struct PyModuleDef _keywdarg =
+{
+    PyModuleDef_HEAD_INIT,
+    "_keywdarg", /* name of module */
+    "", /* module documentation, may be NULL */
+    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    keywdarg_methods,
+};
+
+PyMODINIT_FUNC PyInit__keywdarg(void)
+{
+    return PyModule_Create(&_keywdarg);
 }
 

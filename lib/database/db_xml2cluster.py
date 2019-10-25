@@ -6,15 +6,15 @@
 Require PWMclus
 """
 
-import MotifParser as mp
+from . import MotifParser as mp
 import os
 
 motifdb = 'cistrome.xml'
 p = mp.MotifParser(motifdb)
 
-print 'Create tmp file for PWMclus input'
+print('Create tmp file for PWMclus input')
 outf = open('tmp_pwmclus.tmp', 'w')
-for k in p.motifs.keys():
+for k in list(p.motifs.keys()):
     outf.write('>%s\n' %(k, ))
     for line in p.motifs[k]['pssm'][0]:
         outf.write('\t'.join([str(mm) for mm in line]))
@@ -22,10 +22,10 @@ for k in p.motifs.keys():
     outf.write('\n')
 outf.close()
 
-print 'Running PWMclus to generate clusters'
+print('Running PWMclus to generate clusters')
 os.system('PWMclus -in tmp_pwmclus.tmp -out tmp_ -linkage c')
 
-print 'Format output file'
+print('Format output file')
 count = 0
 outf = open('cistrome.cluster', 'w')
 for line in open('tmp_.clusters').readlines():
@@ -35,9 +35,9 @@ for line in open('tmp_.clusters').readlines():
         outf.write("%s\t%s\n"%(il, cid))
     count += 1
 outf.close()
-print 'Clusters x%d' %count
+print('Clusters x%d' %count)
 
-print 'Cleaning tmp files'
+print('Cleaning tmp files')
 os.system('rm tmp_*')
 
 

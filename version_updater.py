@@ -10,7 +10,7 @@ SEE the bottom of this file
 """
 # BEGIN: YOU PROBABLY SHOULD LEAVE THIS ALONE
 import os
-import ConfigParser
+import configparser
 import subprocess
 
 try:
@@ -30,13 +30,15 @@ def getGitVersion():
     """returns the git commit string"""
     ps = subprocess.Popen(["git","rev-parse","--short", "HEAD"], stdout=subprocess.PIPE)
     (out, err) = ps.communicate()
+    out = out.decode().strip()
+    # print(out)
     return out
 
 def update_config(configFile, ver):
     """Tries to read in the configFile, and updates the current version to ver
     IF configFile dne, then a new configFile is written w/ the version
     """    
-    configParser = ConfigParser.ConfigParser()
+    configParser = configparser.ConfigParser()
     
     if len(configParser.read(configFile)) == 0:
         configParser.add_section("pkg_info")

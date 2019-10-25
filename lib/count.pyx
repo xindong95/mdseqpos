@@ -67,7 +67,7 @@ def count(seqs, length=3):
     cond3g2 = [ ]
     tot1 = 0.0
     for i in range(4):
-        ii = i * (pow(4 , int(length)) - 1) / 3
+        ii = int(i * (pow(4 , int(length)) - 1) / 3)
         bgprob.append(cond[ii])
         tot1 += cond[ii] + 1
         tot2 = 0.0

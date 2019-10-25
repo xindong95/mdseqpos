@@ -314,7 +314,6 @@ def main():
     #ALWAYS PRINT OUT VERSION INFO: 
     print(mdseqpos.__version__)
     print('Library path:', mdseqpos.__file__)
-    print() 
     
     USAGE = """USAGE: MDSeqPos.py [options] BEDFILE GENOME
     
@@ -363,7 +362,7 @@ def main():
     #HERE we should rely on a standard package to read in bed files; stub it
     chip_regions = ChipRegions(bedfile_name, genome, genome_dir=opts.genome_dir)
     print("read regions end time: %s" % time.ctime())
-
+    print(chip_regions)
     #LOAD the motifs (both known and denovo)
     known_motifs, new_motifs = None, None
     if opts.known_motifs:

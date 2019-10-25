@@ -221,7 +221,7 @@ def motif_hcluster(motif_list, cutoff):
         
         # Append merged motif to cluster
         clusters.append(merged)
-        print 'Finish round', mround
+        print('Finish round', mround)
         mround += 1
         
         # Refine score matrix and list. Including cut 2 line and 2 col, and then add 1 line and 1 col.
@@ -274,7 +274,7 @@ def motif_hcluster2(motif_list, cutoff):
     count = 0
     for i in range(len(clusters)-1):
         count+=1
-        print count
+        print(count)
         for j in range(i+1, len(clusters)):
             ts = similarity(clusters[i].motif.seqpos_results['pssm'], clusters[j].motif.seqpos_results['pssm']) # score, position, strand
             cluster_score_mat[i][j] = ts[0] # 1-distance score
@@ -317,7 +317,7 @@ def motif_hcluster2(motif_list, cutoff):
         
         # Append merged motif to cluster
         clusters.append(merged)
-        print 'Clustering, finish round', mround
+        print('Clustering, finish round', mround)
         mround += 1
         
         # Refine score matrix and list. Including cut 2 line and 2 col, and then add 1 line and 1 col.

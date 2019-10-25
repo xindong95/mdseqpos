@@ -26,7 +26,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
+// #include <py3c.h>
 
 /******************************
  *
@@ -351,15 +351,63 @@ static PyMethodDef myMethods[] = {
     { NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-PyMODINIT_FUNC init_MDmod(void)
+// original codes
+
+// PyMODINIT_FUNC init_MDmod(void)
+// {
+//  PyObject *m;
+//     PyObject *tmp;
+//  /*import_array();*/
+//  m=Py_InitModule("_MDmod", myMethods);
+//  pyError = PyErr_NewException("MDmod.error", NULL, NULL);
+//     Py_INCREF(pyError);
+//     PyModule_AddObject(m, "error", pyError);
+// };
+
+// migration by py3c
+
+// static struct PyModuleDef _MDmod = {
+//     PyModuleDef_HEAD_INIT,  /* m_base */
+//     "_MDmod",                 /* m_name */
+//     MDMOD_DOC,                   /* m_doc */
+//     -1,                     /* m_size */
+//     myMethods            /* m_methods */
+// };
+
+
+// MODULE_INIT_FUNC(_MDmod)
+// {
+//   PyObject *m;
+//   PyObject *tmp;
+//   /*import_array();*/
+//   m=PyModule_Create(&_MDmod);
+//   pyError = PyErr_NewException("MDmod.error", NULL, NULL);
+//     Py_INCREF(pyError);
+//     PyModule_AddObject(m, "error", pyError);
+//   return m;
+// };
+
+// directly migration
+
+static struct PyModuleDef _MDmod =
 {
-	PyObject *m;
+    PyModuleDef_HEAD_INIT,
+    "_MDmod", /* name of module */
+    MDMOD_DOC, /* module documentation, may be NULL */
+    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    myMethods
+};
+
+PyMODINIT_FUNC PyInit__MDmod(void)
+{
+  PyObject *m;
     PyObject *tmp;
-	/*import_array();*/
-	m=Py_InitModule("_MDmod", myMethods);
-	pyError = PyErr_NewException("MDmod.error", NULL, NULL);
+  /*import_array();*/
+  m=PyModule_Create(&_MDmod);
+  pyError = PyErr_NewException("MDmod.error", NULL, NULL);
     Py_INCREF(pyError);
     PyModule_AddObject(m, "error", pyError);
+    return m;
 };
 
 /******************************
@@ -485,7 +533,8 @@ static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
      return NULL;
 */
 
-  if (!PyArg_ParseTupleAndKeywords( args, keywds, "O!O!|iiiiiis", kwlist, &PyList_Type, &(input.isp), &PyList_Type, &(input.bsp), &(input.w), &(input.bgmkv), &(input.top), &(input.scan), &(input.iterate),  &(input.report), &(input.seed) ))
+  if (!PyArg_ParseTupleAndKeywords(args, keywds, "O!O!|iiiiiis", kwlist, &PyList_Type, &(input.isp), &PyList_Type, &(input.bsp), 
+    &(input.w), &(input.bgmkv), &(input.top), &(input.scan), &(input.iterate),  &(input.report), &(input.seed) ))
      return;
 
   gettimeofday(&begintv, NULL);
@@ -775,7 +824,7 @@ void readSeqFile(PyObject *listObj, int isSeq, struct sequence **seqs, struct
         strObj = PyList_GetItem(listObj, i); /* Can't fail */
  
         /* make it a string */
-        line = PyString_AsString( strObj );
+        line = PyUnicode_AsUnicode( strObj );
         /*fprintf( stdout, "%s\n", line );*/
 
 
