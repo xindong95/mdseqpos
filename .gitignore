@@ -4,5 +4,5 @@ build/*
 *.pyc
 lib/pkg.cfg
 lib/count.c
-
+lib/settings.py
 

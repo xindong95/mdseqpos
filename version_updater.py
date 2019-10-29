@@ -13,10 +13,11 @@ import os
 import configparser
 import subprocess
 
-try:
-    _ver = os.environ['HG_NODE']
-except:
-    _ver = None
+_ver = None
+# try:
+#     _ver = os.environ['HG_NODE']
+# except:
+#     _ver = None
 
 # def getHGTip():
 #     """returns the hg tip changeset"""
@@ -43,7 +44,7 @@ def update_config(configFile, ver):
     if len(configParser.read(configFile)) == 0:
         configParser.add_section("pkg_info")
 
-    configParser.set("pkg_info", "hg_changeset", ver)
+    configParser.set("pkg_info", "git_changeset", ver)
     f = open(configFile, "w")
     configParser.write(f)
     f.close()
